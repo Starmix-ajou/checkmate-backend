@@ -15,8 +15,11 @@ public class OAuthService {
     private final UserRepositoryPort userRepositoryPort;
 
     public User authenticate(Jwt jwt) {
+
         String email = jwt.getClaimAsString("email");
         String name = jwt.getClaimAsString("name");
+
+//      TODO: CustomException 구성
 
         Optional<User> existingUser = userRepositoryPort.findByEmail(email);
 
