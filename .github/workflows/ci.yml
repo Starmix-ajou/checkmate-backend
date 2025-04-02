@@ -1,0 +1,37 @@
+name: Build and Push to OCI
+on:
+  push:
+    branches:
+      - main
+      - "CM-18"
+
+env:
+  IMAGE_NAME: yny.ocir.io/ax1nm9kw34v6/checkmate
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for ARM builds)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to OCI Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: yny.ocir.io
+          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
+          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:${{ github.sha }} \
+            --push .
