@@ -1,4 +1,4 @@
-package com.starmix.checkmate.infrastructure.cofig;
+package com.starmix.checkmate.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
