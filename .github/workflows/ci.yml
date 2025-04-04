@@ -10,17 +10,14 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, checkmate]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Log in to OCI Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: yny.ocir.io
-          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
-          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
+        run: |
+          echo "${{ secrets.OCI_REGISTRY_PASSWORD }}" | docker login yny.ocir.io -u "${{ secrets.OCI_REGISTRY_USERNAME }}" --password-stdin
 
       - name: Build and Push Docker Image
         run: |
