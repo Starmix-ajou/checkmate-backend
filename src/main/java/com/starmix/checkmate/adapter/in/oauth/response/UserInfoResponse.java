@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.dto.oAuth;
+package com.starmix.checkmate.adapter.in.oauth.response;
 
 import lombok.Builder;
 

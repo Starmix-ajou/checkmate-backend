@@ -1,7 +1,7 @@
-package com.starmix.checkmate.adapter.in;
+package com.starmix.checkmate.adapter.in.oauth;
 
-import com.starmix.checkmate.adapter.in.dto.oAuth.UserInfoResponse;
-import com.starmix.checkmate.application.service.OAuthService;
+import com.starmix.checkmate.adapter.in.oauth.response.UserInfoResponse;
+import com.starmix.checkmate.application.service.AuthService;
 import com.starmix.checkmate.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-public class OAuthController {
+public class AuthController {
 
-    private final OAuthService oAuthService;
+    private final AuthService authService;
 
     @GetMapping("/login")
-    public ResponseEntity<UserInfoResponse> login(
-            @AuthenticationPrincipal Jwt jwt
-    ) {
-        User user = oAuthService.authenticate(jwt);
+    public ResponseEntity<UserInfoResponse> login (@AuthenticationPrincipal Jwt jwt) {
+        User user = authService.authenticate(jwt);
         UserInfoResponse response = UserInfoResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())

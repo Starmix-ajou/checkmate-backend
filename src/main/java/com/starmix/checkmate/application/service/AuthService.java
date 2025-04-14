@@ -1,6 +1,6 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.application.port.out.UserRepositoryPort;
+import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class OAuthService {
+public class AuthService {
 
-    private final UserRepositoryPort userRepositoryPort;
+    private final UserPersistencePort userRepositoryPort;
 
     public User authenticate(Jwt jwt) {
 
@@ -28,7 +28,8 @@ public class OAuthService {
                     .email(email)
                     .name(name)
                     .build();
-            return userRepositoryPort.save(newUser);
+            userRepositoryPort.save(newUser);
+            return newUser;
         });
     }
 }
