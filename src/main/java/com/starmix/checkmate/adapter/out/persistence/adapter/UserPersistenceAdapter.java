@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UserRepositoryAdapter implements UserPersistencePort {
+public class UserPersistenceAdapter implements UserPersistencePort {
 
     private final UserMongoRepository userMongoRepository;
 
