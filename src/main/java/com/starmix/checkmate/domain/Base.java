@@ -1,14 +1,14 @@
 package com.starmix.checkmate.domain;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
+@SuperBuilder
 @Getter
-@Builder
 public abstract class Base {
-    private final Long id;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private String id;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
