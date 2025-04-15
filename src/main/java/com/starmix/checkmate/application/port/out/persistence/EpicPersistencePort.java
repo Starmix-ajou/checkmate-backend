@@ -5,5 +5,5 @@ import com.starmix.checkmate.domain.Epic;
 import java.util.List;
 
 public interface EpicPersistencePort {
-    List<Epic> findByProjectId(String projectId);
+    List<Epic> finAllByProjectId(String projectId);
 }
