@@ -1,6 +1,6 @@
 package com.starmix.checkmate.application.port.out.persistence;
 
-import com.starmix.checkmate.domain.Epic;
+import com.starmix.checkmate.domain.epic.Epic;
 
 import java.util.List;
 
