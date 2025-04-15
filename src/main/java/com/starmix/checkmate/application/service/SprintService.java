@@ -14,6 +14,6 @@ public class SprintService {
     private final SprintPersistencePort sprintPersistencePort;
 
     public List<Sprint> getSprintsByProjectId(String projectId) {
-        return sprintPersistencePort.finAllByProjectId(projectId);
+        return sprintPersistencePort.findAllByProjectId(projectId);
     }
 }

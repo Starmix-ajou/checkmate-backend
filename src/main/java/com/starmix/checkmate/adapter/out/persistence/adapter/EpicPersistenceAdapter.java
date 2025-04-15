@@ -17,7 +17,7 @@ public class EpicPersistenceAdapter implements EpicPersistencePort {
     private final EpicMongoRepository epicMongoRepository;
 
     @Override
-    public List<Epic> finAllByProjectId(String projectId) {
+    public List<Epic> findAllByProjectId(String projectId) {
         List<EpicEntity> epicEntities = epicMongoRepository.findAllByProjectId(projectId);
         return epicEntities.stream().map(EpicMapper::toDomain).toList();
     }

@@ -9,7 +9,7 @@ public class TaskMapper {
 
     public static Task toDomain(TaskEntity entity) {
         return Task.builder()
-                .name(entity.getName())
+                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .status(entity.getStatus())
                 .assignee(UserMapper.toDomain(entity.getAssignee()))
@@ -24,7 +24,7 @@ public class TaskMapper {
 
     public static TaskEntity toEntity(Task domain) {
         return TaskEntity.builder()
-                .name(domain.getName())
+                .title(domain.getTitle())
                 .description(domain.getDescription())
                 .status(domain.getStatus())
                 .assignee(UserMapper.toEntity(domain.getAssignee()))
@@ -35,7 +35,7 @@ public class TaskMapper {
     }
     public static TaskEntity updateEntity(TaskEntity entity, Task domain) {
         return TaskEntity.builder()
-                .name(domain.getName())
+                .title(domain.getTitle())
                 .description(domain.getDescription())
                 .status(domain.getStatus())
                 .assignee(UserMapper.toEntity(domain.getAssignee()))

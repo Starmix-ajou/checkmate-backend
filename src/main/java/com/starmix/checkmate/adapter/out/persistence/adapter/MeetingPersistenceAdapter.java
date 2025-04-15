@@ -17,7 +17,7 @@ public class MeetingPersistenceAdapter implements MeetingPersistencePort {
     private final MeetingMongoRepository meetingMongoRepository;
 
     @Override
-    public List<Meeting> finAllByProjectId(String projectId) {
+    public List<Meeting> findAllByProjectId(String projectId) {
         List<MeetingEntity> meetingEntities = meetingMongoRepository.findAllByProjectId(projectId);
         return meetingEntities.stream().map(MeetingMapper::toDomain).toList();
     }

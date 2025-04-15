@@ -10,7 +10,7 @@ public class CommentMapper {
     public static Comment toDomain(CommentEntity entity) {
         return Comment.builder()
                 .taskId(entity.getTaskId())
-                .authorId(entity.getAuthorId())
+                .author(entity.getAuthor())
                 .content(entity.getContent())
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())
@@ -21,14 +21,14 @@ public class CommentMapper {
     public static CommentEntity toEntity(Comment domain) {
         return CommentEntity.builder()
                 .taskId(domain.getTaskId())
-                .authorId(domain.getAuthorId())
+                .author(domain.getAuthor())
                 .content(domain.getContent())
                 .build();
     }
     public static CommentEntity updateEntity(CommentEntity entity, Comment domain) {
         return CommentEntity.builder()
                 .taskId(domain.getTaskId())
-                .authorId(domain.getAuthorId())
+                .author(domain.getAuthor())
                 .content(domain.getContent())
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())

@@ -14,6 +14,6 @@ public class EpicService {
     private final EpicPersistencePort epicPersistencePort;
 
     public List<Epic> getEpicsByProjectId(String projectId) {
-        return epicPersistencePort.finAllByProjectId(projectId);
+        return epicPersistencePort.findAllByProjectId(projectId);
     }
 }
