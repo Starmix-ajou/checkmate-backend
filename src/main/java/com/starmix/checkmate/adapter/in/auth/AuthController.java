@@ -1,6 +1,6 @@
-package com.starmix.checkmate.adapter.in.oauth;
+package com.starmix.checkmate.adapter.in.auth;
 
-import com.starmix.checkmate.adapter.in.oauth.response.UserInfoResponse;
+import com.starmix.checkmate.adapter.in.auth.response.UserInfoResponse;
 import com.starmix.checkmate.application.service.AuthService;
 import com.starmix.checkmate.domain.user.User;
 import lombok.RequiredArgsConstructor;
