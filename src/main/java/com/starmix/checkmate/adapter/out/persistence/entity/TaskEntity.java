@@ -27,5 +27,5 @@ public class TaskEntity extends BaseEntity {
     private Priority priority;
 
     @DBRef
-    private List<CommentEntity> comments;
+    private List<EpicEntity> epic;
 }

@@ -17,7 +17,7 @@ public class CommentController {
 
     @GetMapping
     public ResponseEntity<List<Comment>> getCommentsByTaskId (
-            @RequestParam(required = false) String taskId
+            @RequestParam String taskId
     ) {
         List<Comment> tasks = commentService.getCommentsByTaskId(taskId);
         return ResponseEntity.ok().body(tasks);
