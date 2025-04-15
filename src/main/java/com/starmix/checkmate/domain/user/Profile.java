@@ -10,6 +10,6 @@ import java.util.List;
 @Getter
 public class Profile {
     private final List<Stack> stacks;
-    private final String position;
-    private final Long projectId;
+    private final List<String> positions;
+    private final String projectId;
 }

@@ -14,6 +14,6 @@ public class MeetingService {
     private final MeetingPersistencePort meetingPersistencePort;
 
     public List<Meeting> getMeetingsByProjectId(String projectId) {
-        return meetingPersistencePort.finAllByProjectId(projectId);
+        return meetingPersistencePort.findAllByProjectId(projectId);
     }
 }

@@ -1,30 +1,25 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
-import com.starmix.checkmate.domain.task.Status;
+import com.starmix.checkmate.domain.common.Stack;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Document(collection = "tasks")
-@SuperBuilder
+@Document(collection = "meetings")
 @Getter
-public class TaskEntity extends BaseEntity {
+@SuperBuilder
+public class ProjectEntity extends BaseEntity {
     private String title;
     private String description;
-    private Status status;
-
-    @DBRef
-    private UserEntity assignee;
-
     private LocalDate startDate;
     private LocalDate endDate;
-
-    private Integer priority;
-
+    private List<Stack> stacks;
     @DBRef
-    private List<EpicEntity> epic;
+    private List<UserEntity> members;
+    @DBRef
+    private UserEntity leader;
 }

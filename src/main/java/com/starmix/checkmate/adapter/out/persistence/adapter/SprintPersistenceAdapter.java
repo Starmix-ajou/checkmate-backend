@@ -17,7 +17,7 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
     private final SprintMongoRepository sprintMongoRepository;
 
     @Override
-    public List<Sprint> finAllByProjectId(String projectId) {
+    public List<Sprint> findAllByProjectId(String projectId) {
         List<SprintEntity> sprintEntities = sprintMongoRepository.findAllByProjectId(projectId);
         return sprintEntities.stream().map(SprintMapper::toDomain).toList();
     }

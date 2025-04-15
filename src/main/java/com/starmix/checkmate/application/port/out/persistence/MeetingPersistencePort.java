@@ -5,5 +5,5 @@ import com.starmix.checkmate.domain.meeting.Meeting;
 import java.util.List;
 
 public interface MeetingPersistencePort {
-    List<Meeting> finAllByProjectId(String projectId);
+    List<Meeting> findAllByProjectId(String projectId);
 }

@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
+import com.starmix.checkmate.domain.user.User;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @SuperBuilder
 public class CommentEntity extends BaseEntity {
     private String taskId;
-    private String authorId;
+    private User author;
     private String content;
 }
