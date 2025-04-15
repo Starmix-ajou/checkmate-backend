@@ -1,13 +1,13 @@
 package com.starmix.checkmate.domain;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@Builder
+@SuperBuilder
 public class Project extends Base {
     private String name;
     private String description;

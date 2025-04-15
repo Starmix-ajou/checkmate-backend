@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
 import java.util.List;
 
-@Document(collection = "epics")
+@Document(collection = "dailyScrums")
 @Getter
 @SuperBuilder
 public class DailyScrumEntity extends BaseEntity {

@@ -1,7 +1,7 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
-import com.starmix.checkmate.domain.Epic;
+import com.starmix.checkmate.domain.epic.Epic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
