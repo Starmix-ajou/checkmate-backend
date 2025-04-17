@@ -1,9 +1,7 @@
 package com.starmix.checkmate.adapter.in.project;
 
 import com.starmix.checkmate.application.service.ProjectService;
-import com.starmix.checkmate.application.service.SprintService;
 import com.starmix.checkmate.domain.project.Project;
-import com.starmix.checkmate.domain.sprint.Sprint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
