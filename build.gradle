@@ -26,6 +26,7 @@ repositories {
 dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// Spring Security - OAuth
 	implementation "org.springframework.boot:spring-boot-starter-security"
@@ -43,7 +44,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
 	// OpenFeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1'
