@@ -1,8 +1,6 @@
-package com.starmix.checkmate.adapter.in.sprint;
+package com.starmix.checkmate.adapter.in.http.sprint;
 
-import com.starmix.checkmate.application.service.MeetingService;
 import com.starmix.checkmate.application.service.SprintService;
-import com.starmix.checkmate.domain.meeting.Meeting;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

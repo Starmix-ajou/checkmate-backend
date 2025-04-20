@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.dailyScrum;
+package com.starmix.checkmate.adapter.in.http.dailyScrum;
 
 import com.starmix.checkmate.application.service.DailyScrumService;
 import com.starmix.checkmate.domain.dailyScrum.DailyScrum;

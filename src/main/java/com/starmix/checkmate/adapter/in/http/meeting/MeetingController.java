@@ -1,9 +1,7 @@
-package com.starmix.checkmate.adapter.in.meeting;
+package com.starmix.checkmate.adapter.in.http.meeting;
 
 import com.starmix.checkmate.application.service.MeetingService;
-import com.starmix.checkmate.application.service.TaskService;
 import com.starmix.checkmate.domain.meeting.Meeting;
-import com.starmix.checkmate.domain.task.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,19 +1,17 @@
-package com.starmix.checkmate.adapter.in.project;
+package com.starmix.checkmate.adapter.in.http.project;
 
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/project")
-public class ProjectController {
+public class ProjectHttpController {
 
     private final ProjectService projectService;
 

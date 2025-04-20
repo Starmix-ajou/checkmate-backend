@@ -6,5 +6,5 @@ import com.starmix.checkmate.domain.sprint.Sprint;
 import java.util.List;
 
 public interface ProjectPersistencePort {
-    List<Project> findAll();
+    List<Project> findByMembersEmail(String email);
 }
