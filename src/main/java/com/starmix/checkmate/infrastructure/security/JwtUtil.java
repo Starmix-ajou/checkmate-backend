@@ -1,5 +1,7 @@
 package com.starmix.checkmate.infrastructure.security;
 
+import com.starmix.checkmate.global.exception.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -13,6 +15,6 @@ public class JwtUtil {
         if (authentication instanceof JwtAuthenticationToken jwtAuthToken) {
             return jwtAuthToken.getToken();
         }
-        throw new IllegalStateException("JWT 인증 정보가 없습니다.");
+        throw new CustomException("JWT 인증 정보가 없습니다.", HttpStatus.FORBIDDEN);
     }
 }

@@ -13,10 +13,14 @@ import java.util.List;
 @SuperBuilder
 public class Project extends Base {
     private final String title;
-    private final String description;
+    private String description;
     private final LocalDate startDate;
     private final LocalDate endDate;
     private final List<Stack> stacks;
     private final List<User> members;
     private final User leader;
+
+    public void addFeedback(String feedback) {
+        this.description = description.concat(" " + feedback);
+    }
 }
