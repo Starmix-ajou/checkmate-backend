@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.task;
+package com.starmix.checkmate.adapter.in.http.task;
 
 import com.starmix.checkmate.application.service.TaskService;
 import com.starmix.checkmate.domain.task.Task;

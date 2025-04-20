@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record SlackSendMessageRequest(
+public record SlackSendMessageFeignRequest(
         String text,
         List<Object> blocks
 ) {}

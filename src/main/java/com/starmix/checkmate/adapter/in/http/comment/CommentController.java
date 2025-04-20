@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.comment;
+package com.starmix.checkmate.adapter.in.http.comment;
 
 import com.starmix.checkmate.application.service.CommentService;
 import com.starmix.checkmate.domain.comment.Comment;

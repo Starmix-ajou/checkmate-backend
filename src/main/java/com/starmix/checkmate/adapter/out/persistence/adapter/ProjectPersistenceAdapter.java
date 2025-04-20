@@ -17,8 +17,8 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     private final ProjectMongoRepository projectMongoRepository;
 
     @Override
-    public List<Project> findAll() {
-        List<ProjectEntity> projectEntities = projectMongoRepository.findAll();
+    public List<Project> findByMembersEmail(String email) {
+        List<ProjectEntity> projectEntities = projectMongoRepository.findByMembersEmail(email);
         return projectEntities.stream().map(ProjectMapper::toDomain).toList();
     }
 }

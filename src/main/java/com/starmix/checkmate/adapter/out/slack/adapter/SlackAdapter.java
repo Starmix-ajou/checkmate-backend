@@ -1,7 +1,7 @@
 package com.starmix.checkmate.adapter.out.slack.adapter;
 
 import com.starmix.checkmate.adapter.out.slack.client.SlackFeignClient;
-import com.starmix.checkmate.adapter.out.slack.client.request.SlackSendMessageRequest;
+import com.starmix.checkmate.adapter.out.slack.client.request.SlackSendMessageFeignRequest;
 import com.starmix.checkmate.adapter.out.slack.log.SlackLabel;
 import com.starmix.checkmate.adapter.out.slack.log.SlackLogLevel;
 import com.starmix.checkmate.application.port.out.slack.SlackPort;
@@ -28,7 +28,7 @@ public class SlackAdapter implements SlackPort {
     @Override
     public void sendMsg(LocalDateTime timestamp, String title, String description, SlackLogLevel logLevel, SlackLabel label) {
         try {
-            SlackSendMessageRequest slackSendMessageRequest = createMessage(
+            SlackSendMessageFeignRequest slackSendMessageRequest = createMessage(
                     timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                     title, description, logLevel, label
             );
@@ -45,7 +45,7 @@ public class SlackAdapter implements SlackPort {
         }
     }
 
-    private SlackSendMessageRequest createMessage(String timestamp, String title, String description, SlackLogLevel logLevel, SlackLabel label) {
+    private SlackSendMessageFeignRequest createMessage(String timestamp, String title, String description, SlackLogLevel logLevel, SlackLabel label) {
         String text = label.getIcon() + " " + title;
 
         List<Object> blocks = List.of(
@@ -68,7 +68,7 @@ public class SlackAdapter implements SlackPort {
                 )
         );
 
-        return SlackSendMessageRequest.builder()
+        return SlackSendMessageFeignRequest.builder()
                 .text(text)
                 .blocks(blocks)
                 .build();

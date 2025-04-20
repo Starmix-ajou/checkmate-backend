@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.epic;
+package com.starmix.checkmate.adapter.in.http.epic;
 
 import com.starmix.checkmate.application.service.EpicService;
 import com.starmix.checkmate.domain.epic.Epic;

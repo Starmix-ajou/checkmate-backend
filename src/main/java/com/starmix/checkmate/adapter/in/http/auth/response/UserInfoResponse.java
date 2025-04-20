@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.auth.response;
+package com.starmix.checkmate.adapter.in.http.auth.response;
 
 import lombok.Builder;
 
