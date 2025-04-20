@@ -35,6 +35,9 @@ dependencies {
 	// Database
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
