@@ -3,12 +3,14 @@ package com.starmix.checkmate.application.service;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeatureDefinitionFeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
+import com.starmix.checkmate.adapter.in.sse.project.response.FeatureDefinitionFeedbackResponse;
 import com.starmix.checkmate.adapter.out.cache.CacheType;
 import com.starmix.checkmate.adapter.out.oauth.dto.OAuthUserInfo;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.cache.CachePort;
 import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
+import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
@@ -56,7 +58,17 @@ public class ProjectService {
                 .build();
     }
 
-    public void featureDefinitionFeedback(FeatureDefinitionFeedbackRequest request) {
-//        cachePort.saveObject();
+    public FeatureDefinitionFeedbackResponse featureDefinitionFeedback(FeatureDefinitionFeedbackRequest request) {
+        Jwt jwt = jwtUtil.getToken();
+        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+
+        Project project = cachePort.getObject(CacheType.PROJECT_INFO_WITHOUT_DEF, email);
+        project.addFeedback(request.description());
+
+        List<Feature> features = aiPort.featureDefinitionFeedback(project);
+
+        return FeatureDefinitionFeedbackResponse.builder()
+                .features(features)
+                .build();
     }
 }
