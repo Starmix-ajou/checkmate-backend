@@ -1,9 +1,9 @@
-package com.starmix.checkmate.adapter.out.cache.adapter;
+package com.starmix.checkmate.adapter.out.redis.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.starmix.checkmate.adapter.out.cache.CacheType;
-import com.starmix.checkmate.application.port.out.cache.CachePort;
+import com.starmix.checkmate.adapter.out.redis.RedisType;
+import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @AllArgsConstructor
-public class CacheAdapter implements CachePort {
+public class RedisAdapter implements RedisPort {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
     @Override
-    public void save(CacheType cacheType, String key, String value) {
+    public void save(RedisType cacheType, String key, String value) {
         try {
             redisTemplate.opsForValue().set(cacheType.getKey() + key, value);
         } catch (Exception e) {
@@ -31,7 +31,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void save(CacheType cacheType, String key, String value, long timeout, TimeUnit timeUnit) {
+    public void save(RedisType cacheType, String key, String value, long timeout, TimeUnit timeUnit) {
         try {
             redisTemplate.opsForValue().set(cacheType.getKey() + key, value);
             redisTemplate.expire(cacheType.getKey() + key, timeout, timeUnit);
@@ -41,7 +41,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public String get(CacheType cacheType, String key) {
+    public String get(RedisType cacheType, String key) {
         try {
             return redisTemplate.opsForValue().get(cacheType.getKey() + key);
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void saveSet(CacheType cacheType, String key, List<?> values) {
+    public void saveSet(RedisType cacheType, String key, List<?> values) {
         try {
             for (Object value : values) {
                 String json = objectMapper.writeValueAsString(value);
@@ -62,7 +62,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public <T> List<T> getSet(CacheType cacheType, String key, Class<T> clazz) {
+    public <T> List<T> getSet(RedisType cacheType, String key, Class<T> clazz) {
         try {
             Set<String> jsonSet = redisTemplate.opsForSet().members(cacheType.getKey() + key);
             if (jsonSet == null || jsonSet.isEmpty()) {
@@ -79,7 +79,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public boolean isInclude(CacheType cacheType, String key, String value) {
+    public boolean isInclude(RedisType cacheType, String key, String value) {
         try {
             return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(cacheType.getKey() + key, value));
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public boolean exists(CacheType cacheType, String key) {
+    public boolean exists(RedisType cacheType, String key) {
         try {
             return redisTemplate.hasKey(cacheType.getKey() + key);
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void delete(CacheType cacheType, String key) {
+    public void delete(RedisType cacheType, String key) {
         try {
             redisTemplate.delete(cacheType.getKey() + key);
         } catch (Exception e) {
@@ -106,7 +106,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void saveObject(CacheType cacheType, String key, Object value, long timeout, TimeUnit timeUnit) {
+    public void saveObject(RedisType cacheType, String key, Object value, long timeout, TimeUnit timeUnit) {
         try {
             String json = objectMapper.writeValueAsString(value);
             save(cacheType, key, json, timeout, timeUnit);
@@ -116,7 +116,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void saveObject(CacheType cacheType, String key, Object value) {
+    public void saveObject(RedisType cacheType, String key, Object value) {
         try {
             String json = objectMapper.writeValueAsString(value);
             save(cacheType, key, json);
@@ -126,7 +126,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public <T> T getObject(CacheType cacheType, String key) {
+    public <T> T getObject(RedisType cacheType, String key) {
         try {
             String json = get(cacheType, key);
             if (json == null) {
@@ -139,7 +139,7 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void updateSet(CacheType cacheType, String key, List<?> newValues) {
+    public void updateSet(RedisType cacheType, String key, List<?> newValues) {
         try {
             redisTemplate.delete(cacheType.getKey() + key);
 

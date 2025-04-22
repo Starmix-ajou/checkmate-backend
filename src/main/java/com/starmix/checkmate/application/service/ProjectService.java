@@ -5,11 +5,11 @@ import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
-import com.starmix.checkmate.adapter.out.cache.CacheType;
+import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
-import com.starmix.checkmate.application.port.out.cache.CachePort;
 import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
+import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
@@ -26,7 +26,7 @@ public class ProjectService {
     private final ProjectPersistencePort projectPersistencePort;
     private final GoogleOAuthPort googleOAuthPort;
     private final AIPort aiPort;
-    private final CachePort cachePort;
+    private final RedisPort redisPort;
     private final JwtUtil jwtUtil;
 
     public List<Project> getProjects() {
@@ -48,11 +48,11 @@ public class ProjectService {
                 .members(request.members())
                 .build();
 
-        cachePort.saveObject(CacheType.PROJECT_INFO, email, project);
+        redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 
         Suggestion suggestion = aiPort.createFunctionDefinition(project);
 
-        cachePort.saveSet(CacheType.FEATURES, email, suggestion.getFeatures());
+        redisPort.saveSet(RedisType.FEATURES, email, suggestion.getFeatures());
 
         return CreateFeatureDefinitionResponse.builder()
                 .suggestion(suggestion)
@@ -64,7 +64,7 @@ public class ProjectService {
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
         List<Feature> features = aiPort.featureDefinitionFeedback(email, request.feedback());
-        cachePort.updateSet(CacheType.FEATURES, email, features);
+        redisPort.updateSet(RedisType.FEATURES, email, features);
 
         return FeedbackResponse.builder()
                 .features(features)
@@ -76,7 +76,7 @@ public class ProjectService {
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
         List<Feature> features = aiPort.createFeatureSpecification(email);
-        cachePort.updateSet(CacheType.FEATURES, email, features);
+        redisPort.updateSet(RedisType.FEATURES, email, features);
 
         return CreateFeatureSpecificationResponse.builder()
                 .features(features)
@@ -88,12 +88,12 @@ public class ProjectService {
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
         if(request.feedback().isEmpty()) {
-            Project project = cachePort.getObject(CacheType.PROJECT_INFO, email);
+            Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
             projectPersistencePort.save(project);
         }
 
         List<Feature> features = aiPort.featureDefinitionFeedback(email, request.feedback());
-        cachePort.updateSet(CacheType.FEATURES, email, features);
+        redisPort.updateSet(RedisType.FEATURES, email, features);
 
         return FeedbackResponse.builder()
                 .features(features)
