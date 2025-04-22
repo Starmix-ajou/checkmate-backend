@@ -2,9 +2,11 @@ package com.starmix.checkmate.adapter.out.ai.adapter;
 
 import com.starmix.checkmate.adapter.out.ai.client.AIFeignClient;
 import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureDefinitionFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.FeatureDefinitionFeedbackFeignRequest;
+import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecificationFeignRequest;
+import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureDefinitionFeignResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.FeatureDefinitionFeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureSpecificationFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
@@ -28,7 +30,7 @@ public class AIAdapter implements AIPort {
             CreateFeatureDefinitionFeignRequest request = CreateFeatureDefinitionFeignRequest.builder()
                     .description(project.getDescription())
                     .build();
-            CreateFeatureDefinitionFeignResponse response = aiFeignClient.createFunctionDefinition(request);
+            CreateFeatureDefinitionFeignResponse response = aiFeignClient.createFeatureDefinition(request);
             return response.suggestion();
         } catch (Exception e) {
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -36,18 +38,40 @@ public class AIAdapter implements AIPort {
     }
 
     @Override
-    public List<Feature> featureDefinitionFeedback(Project project) {
+    public List<Feature> featureDefinitionFeedback(String email, String feedback) {
         try {
-            FeatureDefinitionFeedbackFeignRequest request = FeatureDefinitionFeedbackFeignRequest.builder()
-                    .title(project.getTitle())
-                    .description(project.getDescription())
-                    .startDate(project.getStartDate())
-                    .endDate(project.getEndDate())
-                    .stacks(project.getStacks())
-                    .members(project.getMembers())
-                    .leader(project.getLeader())
+            FeedbackFeignRequest request = FeedbackFeignRequest.builder()
+                    .email(email)
+                    .feedback(feedback)
                     .build();
-            FeatureDefinitionFeedbackFeignResponse response = aiFeignClient.featureDefinitionFeedback(request);
+            FeedbackFeignResponse response = aiFeignClient.feedbackFeatureDefinition(request);
+            return response.features();
+        } catch (Exception e) {
+            throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<Feature> createFeatureSpecification(String email) {
+        try {
+            CreateFeatureSpecificationFeignRequest request = CreateFeatureSpecificationFeignRequest.builder()
+                    .email(email)
+                    .build();
+            CreateFeatureSpecificationFeignResponse response = aiFeignClient.createFeatureSpecification(request);
+            return response.features();
+        } catch (Exception e) {
+            throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<Feature> featureSpecificationFeedback(String email, String feedback) {
+        try {
+            FeedbackFeignRequest request = FeedbackFeignRequest.builder()
+                    .email(email)
+                    .feedback(feedback)
+                    .build();
+            FeedbackFeignResponse response = aiFeignClient.feedbackFeatureSpecification(request);
             return response.features();
         } catch (Exception e) {
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
