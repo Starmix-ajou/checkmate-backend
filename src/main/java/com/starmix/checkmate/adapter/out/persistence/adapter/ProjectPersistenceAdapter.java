@@ -21,4 +21,10 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
         List<ProjectEntity> projectEntities = projectMongoRepository.findByMembersEmail(email);
         return projectEntities.stream().map(ProjectMapper::toDomain).toList();
     }
+
+    @Override
+    public void save(Project project) {
+        ProjectEntity projectEntity = ProjectMapper.toEntity(project);
+        projectMongoRepository.save(projectEntity);
+    }
 }

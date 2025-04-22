@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ProjectPersistencePort {
     List<Project> findByMembersEmail(String email);
+    void save(Project project);
 }

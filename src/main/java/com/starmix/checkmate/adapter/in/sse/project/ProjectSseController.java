@@ -1,9 +1,11 @@
 package com.starmix.checkmate.adapter.in.sse.project;
 
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
-import com.starmix.checkmate.adapter.in.sse.project.request.FeatureDefinitionFeedbackRequest;
+import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureSpecificationRequest;
+import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
-import com.starmix.checkmate.adapter.in.sse.project.response.FeatureDefinitionFeedbackResponse;
+import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
+import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
 import com.starmix.checkmate.application.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +26,25 @@ public class ProjectSseController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/definition-feedback")
-    public ResponseEntity<FeatureDefinitionFeedbackResponse> featureDefinitionFeedback(@RequestBody FeatureDefinitionFeedbackRequest request) {
-        FeatureDefinitionFeedbackResponse response = projectService.featureDefinitionFeedback(request);
+    @PutMapping("/definition")
+    public ResponseEntity<FeedbackResponse> feedbackFeatureDefinition(
+            @RequestBody FeedbackRequest request
+    ) {
+        FeedbackResponse response = projectService.feedbackFeatureDefinition(request);
         return ResponseEntity.ok(response);
     }
-//
-//    @PostMapping("/specification")
-//    public ResponseEntity<Project> createFeatureSpecification(@RequestBody CreateFeatureSpecificationRequest request) {
-//
-//    }
+
+    @GetMapping("/specification")
+    public ResponseEntity<CreateFeatureSpecificationResponse> createFeatureSpecification() {
+        CreateFeatureSpecificationResponse response = projectService.createFeatureSpecification();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/specification")
+    public ResponseEntity<FeedbackResponse> feedbackFeatureSpecification(
+            @RequestBody FeedbackRequest request
+    ) {
+        FeedbackResponse response = projectService.feedbackFeatureSpecification(request);
+        return ResponseEntity.ok(response);
+    }
 }

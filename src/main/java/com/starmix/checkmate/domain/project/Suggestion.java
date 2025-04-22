@@ -8,8 +8,8 @@ import java.util.List;
 @Getter
 @Builder
 public class Suggestion {
-    private final List<String> features;
-    private final List<Topic> topics;
+    private final List<Feature> features;
+    private final List<Topic> suggestions;
 
     public record Topic(
             String question,

@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.out.ai.client.response;
+package com.starmix.checkmate.adapter.in.sse.project.response;
 
 import com.starmix.checkmate.domain.project.Feature;
 import lombok.Builder;
@@ -6,6 +6,6 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record FeatureDefinitionFeedbackFeignResponse(
+public record FeedbackResponse(
         List<Feature> features
 ) { }

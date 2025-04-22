@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -48,18 +50,29 @@ public class CacheAdapter implements CachePort {
     }
 
     @Override
-    public void saveSet(CacheType cacheType, String key, String value) {
+    public void saveSet(CacheType cacheType, String key, List<?> values) {
         try {
-            redisTemplate.opsForSet().add(cacheType.getKey() + key, value);
-        } catch (Exception e) {
+            for (Object value : values) {
+                String json = objectMapper.writeValueAsString(value);
+                redisTemplate.opsForSet().add(cacheType.getKey() + key, json);
+            }
+        } catch (JsonProcessingException e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public Set<String> getSet(CacheType cacheType, String key) {
+    public <T> List<T> getSet(CacheType cacheType, String key, Class<T> clazz) {
         try {
-            return redisTemplate.opsForSet().members(cacheType.getKey() + key);
+            Set<String> jsonSet = redisTemplate.opsForSet().members(cacheType.getKey() + key);
+            if (jsonSet == null || jsonSet.isEmpty()) {
+                return List.of();
+            }
+            List<T> result = new ArrayList<>();
+            for (String json : jsonSet) {
+                result.add(objectMapper.readValue(json, clazz));
+            }
+            return result;
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -120,6 +133,20 @@ public class CacheAdapter implements CachePort {
                 return null;
             }
             return (T) objectMapper.readValue(json, cacheType.getType());
+        } catch (Exception e) {
+            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void updateSet(CacheType cacheType, String key, List<?> newValues) {
+        try {
+            redisTemplate.delete(cacheType.getKey() + key);
+
+            for (Object value : newValues) {
+                String json = objectMapper.writeValueAsString(value);
+                redisTemplate.opsForSet().add(cacheType.getKey() + key, json);
+            }
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }

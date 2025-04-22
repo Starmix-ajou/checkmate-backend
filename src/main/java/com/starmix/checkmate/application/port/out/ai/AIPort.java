@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface AIPort {
     Suggestion createFunctionDefinition(Project project);
-    List<Feature> featureDefinitionFeedback(Project project);
+    List<Feature> featureDefinitionFeedback(String email, String feedback);
+    List<Feature> createFeatureSpecification(String email);
+    List<Feature> featureSpecificationFeedback(String email, String feedback);
 }
