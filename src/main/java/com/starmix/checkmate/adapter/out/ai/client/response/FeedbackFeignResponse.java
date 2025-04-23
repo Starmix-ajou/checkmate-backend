@@ -7,5 +7,6 @@ import java.util.List;
 
 @Builder
 public record FeedbackFeignResponse(
-        List<Feature> features
+        List<Feature> features,
+        Boolean isNextStep
 ) { }

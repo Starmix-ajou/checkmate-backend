@@ -5,6 +5,7 @@ import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
@@ -50,7 +51,7 @@ public class ProjectService {
 
         redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 
-        Suggestion suggestion = aiPort.createFunctionDefinition(project);
+        Suggestion suggestion = aiPort.createFunctionDefinition(project, request.definitionUrl());
 
         redisPort.saveSet(RedisType.FEATURES, email, suggestion.getFeatures());
 
@@ -63,11 +64,12 @@ public class ProjectService {
         Jwt jwt = jwtUtil.getToken();
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
-        List<Feature> features = aiPort.featureDefinitionFeedback(email, request.feedback());
-        redisPort.updateSet(RedisType.FEATURES, email, features);
+        FeedbackFeignResponse response = aiPort.feedbackFeatureDefinition(email, request.feedback());
+        redisPort.updateSet(RedisType.FEATURES, email, response.features());
 
         return FeedbackResponse.builder()
-                .features(features)
+                .features(response.features())
+                .isNextStep(response.isNextStep())
                 .build();
     }
 
@@ -92,11 +94,12 @@ public class ProjectService {
             projectPersistencePort.save(project);
         }
 
-        List<Feature> features = aiPort.featureDefinitionFeedback(email, request.feedback());
-        redisPort.updateSet(RedisType.FEATURES, email, features);
+        FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
+        redisPort.updateSet(RedisType.FEATURES, email, response.features());
 
         return FeedbackResponse.builder()
-                .features(features)
+                .features(response.features())
+                .isNextStep(response.isNextStep())
                 .build();
     }
 }

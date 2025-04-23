@@ -10,5 +10,6 @@ public record CreateFeatureDefinitionRequest(
         String description,
         LocalDate startDate,
         LocalDate endDate,
-        List<User> members
+        List<User> members,
+        String definitionUrl
 ) { }
