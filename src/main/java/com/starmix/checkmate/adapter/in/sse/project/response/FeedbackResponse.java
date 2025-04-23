@@ -7,5 +7,6 @@ import java.util.List;
 
 @Builder
 public record FeedbackResponse(
-        List<Feature> features
+        List<Feature> features,
+        Boolean isNextStep
 ) { }

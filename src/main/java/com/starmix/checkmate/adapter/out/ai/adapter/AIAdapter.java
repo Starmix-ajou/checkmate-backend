@@ -25,10 +25,11 @@ public class AIAdapter implements AIPort {
     private final AIFeignClient aiFeignClient;
 
     @Override
-    public Suggestion createFunctionDefinition(Project project) {
+    public Suggestion createFunctionDefinition(Project project, String definitionUrl) {
         try {
             CreateFeatureDefinitionFeignRequest request = CreateFeatureDefinitionFeignRequest.builder()
                     .description(project.getDescription())
+                    .definitionUrl(definitionUrl)
                     .build();
             CreateFeatureDefinitionFeignResponse response = aiFeignClient.createFeatureDefinition(request);
             return response.suggestion();
@@ -38,14 +39,13 @@ public class AIAdapter implements AIPort {
     }
 
     @Override
-    public List<Feature> featureDefinitionFeedback(String email, String feedback) {
+    public FeedbackFeignResponse feedbackFeatureDefinition(String email, String feedback) {
         try {
             FeedbackFeignRequest request = FeedbackFeignRequest.builder()
                     .email(email)
                     .feedback(feedback)
                     .build();
-            FeedbackFeignResponse response = aiFeignClient.feedbackFeatureDefinition(request);
-            return response.features();
+            return aiFeignClient.feedbackFeatureDefinition(request);
         } catch (Exception e) {
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -65,14 +65,13 @@ public class AIAdapter implements AIPort {
     }
 
     @Override
-    public List<Feature> featureSpecificationFeedback(String email, String feedback) {
+    public FeedbackFeignResponse feedbackFeatureSpecification(String email, String feedback) {
         try {
             FeedbackFeignRequest request = FeedbackFeignRequest.builder()
                     .email(email)
                     .feedback(feedback)
                     .build();
-            FeedbackFeignResponse response = aiFeignClient.feedbackFeatureSpecification(request);
-            return response.features();
+            return aiFeignClient.feedbackFeatureSpecification(request);
         } catch (Exception e) {
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
