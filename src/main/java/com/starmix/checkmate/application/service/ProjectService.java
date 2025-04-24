@@ -95,13 +95,16 @@ public class ProjectService {
         Jwt jwt = jwtUtil.getToken();
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
-        if(request.feedback().isEmpty()) {
+        FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
+        if(response.isNextStep()) {
+            redisPort.updateSet(RedisType.FEATURES, email, response.features());
+        } else {
             Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
+            project.getMembers().forEach(
+                    member -> member.addPendingProject(project.getId())
+            );
             projectPersistencePort.save(project);
         }
-
-        FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
-        redisPort.updateSet(RedisType.FEATURES, email, response.features());
 
         return FeedbackResponse.builder()
                 .features(response.features())
