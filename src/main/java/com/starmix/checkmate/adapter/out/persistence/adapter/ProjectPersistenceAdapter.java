@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -20,6 +21,12 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     public List<Project> findByMembersEmail(String email) {
         List<ProjectEntity> projectEntities = projectMongoRepository.findByMembersEmail(email);
         return projectEntities.stream().map(ProjectMapper::toDomain).toList();
+    }
+
+    @Override
+    public Optional<Project> findById(String id) {
+        Optional<ProjectEntity> projectEntity =  projectMongoRepository.findById(id);
+        return projectEntity.map(ProjectMapper::toDomain);
     }
 
     @Override

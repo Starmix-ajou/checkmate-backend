@@ -1,5 +1,6 @@
 package com.starmix.checkmate.application.service;
 
+import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
@@ -10,12 +11,16 @@ import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
+import com.starmix.checkmate.domain.user.User;
+import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +34,7 @@ public class ProjectService {
     private final AIPort aiPort;
     private final RedisPort redisPort;
     private final JwtUtil jwtUtil;
+    private final UserPersistencePort userPersistencePort;
 
     public List<Project> getProjects() {
         Jwt jwt = jwtUtil.getToken();
@@ -101,5 +107,32 @@ public class ProjectService {
                 .features(response.features())
                 .isNextStep(response.isNextStep())
                 .build();
+    }
+
+    public void approve(String projectId, ApproveRequest request) {
+        Jwt jwt = jwtUtil.getToken();
+        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        if(!user.getPendingProjectIds().contains(projectId)) {
+            throw new CustomException("Permission denied", HttpStatus.FORBIDDEN);
+        }
+
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        project.approve(user);
+    }
+
+    public void deny(String projectId) {
+        Jwt jwt = jwtUtil.getToken();
+        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        if(!user.getPendingProjectIds().contains(projectId)) {
+            throw new CustomException("Permission denied", HttpStatus.FORBIDDEN);
+        }
+        user.denyPendingProject(projectId);
     }
 }

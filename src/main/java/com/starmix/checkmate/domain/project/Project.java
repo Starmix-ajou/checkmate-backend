@@ -19,4 +19,8 @@ public class Project extends Base {
     private final List<Stack> stacks;
     private final List<User> members;
     private final User leader;
+
+    public void approve(User user) {
+        this.members.add(user);
+    }
 }
