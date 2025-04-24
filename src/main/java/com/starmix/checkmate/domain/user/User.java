@@ -13,4 +13,13 @@ public class User extends Base {
     private final String email;
     private final List<Profile> profiles;
     private final Role role;
+    private final List<String> pendingProjectIds;
+
+    public void addPendingProject(String projectId) {
+        this.pendingProjectIds.add(projectId);
+    }
+
+    public void denyPendingProject(String projectId) {
+        this.pendingProjectIds.remove(projectId);
+    }
 }
