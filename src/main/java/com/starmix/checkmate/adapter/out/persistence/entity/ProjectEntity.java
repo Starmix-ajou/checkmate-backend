@@ -22,4 +22,5 @@ public class ProjectEntity extends BaseEntity {
     private List<UserEntity> members;
     @DBRef
     private UserEntity leader;
+    private String imageUrl;
 }
