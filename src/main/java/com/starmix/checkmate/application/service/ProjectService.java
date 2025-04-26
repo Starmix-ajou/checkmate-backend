@@ -7,8 +7,10 @@ import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefini
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
+import com.starmix.checkmate.application.port.out.mail.MailPort;
 import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
@@ -23,8 +25,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +39,7 @@ public class ProjectService {
     private final RedisPort redisPort;
     private final JwtUtil jwtUtil;
     private final UserPersistencePort userPersistencePort;
+    private final MailPort mailPort;
 
     public List<Project> getProjects() {
         Jwt jwt = jwtUtil.getToken();
@@ -104,6 +109,8 @@ public class ProjectService {
                     member -> member.addPendingProject(project.getId())
             );
             projectPersistencePort.save(project);
+            Map<String, Context> contexts = project.toMailContext();
+            contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
         }
 
         return FeedbackResponse.builder()

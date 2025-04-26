@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="margin: 0; padding: 0; font-family: '맑은 고딕', 'Malgun Gothic', dotum, sans-serif; background-color: #ffffff;">
+
+<!-- 상단 헤더 -->
+<div style="background: #795548; padding: 24px; text-align: center; max-width: 700px; margin: auto; border-radius: 8px 8px 0 0;">
+    <img src="https://ax1nm9kw34v6.objectstorage.ap-chuncheon-1.oci.customer-oci.com/n/ax1nm9kw34v6/b/checkmate-assets/o/checkmate_logoGroup%20633038.png"
+         alt="Checkmate"
+         style="max-height: 40px; height: auto; width: auto; display: inline-block;" />
+</div>
+<!-- 본문 -->
+<div style="color: rgb(62,58,87); max-width: 700px; margin: auto; padding: 0 24px;">
+
+    <!-- 인사 및 안내 -->
+    <div style="font-size: 20px; margin-top: 20px; margin-bottom: 40px; text-align: center; line-height: 1.5;">
+        <div><strong>[프로젝트 초대 안내]</strong></div>
+        <br>
+        <div>안녕하세요,</div>
+        <div><strong th:text="${memberName}">홍길동</strong>님을 <strong th:text="${projectName}">[프로젝트명]</strong>에 초대합니다.</div>
+        <br>
+        <div>아래 내용을 확인하시고 참여를 확정해주세요.</div>
+    </div>
+
+    <!-- 프로젝트 정보 -->
+    <div style="margin-bottom: 32px; padding: 0 16px;">
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #3E3A57;">📌 프로젝트 정보</h2>
+        <div style="background-color: #f6f8fa; border-radius: 8px; padding: 16px; font-size: 16px; color: #3E3A57; line-height: 1.6;">
+            <p><strong>프로젝트명:</strong> <span th:text="${projectName}">Checkmate 캠페인</span></p>
+            <p><strong>기간:</strong> <span th:text="${projectPeriod}">2025년 5월 1일 ~ 6월 30일</span></p>
+        </div>
+    </div>
+
+    <!-- 참여 버튼 -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a th:href="${projectJoinLink}" target="_blank"
+           style="background-color: #795548; color: #ffffff; padding: 16px 32px; font-size: 18px; font-weight: bold; border-radius: 8px; text-decoration: none; display: inline-block; cursor: pointer;">프로젝트 참여하기
+        </a>
+    </div>
+
+</div>
+</body>
+</html>
