@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,11 +12,12 @@ import java.util.List;
 @Document(collection = "dailyScrums")
 @Getter
 @SuperBuilder
+@NoArgsConstructor
 public class DailyScrumEntity extends BaseEntity {
-    private final LocalDate timestamp;
+    private LocalDate timestamp;
     @DBRef
-    private final List<TaskEntity> todoTasks;
+    private List<TaskEntity> todoTasks;
     @DBRef
-    private final List<TaskEntity> doneTasks;
-    private final String projectId;
+    private List<TaskEntity> doneTasks;
+    private String projectId;
 }

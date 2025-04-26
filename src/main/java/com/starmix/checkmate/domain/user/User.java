@@ -11,6 +11,7 @@ import java.util.List;
 public class User extends Base {
     private final String name;
     private final String email;
+    private final String profileImageUrl;
     private final List<Profile> profiles;
     private final Role role;
     private final List<String> pendingProjectIds;

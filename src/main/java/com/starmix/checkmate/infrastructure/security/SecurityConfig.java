@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -23,7 +22,7 @@ public class SecurityConfig {
     private String corsAllowedOrigins;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> {});
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(HttpBasicConfigurer::disable);
@@ -32,9 +31,6 @@ public class SecurityConfig {
 //          authorizeRequests.requestMatchers(ApiPaths.AUTHENTICATED_ENDPOINTS).authenticated();
             authorizeRequests.anyRequest().permitAll();
         });
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
-        );
         http.sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
