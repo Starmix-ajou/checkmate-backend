@@ -1,6 +1,7 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
+import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
@@ -41,11 +42,22 @@ public class ProjectService {
     private final UserPersistencePort userPersistencePort;
     private final MailPort mailPort;
 
-    public List<Project> getProjects() {
+    public List<Project> getProjects(ProjectStatus status) {
         Jwt jwt = jwtUtil.getToken();
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
 
-        return projectPersistencePort.findByMembersEmail(email);
+        return switch (status) {
+            case ACTIVE -> projectPersistencePort.findActiveProjects();
+            case ARCHIVED -> projectPersistencePort.findArchivedProjects();
+            case PENDING -> {
+                User user = userPersistencePort.findByEmail(email)
+                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+                yield user.getPendingProjectIds().stream()
+                        .map(projectId -> projectPersistencePort.findById(projectId).orElse(null))
+                        .toList();
+            }
+            case null -> projectPersistencePort.findByMembersEmail(email);
+        };
     }
 
     public CreateFeatureDefinitionResponse createFeatureDefinition(CreateFeatureDefinitionRequest request) {

@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.http.project;
 
 import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
+import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,11 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping
-    public ResponseEntity<List<Project>> getProjects () {
-        List<Project> sprints = projectService.getProjects();
-        return ResponseEntity.ok().body(sprints);
+    public ResponseEntity<List<Project>> getProjects (
+            @RequestParam(required = false) ProjectStatus status
+    ) {
+        List<Project> projects = projectService.getProjects(status);
+        return ResponseEntity.ok().body(projects);
     }
 
     @PostMapping("/{id}/approve")

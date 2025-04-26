@@ -8,6 +8,7 @@ import com.starmix.checkmate.domain.project.Project;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +34,20 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     public void save(Project project) {
         ProjectEntity projectEntity = ProjectMapper.toEntity(project);
         projectMongoRepository.save(projectEntity);
+    }
+
+    @Override
+    public List<Project> findActiveProjects() {
+        LocalDate today = LocalDate.now();
+        List<ProjectEntity> projectEntities =
+                projectMongoRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(today, today);
+        return projectEntities.stream().map(ProjectMapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Project> findArchivedProjects() {
+        LocalDate today = LocalDate.now();
+        List<ProjectEntity> projectEntities = projectMongoRepository.findByEndDateBefore(today);
+        return projectEntities.stream().map(ProjectMapper::toDomain).toList();
     }
 }

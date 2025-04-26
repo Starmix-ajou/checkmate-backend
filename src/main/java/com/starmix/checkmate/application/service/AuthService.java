@@ -20,8 +20,6 @@ public class AuthService {
     public User authenticate(Jwt jwt) {
         OAuthUserInfo oAuthUserInfo = googleOAuthPort.getUserInfo(jwt);
 
-//      TODO: CustomException 구성
-
         Optional<User> existingUser = userRepositoryPort.findByEmail(oAuthUserInfo.getEmail());
 
         return existingUser.orElseGet(() -> {
