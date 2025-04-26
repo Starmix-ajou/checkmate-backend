@@ -13,7 +13,6 @@ import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
-import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
@@ -26,7 +25,6 @@ import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -37,7 +35,6 @@ import java.util.Map;
 @Service
 public class ProjectService {
     private final ProjectPersistencePort projectPersistencePort;
-    private final GoogleOAuthPort googleOAuthPort;
     private final AIPort aiPort;
     private final RedisPort redisPort;
     private final JwtUtil jwtUtil;
@@ -45,8 +42,7 @@ public class ProjectService {
     private final MailPort mailPort;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
@@ -109,8 +105,7 @@ public class ProjectService {
     }
 
     public CreateFeatureDefinitionResponse createFeatureDefinition(CreateFeatureDefinitionRequest request) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
@@ -135,8 +130,7 @@ public class ProjectService {
     }
 
     public FeedbackResponse feedbackFeatureDefinition(FeedbackRequest request) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
 
         FeedbackFeignResponse response = aiPort.feedbackFeatureDefinition(email, request.feedback());
         redisPort.updateSet(RedisType.FEATURES, email, response.features());
@@ -148,8 +142,7 @@ public class ProjectService {
     }
 
     public CreateFeatureSpecificationResponse createFeatureSpecification() {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
 
         List<Feature> features = aiPort.createFeatureSpecification(email);
         redisPort.updateSet(RedisType.FEATURES, email, features);
@@ -160,8 +153,7 @@ public class ProjectService {
     }
 
     public FeedbackResponse feedbackFeatureSpecification(FeedbackRequest request) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
 
         FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
         if(response.isNextStep()) {
@@ -184,8 +176,7 @@ public class ProjectService {
     }
 
     public void approve(String projectId, ApproveRequest request) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
 
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
@@ -199,8 +190,7 @@ public class ProjectService {
     }
 
     public void deny(String projectId) {
-        Jwt jwt = jwtUtil.getToken();
-        String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        String email = jwtUtil.extractEmail();
 
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));

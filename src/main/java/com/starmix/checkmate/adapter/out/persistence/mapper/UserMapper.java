@@ -13,6 +13,8 @@ public class UserMapper {
                 .email(userEntity.getEmail())
                 .profiles(userEntity.getProfiles())
                 .role(userEntity.getRole())
+                .profileImageUrl(userEntity.getProfileImageUrl())
+                .pendingProjectIds(userEntity.getPendingProjectIds())
                 .id(userEntity.getId())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
@@ -25,8 +27,11 @@ public class UserMapper {
                 .email(user.getEmail())
                 .profiles(user.getProfiles())
                 .role(user.getRole())
+                .profileImageUrl(user.getProfileImageUrl())
+                .pendingProjectIds(user.getPendingProjectIds())
                 .build();
     }
+
     public static UserEntity updateEntity(UserEntity entity, User domain) {
         return UserEntity.builder()
                 .id(entity.getId())
@@ -36,6 +41,8 @@ public class UserMapper {
                 .email(domain.getEmail())
                 .profiles(domain.getProfiles())
                 .role(domain.getRole())
+                .profileImageUrl(domain.getProfileImageUrl())
+                .pendingProjectIds(domain.getPendingProjectIds())
                 .build();
     }
 }
