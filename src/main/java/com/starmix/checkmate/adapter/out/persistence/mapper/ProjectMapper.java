@@ -22,6 +22,7 @@ public class ProjectMapper {
                 .stacks(entity.getStacks())
                 .members(members)
                 .leader(UserMapper.toDomain(entity.getLeader()))
+                .imageUrl(entity.getImageUrl())
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
@@ -40,8 +41,10 @@ public class ProjectMapper {
                 .stacks(domain.getStacks())
                 .members(members)
                 .leader(UserMapper.toEntity(domain.getLeader()))
+                .imageUrl(domain.getImageUrl())
                 .build();
     }
+
     public static ProjectEntity updateEntity(ProjectEntity entity, Project domain) {
         List<UserEntity> members = domain.getMembers().stream()
                 .map(UserMapper::toEntity).toList();
@@ -54,6 +57,7 @@ public class ProjectMapper {
                 .stacks(domain.getStacks())
                 .members(members)
                 .leader(UserMapper.toEntity(domain.getLeader()))
+                .imageUrl(domain.getImageUrl())
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(LocalDateTime.now())

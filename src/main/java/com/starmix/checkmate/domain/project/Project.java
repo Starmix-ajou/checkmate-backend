@@ -8,10 +8,10 @@ import lombok.experimental.SuperBuilder;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Getter
 @SuperBuilder
@@ -23,9 +23,16 @@ public class Project extends Base {
     private final List<Stack> stacks;
     private final List<User> members;
     private final User leader;
+    private final String imageUrl;
 
     public void approve(User user) {
         this.members.add(user);
+    }
+
+    public List<User> getAllMembers() {
+        List<User> members = new ArrayList<>(this.members);
+        members.add(this.leader);
+        return members;
     }
 
     public Map<String, Context> toMailContext() {

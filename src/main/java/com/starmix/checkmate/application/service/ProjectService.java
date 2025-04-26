@@ -2,6 +2,7 @@ package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
@@ -19,6 +20,7 @@ import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
+import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
@@ -42,33 +44,82 @@ public class ProjectService {
     private final UserPersistencePort userPersistencePort;
     private final MailPort mailPort;
 
-    public List<Project> getProjects(ProjectStatus status) {
+    public List<ProjectsResponse> getProjects(ProjectStatus status) {
         Jwt jwt = jwtUtil.getToken();
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
         return switch (status) {
-            case ACTIVE -> projectPersistencePort.findActiveProjects();
-            case ARCHIVED -> projectPersistencePort.findArchivedProjects();
+            case ACTIVE -> {
+                List<Project> projects = projectPersistencePort.findActiveProjects();
+                yield projects.stream().map(
+                        project -> {
+                            Profile profile = user.getProfiles().stream()
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .findFirst()
+                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+                            return ProjectsResponse.fromDomain(project, profile);
+                        }
+                ).toList();
+            }
+            case ARCHIVED -> {
+                List<Project> projects = projectPersistencePort.findArchivedProjects();
+
+                yield projects.stream().map(
+                        project -> {
+                            Profile profile = user.getProfiles().stream()
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .findFirst()
+                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+                            return ProjectsResponse.fromDomain(project, profile);
+                        }
+                ).toList();
+            }
             case PENDING -> {
-                User user = userPersistencePort.findByEmail(email)
-                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-                yield user.getPendingProjectIds().stream()
+                List<Project> projects = user.getPendingProjectIds().stream()
                         .map(projectId -> projectPersistencePort.findById(projectId).orElse(null))
                         .toList();
+                yield projects.stream().map(project -> {
+                    Profile profile = user.getProfiles().stream()
+                            .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                            .findFirst()
+                            .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+                    return ProjectsResponse.fromDomain(project, profile);
+                }).toList();
             }
-            case null -> projectPersistencePort.findByMembersEmail(email);
+            case null -> {
+                List<Project> projects = projectPersistencePort.findByMembersEmail(email);
+                yield projects.stream().map(
+                        project -> {
+                            Profile profile = user.getProfiles().stream()
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .findFirst()
+                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+                            return ProjectsResponse.fromDomain(project, profile);
+                        }
+                ).toList();
+            }
         };
+    }
+
+    public Project getProject(String projectId) {
+        return projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
     }
 
     public CreateFeatureDefinitionResponse createFeatureDefinition(CreateFeatureDefinitionRequest request) {
         Jwt jwt = jwtUtil.getToken();
         String email = googleOAuthPort.getUserInfo(jwt).getEmail();
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
         Project project = Project.builder()
                 .title(request.title())
                 .description(request.description())
                 .startDate(request.startDate())
                 .endDate(request.endDate())
+                .leader(user)
                 .members(request.members())
                 .build();
 
@@ -121,6 +172,7 @@ public class ProjectService {
                     member -> member.addPendingProject(project.getId())
             );
             projectPersistencePort.save(project);
+
             Map<String, Context> contexts = project.toMailContext();
             contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
         }
