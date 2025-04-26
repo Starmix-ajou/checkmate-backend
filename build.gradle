@@ -51,6 +51,10 @@ dependencies {
 
 	// OpenFeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1'
+
+	// Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {
