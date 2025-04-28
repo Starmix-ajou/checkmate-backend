@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ProjectMongoRepository extends MongoRepository<ProjectEntity, String> {
-    List<ProjectEntity> findByMembersEmail(String email);
+    List<ProjectEntity> findByMemberIdsContaining(String memberId);
     List<ProjectEntity> findByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate todayForStartDate, LocalDate todayForEndDate);
     List<ProjectEntity> findByEndDateBefore(LocalDate today);
 }

@@ -1,6 +1,5 @@
 package com.starmix.checkmate.domain.project;
 
-import com.starmix.checkmate.domain.common.Stack;
 import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,20 +18,17 @@ public class Project {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<Stack> stacks;
     private List<User> members;
     private User leader;
     private String imageUrl;
 
-    public void approve(User user) {
-        this.members.add(user);
-    }
+    public void createProject(User leader, List<User> members) {
+        leader.addProfile(this.leader.getProfileByProjectId(this.projectId));
+        leader.approve(this.projectId);
 
-    public void createProject() {
-        this.members.forEach(
-                member -> member.addPendingProject(this.projectId)
+        members.forEach(member ->
+                member.addProfile(this.leader.getProfileByProjectId(this.projectId))
         );
-        this.members = List.of(this.leader);
     }
 
     public Map<String, Context> toMailContext() {
@@ -47,5 +43,19 @@ public class Project {
             mailContextMap.put(member.getEmail(), context);
         });
         return mailContextMap;
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "projectId='" + projectId + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", members=" + members +
+                ", leader=" + leader.toString() +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }

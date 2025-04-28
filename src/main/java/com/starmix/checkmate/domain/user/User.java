@@ -1,8 +1,10 @@
 package com.starmix.checkmate.domain.user;
 
 import com.starmix.checkmate.adapter.out.oauth.dto.OAuthUserInfo;
+import com.starmix.checkmate.global.exception.CustomException;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +18,29 @@ public class User {
     private String profileImageUrl;
     private List<Profile> profiles;
     private Role role;
-    private List<String> pendingProjectIds;
 
-    public void addPendingProject(String projectId) {
-        this.pendingProjectIds.add(projectId);
+    public void addProfile(Profile profile) {
+        this.profiles.add(profile);
     }
 
-    public void denyPendingProject(String projectId) {
-        this.pendingProjectIds.remove(projectId);
+    public void removeProfile(Profile profile) {
+        this.profiles.remove(profile);
     }
+
+    public void approve(String projectId) {
+        getProfileByProjectId(projectId).activeProfile();
+    }
+
+    public void deny(String projectId) {
+        removeProfile(getProfileByProjectId(projectId));
+    }
+
+    public Profile getProfileByProjectId(String projectId) {
+        return this.profiles.stream().filter(
+                profile -> profile.getProjectId().equals(projectId)
+        ).findFirst().orElseThrow(() -> new CustomException("Permission denied", HttpStatus.FORBIDDEN));
+    }
+
 
     public static User register(OAuthUserInfo oAuthUserInfo) {
         return User.builder()
@@ -33,7 +49,19 @@ public class User {
                 .profileImageUrl(oAuthUserInfo.profileImage())
                 .profiles(new ArrayList<>())
                 .role(Role.DEVELOPER)
-                .pendingProjectIds(new ArrayList<>())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        String profilesString = (profiles != null && !profiles.isEmpty()) ? profiles.getFirst().toString() : "No profiles";
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", profiles=" + profilesString +
+                ", role=" + role +
+                '}';
     }
 }

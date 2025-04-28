@@ -31,6 +31,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorDto> handleCustomException(CustomException ex) {
+        ex.printStackTrace();
+
         LocalDateTime timestamp = LocalDateTime.now();
         String formattedDetails = formatAsJson(ex.getDetailedMessage());
 
@@ -46,6 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorDto> handleNullPointerException(NullPointerException ex) {
+        ex.printStackTrace();
 
         LocalDateTime timestamp = LocalDateTime.now();
         String formattedDetails = formatAsJson(ex.getMessage());
@@ -62,6 +65,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleValidationException(MethodArgumentNotValidException ex) {
+        ex.printStackTrace();
 
         LocalDateTime timestamp = LocalDateTime.now();
         String formattedDetails = formatAsJson(ex.getMessage());
@@ -87,6 +91,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
+
         LocalDateTime timestamp = LocalDateTime.now();
         String formattedDetails = formatAsJson(ex.getMessage());
 

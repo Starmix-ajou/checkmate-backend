@@ -22,11 +22,7 @@ public class AuthService {
         OAuthUserInfo oAuthUserInfo = googleOAuthPort.getUserInfo(request.accessToken());
         User user = userRepositoryPort.findByEmail(oAuthUserInfo.email())
                 .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .email(oAuthUserInfo.email())
-                            .name(oAuthUserInfo.name())
-                            .profileImageUrl(oAuthUserInfo.profileImage())
-                            .build();
+                    User newUser = User.register(oAuthUserInfo);
                     userRepositoryPort.save(newUser);
                     return newUser;
                 });
