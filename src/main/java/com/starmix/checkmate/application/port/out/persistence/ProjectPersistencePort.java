@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectPersistencePort {
-    List<Project> findByMembersEmail(String email);
+    List<Project> findByMemberIdsContaining(String memberId);
     Optional<Project> findById(String id);
-    void save(Project project);
+    String save(Project project);
     List<Project> findActiveProjects();
     List<Project> findArchivedProjects();
 }

@@ -15,7 +15,6 @@ public class ProjectMapper {
                 .description(entity.getDescription())
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
-                .stacks(entity.getStacks())
                 .members(members)
                 .leader(leader)
                 .imageUrl(entity.getImageUrl())
@@ -28,11 +27,11 @@ public class ProjectMapper {
                 .map(User::getUserId).toList();
 
         return ProjectEntity.builder()
+                .id(domain.getProjectId())
                 .title(domain.getTitle())
                 .description(domain.getDescription())
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
-                .stacks(domain.getStacks())
                 .memberIds(memberIds)
                 .leaderId(domain.getLeader().getUserId())
                 .imageUrl(domain.getImageUrl())
@@ -48,7 +47,6 @@ public class ProjectMapper {
                 .description(domain.getDescription())
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
-                .stacks(domain.getStacks())
                 .memberIds(memberIds)
                 .leaderId(domain.getLeader().getUserId())
                 .imageUrl(domain.getImageUrl())

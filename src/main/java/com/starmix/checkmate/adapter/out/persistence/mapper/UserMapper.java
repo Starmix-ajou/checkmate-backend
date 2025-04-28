@@ -14,19 +14,18 @@ public class UserMapper {
                 .profiles(userEntity.getProfiles())
                 .role(userEntity.getRole())
                 .profileImageUrl(userEntity.getProfileImageUrl())
-                .pendingProjectIds(userEntity.getPendingProjectIds())
                 .userId(userEntity.getId())
                 .build();
     }
 
     public static UserEntity toEntity(User user) {
         return UserEntity.builder()
+                .id(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .profiles(user.getProfiles())
                 .role(user.getRole())
                 .profileImageUrl(user.getProfileImageUrl())
-                .pendingProjectIds(user.getPendingProjectIds())
                 .build();
     }
 
@@ -40,7 +39,6 @@ public class UserMapper {
                 .profiles(domain.getProfiles())
                 .role(domain.getRole())
                 .profileImageUrl(domain.getProfileImageUrl())
-                .pendingProjectIds(domain.getPendingProjectIds())
                 .build();
     }
 }

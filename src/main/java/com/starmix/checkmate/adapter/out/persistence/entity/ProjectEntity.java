@@ -4,13 +4,12 @@ import com.starmix.checkmate.domain.common.Stack;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Document(collection = "meetings")
+@Document(collection = "projects")
 @Getter
 @SuperBuilder
 @NoArgsConstructor
@@ -20,9 +19,7 @@ public class ProjectEntity extends BaseEntity {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<Stack> stacks;
-    @DBRef
-    private List<UserEntity> members;
-    @DBRef
-    private UserEntity leader;
+    private List<String> memberIds;
+    private String leaderId;
     private String imageUrl;
 }

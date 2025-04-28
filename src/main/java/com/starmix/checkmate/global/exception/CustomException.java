@@ -5,11 +5,15 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class CustomException extends RuntimeException {
-    private final String detailedMessage;
     private final HttpStatus httpStatus;
 
-    public CustomException(String detailedMessage, HttpStatus httpStatus) {
-        this.detailedMessage = detailedMessage;
+    public CustomException(String message, HttpStatus httpStatus) {
+        super(message);
+        this.httpStatus = httpStatus;
+    }
+
+    public CustomException(String message, HttpStatus httpStatus, Throwable cause) {
+        super(message, cause);
         this.httpStatus = httpStatus;
     }
 }

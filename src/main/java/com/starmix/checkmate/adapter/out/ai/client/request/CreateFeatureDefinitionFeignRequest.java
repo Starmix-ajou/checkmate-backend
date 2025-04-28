@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateFeatureDefinitionFeignRequest(
+        String email,
         String description,
         String definitionUrl
 ) { }

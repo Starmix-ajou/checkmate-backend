@@ -33,12 +33,12 @@ public class JwtUtil {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader == null || authorizationHeader.isBlank()) {
-            throw new CustomException("Authorization 헤더가 없습니다.", HttpStatus.FORBIDDEN);
+            throw new CustomException("토큰 정보가 없습니다.", HttpStatus.FORBIDDEN);
         }
 
         String[] parts = authorizationHeader.trim().split("\\s+");
         if (parts.length != 2 || !parts[0].equalsIgnoreCase("Bearer")) {
-            throw new CustomException("Authorization 헤더 형식이 올바르지 않습니다.", HttpStatus.FORBIDDEN);
+            throw new CustomException("토큰 형식이 올바르지 않습니다.", HttpStatus.FORBIDDEN);
         }
 
         return parts[1];

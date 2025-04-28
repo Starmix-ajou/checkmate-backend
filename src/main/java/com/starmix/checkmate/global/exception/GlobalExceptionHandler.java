@@ -1,4 +1,5 @@
 package com.starmix.checkmate.global.exception;
+
 import com.starmix.checkmate.adapter.out.slack.log.SlackLabel;
 import com.starmix.checkmate.adapter.out.slack.log.SlackLogLevel;
 import com.starmix.checkmate.application.port.out.slack.SlackPort;
@@ -29,16 +30,26 @@ public class GlobalExceptionHandler {
                 .replace(", ", ",\n  ");
     }
 
+    private void logToSlack(LocalDateTime timestamp, String message, SlackLogLevel logLevel) {
+        if (springEnv.isDevProfile() || springEnv.isProdProfile()) {
+            slackPort.sendMsg(timestamp, "Exception 발생", formatAsJson(message), logLevel, SlackLabel.SYSTEM_ALERT);
+        }
+    }
+
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorDto> handleCustomException(CustomException ex) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        String formattedDetails = formatAsJson(ex.getDetailedMessage());
+        ex.printStackTrace();
 
-        if(springEnv.isDevProfile() || springEnv.isProdProfile()) {
-            slackPort.sendMsg(timestamp, "Exception 발생", formattedDetails, SlackLogLevel.ERROR, SlackLabel.SYSTEM_ALERT);
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        StringBuilder details = new StringBuilder(ex.getMessage());
+        if (ex.getCause() != null) {
+            details.append("\nCaused by: ").append(ex.getCause().getMessage());
         }
 
-        ErrorDto errorDto = new ErrorDto(ex.getDetailedMessage());
+        logToSlack(timestamp, details.toString(), SlackLogLevel.ERROR);
+
+        ErrorDto errorDto = new ErrorDto(details.toString());
         return ResponseEntity
                 .status(ex.getHttpStatus())
                 .body(errorDto);
@@ -46,13 +57,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorDto> handleNullPointerException(NullPointerException ex) {
+        ex.printStackTrace();
 
         LocalDateTime timestamp = LocalDateTime.now();
-        String formattedDetails = formatAsJson(ex.getMessage());
-
-        if(springEnv.isDevProfile() || springEnv.isProdProfile()) {
-            slackPort.sendMsg(timestamp, "Exception 발생", formattedDetails, SlackLogLevel.WARNING, SlackLabel.SYSTEM_ALERT);
-        }
+        logToSlack(timestamp, ex.getMessage(), SlackLogLevel.WARNING);
 
         ErrorDto errorDto = new ErrorDto("잘못된 요청입니다: Null 값이 존재합니다.");
         return ResponseEntity
@@ -62,13 +70,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleValidationException(MethodArgumentNotValidException ex) {
+        ex.printStackTrace();
 
         LocalDateTime timestamp = LocalDateTime.now();
-        String formattedDetails = formatAsJson(ex.getMessage());
-
-        if(springEnv.isDevProfile() || springEnv.isProdProfile()) {
-            slackPort.sendMsg(timestamp, "Exception 발생", formattedDetails, SlackLogLevel.WARNING, SlackLabel.SYSTEM_ALERT);
-        }
+        logToSlack(timestamp, ex.getMessage(), SlackLogLevel.WARNING);
 
         StringBuilder errorMessageBuilder = new StringBuilder("입력값 검증 오류: ");
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
@@ -78,8 +83,7 @@ public class GlobalExceptionHandler {
                     .append(fieldError.getDefaultMessage())
                     .append("] ");
         }
-        String detailedMessage = errorMessageBuilder.toString();
-        ErrorDto errorDto = new ErrorDto(detailedMessage);
+        ErrorDto errorDto = new ErrorDto(errorMessageBuilder.toString());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorDto);
@@ -87,12 +91,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDto> handleGeneralException(Exception ex) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        String formattedDetails = formatAsJson(ex.getMessage());
+        ex.printStackTrace();
 
-        if(springEnv.isDevProfile() || springEnv.isProdProfile()) {
-            slackPort.sendMsg(timestamp, "Exception 발생", formattedDetails, SlackLogLevel.ERROR, SlackLabel.SYSTEM_ALERT);
-        }
+        LocalDateTime timestamp = LocalDateTime.now();
+        logToSlack(timestamp, ex.getMessage(), SlackLogLevel.ERROR);
 
         ErrorDto errorDto = new ErrorDto("서버 내부 오류가 발생했습니다.");
         return ResponseEntity

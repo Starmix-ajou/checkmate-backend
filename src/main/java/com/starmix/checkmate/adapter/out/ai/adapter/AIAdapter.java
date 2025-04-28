@@ -28,6 +28,7 @@ public class AIAdapter implements AIPort {
     public Suggestion createFunctionDefinition(Project project, String definitionUrl) {
         try {
             CreateFeatureDefinitionFeignRequest request = CreateFeatureDefinitionFeignRequest.builder()
+                    .email(project.getLeader().getEmail())
                     .description(project.getDescription())
                     .definitionUrl(definitionUrl)
                     .build();

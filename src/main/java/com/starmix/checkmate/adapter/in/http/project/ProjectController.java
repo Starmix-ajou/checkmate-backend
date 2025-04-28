@@ -1,6 +1,5 @@
 package com.starmix.checkmate.adapter.in.http.project;
 
-import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
@@ -36,14 +35,14 @@ public class ProjectController {
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<Void> approve (
-            @PathVariable String id, @RequestBody ApproveRequest request
+            @PathVariable String id
     ) {
-        projectService.approve(id, request);
+        projectService.approve(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/deny")
-    public ResponseEntity<Void> approve (
+    public ResponseEntity<Void> deny (
             @PathVariable String id
     ) {
         projectService.deny(id);

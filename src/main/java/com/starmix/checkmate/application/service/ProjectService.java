@@ -1,6 +1,5 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.http.project.request.ApproveRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
@@ -52,7 +51,7 @@ public class ProjectService {
                 yield projects.stream().map(
                         project -> {
                             Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
                                     .findFirst()
                                     .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
                             return ProjectsResponse.fromDomain(project, profile);
@@ -65,7 +64,7 @@ public class ProjectService {
                 yield projects.stream().map(
                         project -> {
                             Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
                                     .findFirst()
                                     .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
                             return ProjectsResponse.fromDomain(project, profile);
@@ -73,23 +72,31 @@ public class ProjectService {
                 ).toList();
             }
             case PENDING -> {
-                List<Project> projects = user.getPendingProjectIds().stream()
+                List<String> pendingProjectIds = user.getProfiles().stream()
+                        .filter(profile -> !profile.getIsActive())
+                        .map(Profile::getProjectId)
+                        .toList();
+                if(pendingProjectIds.isEmpty()) {
+                    yield List.of();
+                }
+
+                List<Project> projects = pendingProjectIds.stream()
                         .map(projectId -> projectPersistencePort.findById(projectId).orElse(null))
                         .toList();
                 yield projects.stream().map(project -> {
                     Profile profile = user.getProfiles().stream()
-                            .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                            .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
                             .findFirst()
                             .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
                     return ProjectsResponse.fromDomain(project, profile);
                 }).toList();
             }
             case null -> {
-                List<Project> projects = projectPersistencePort.findByMembersEmail(email);
+                List<Project> projects = projectPersistencePort.findByMemberIdsContaining(user.getUserId());
                 yield projects.stream().map(
                         project -> {
                             Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getId()))
+                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
                                     .findFirst()
                                     .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
                             return ProjectsResponse.fromDomain(project, profile);
@@ -106,23 +113,18 @@ public class ProjectService {
 
     public CreateFeatureDefinitionResponse createFeatureDefinition(CreateFeatureDefinitionRequest request) {
         String email = jwtUtil.extractEmail();
-        User user = userPersistencePort.findByEmail(email)
+        User leader = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        List<User> members = request.members().stream().map(
+                member -> userPersistencePort.findByEmail(member.email())
+                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
+        ).toList();
 
-        Project project = Project.builder()
-                .title(request.title())
-                .description(request.description())
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .leader(user)
-                .members(request.members())
-                .build();
+        Project project = request.toDomain(leader, members);
 
         redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 
         Suggestion suggestion = aiPort.createFunctionDefinition(project, request.definitionUrl());
-
-        redisPort.saveSet(RedisType.FEATURES, email, suggestion.getFeatures());
 
         return CreateFeatureDefinitionResponse.builder()
                 .suggestion(suggestion)
@@ -133,7 +135,6 @@ public class ProjectService {
         String email = jwtUtil.extractEmail();
 
         FeedbackFeignResponse response = aiPort.feedbackFeatureDefinition(email, request.feedback());
-        redisPort.updateSet(RedisType.FEATURES, email, response.features());
 
         return FeedbackResponse.builder()
                 .features(response.features())
@@ -145,7 +146,6 @@ public class ProjectService {
         String email = jwtUtil.extractEmail();
 
         List<Feature> features = aiPort.createFeatureSpecification(email);
-        redisPort.updateSet(RedisType.FEATURES, email, features);
 
         return CreateFeatureSpecificationResponse.builder()
                 .features(features)
@@ -157,12 +157,18 @@ public class ProjectService {
 
         FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
         if(response.isNextStep()) {
-            redisPort.updateSet(RedisType.FEATURES, email, response.features());
-        } else {
             Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
-            project.getMembers().forEach(
-                    member -> member.addPendingProject(project.getId())
-            );
+
+            User leader = userPersistencePort.findById(project.getLeader().getUserId())
+                    .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+            List<User> members = project.getMembers().stream().map(
+                    member -> userPersistencePort.findById(member.getUserId())
+                            .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
+            ).toList();
+            project.createProject(leader, members);
+
+            userPersistencePort.save(leader);
+            members.forEach(userPersistencePort::save);
             projectPersistencePort.save(project);
 
             Map<String, Context> contexts = project.toMailContext();
@@ -175,28 +181,25 @@ public class ProjectService {
                 .build();
     }
 
-    public void approve(String projectId, ApproveRequest request) {
+    public void approve(String projectId) {
         String email = jwtUtil.extractEmail();
-
-        User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-        if(!user.getPendingProjectIds().contains(projectId)) {
-            throw new CustomException("Permission denied", HttpStatus.FORBIDDEN);
-        }
 
         Project project = projectPersistencePort.findById(projectId)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        project.approve(user);
+        User user = userPersistencePort.findByEmail(email)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+
+        user.approve(project.getProjectId());
     }
 
     public void deny(String projectId) {
         String email = jwtUtil.extractEmail();
 
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-        if(!user.getPendingProjectIds().contains(projectId)) {
-            throw new CustomException("Permission denied", HttpStatus.FORBIDDEN);
-        }
-        user.denyPendingProject(projectId);
+
+        user.deny(project.getProjectId());
     }
 }
