@@ -1,20 +1,22 @@
 package com.starmix.checkmate.domain.user;
 
-import com.starmix.checkmate.domain.Base;
+import com.starmix.checkmate.adapter.out.oauth.dto.OAuthUserInfo;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@SuperBuilder
+@Builder(toBuilder = true)
 @Getter
-public class User extends Base {
-    private final String name;
-    private final String email;
-    private final String profileImageUrl;
-    private final List<Profile> profiles;
-    private final Role role;
-    private final List<String> pendingProjectIds;
+public class User {
+    private String userId;
+    private String name;
+    private String email;
+    private String profileImageUrl;
+    private List<Profile> profiles;
+    private Role role;
+    private List<String> pendingProjectIds;
 
     public void addPendingProject(String projectId) {
         this.pendingProjectIds.add(projectId);
@@ -22,5 +24,16 @@ public class User extends Base {
 
     public void denyPendingProject(String projectId) {
         this.pendingProjectIds.remove(projectId);
+    }
+
+    public static User register(OAuthUserInfo oAuthUserInfo) {
+        return User.builder()
+                .email(oAuthUserInfo.email())
+                .name(oAuthUserInfo.name())
+                .profileImageUrl(oAuthUserInfo.profileImage())
+                .profiles(new ArrayList<>())
+                .role(Role.DEVELOPER)
+                .pendingProjectIds(new ArrayList<>())
+                .build();
     }
 }

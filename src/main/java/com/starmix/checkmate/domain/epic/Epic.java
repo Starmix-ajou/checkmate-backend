@@ -1,13 +1,13 @@
 package com.starmix.checkmate.domain.epic;
 
-import com.starmix.checkmate.domain.Base;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@Builder(toBuilder = true)
 @Getter
-public class Epic extends Base {
-    private final String title;
-    private final String description;
-    private final String projectId;
+public class Epic {
+    private String epicId;
+    private String title;
+    private String description;
+    private String projectId;
 }

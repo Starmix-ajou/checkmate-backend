@@ -20,9 +20,7 @@ public class MeetingMapper {
                 .participants(participants)
                 .master(UserMapper.toDomain(entity.getMaster()))
                 .projectId(entity.getProjectId())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .meetingId(entity.getId())
                 .build();
     }
 
@@ -38,6 +36,7 @@ public class MeetingMapper {
                 .projectId(domain.getProjectId())
                 .build();
     }
+
     public static MeetingEntity updateEntity(MeetingEntity entity, Meeting domain) {
         List<UserEntity> participants = domain.getParticipants().stream()
                 .map(UserMapper::toEntity).toList();

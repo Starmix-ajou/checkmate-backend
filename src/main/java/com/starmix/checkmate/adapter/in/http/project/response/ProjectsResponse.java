@@ -23,7 +23,7 @@ public record ProjectsResponse(
         return ProjectsResponse.builder()
                 .projectTitle(project.getTitle())
                 .projectImageUrl(project.getImageUrl())
-                .projectId(project.getId())
+                .projectId(project.getProjectId())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .members(project.getMembers())

@@ -21,9 +21,7 @@ public class DailyScrumMapper {
                 .todoTasks(todoTasks)
                 .doneTasks(doneTasks)
                 .projectId(entity.getProjectId())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .dailyScrumId(entity.getId())
                 .build();
     }
 

@@ -1,18 +1,18 @@
 package com.starmix.checkmate.domain.meeting;
 
-import com.starmix.checkmate.domain.Base;
 import com.starmix.checkmate.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
-@SuperBuilder
-public class Meeting extends Base {
-    private final String title;
-    private final String content;
-    private final List<User> participants;
-    private final User master;
-    private final String projectId;
+@Builder(toBuilder = true)
+public class Meeting {
+    private String meetingId;
+    private String title;
+    private String content;
+    private List<User> participants;
+    private User master;
+    private String projectId;
 }

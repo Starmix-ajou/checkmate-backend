@@ -15,9 +15,7 @@ public class SprintMapper {
                 .projectId(entity.getProjectId())
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .sprintId(entity.getId())
                 .build();
     }
 

@@ -16,9 +16,7 @@ public class TaskMapper {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .priority(entity.getPriority())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .taskId(entity.getId())
                 .build();
     }
 
@@ -33,6 +31,7 @@ public class TaskMapper {
                 .priority(domain.getPriority())
                 .build();
     }
+
     public static TaskEntity updateEntity(TaskEntity entity, Task domain) {
         return TaskEntity.builder()
                 .title(domain.getTitle())
