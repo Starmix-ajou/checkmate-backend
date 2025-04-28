@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class Suggestion {
     private final List<Feature> features;
     private final List<Topic> suggestions;

@@ -1,22 +1,22 @@
 package com.starmix.checkmate.domain.task;
 
-import com.starmix.checkmate.domain.Base;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
-@SuperBuilder
+@Builder(toBuilder = true)
 @Getter
-public class Task extends Base {
-    private final String title;
-    private final String description;
-    private final Status status;
-    private final User assignee;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
-    private final Integer priority;
-    private final Epic epic;
+public class Task {
+    private String taskId;
+    private String title;
+    private String description;
+    private Status status;
+    private User assignee;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Integer priority;
+    private Epic epic;
 }

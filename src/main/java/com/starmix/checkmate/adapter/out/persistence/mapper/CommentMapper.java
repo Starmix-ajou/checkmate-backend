@@ -12,9 +12,7 @@ public class CommentMapper {
                 .taskId(entity.getTaskId())
                 .author(entity.getAuthor())
                 .content(entity.getContent())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .commentId(entity.getId())
                 .build();
     }
 

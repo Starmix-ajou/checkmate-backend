@@ -1,18 +1,18 @@
 package com.starmix.checkmate.domain.dailyScrum;
 
-import com.starmix.checkmate.domain.Base;
 import com.starmix.checkmate.domain.task.Task;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@SuperBuilder
+@Builder(toBuilder = true)
 @Getter
-public class DailyScrum extends Base {
-    private final LocalDate timestamp;
-    private final List<Task> todoTasks;
-    private final List<Task> doneTasks;
-    private final String projectId;
+public class DailyScrum {
+    private String dailyScrumId;
+    private LocalDate timestamp;
+    private List<Task> todoTasks;
+    private List<Task> doneTasks;
+    private String projectId;
 }

@@ -12,9 +12,7 @@ public class EpicMapper {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .projectId(entity.getProjectId())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .epicId(entity.getId())
                 .build();
     }
 

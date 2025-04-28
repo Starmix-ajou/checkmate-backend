@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class Profile {
     private final List<Stack> stacks;

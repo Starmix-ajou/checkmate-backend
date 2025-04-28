@@ -15,9 +15,7 @@ public class UserMapper {
                 .role(userEntity.getRole())
                 .profileImageUrl(userEntity.getProfileImageUrl())
                 .pendingProjectIds(userEntity.getPendingProjectIds())
-                .id(userEntity.getId())
-                .createdAt(userEntity.getCreatedAt())
-                .updatedAt(userEntity.getUpdatedAt())
+                .userId(userEntity.getId())
                 .build();
     }
 

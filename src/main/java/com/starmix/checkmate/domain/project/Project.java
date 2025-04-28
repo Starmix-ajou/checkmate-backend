@@ -1,38 +1,38 @@
 package com.starmix.checkmate.domain.project;
 
-import com.starmix.checkmate.domain.Base;
 import com.starmix.checkmate.domain.common.Stack;
 import com.starmix.checkmate.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Getter
-@SuperBuilder
-public class Project extends Base {
-    private final String title;
+@Builder(toBuilder = true)
+public class Project {
+    private String projectId;
+    private String title;
     private String description;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
-    private final List<Stack> stacks;
-    private final List<User> members;
-    private final User leader;
-    private final String imageUrl;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private List<Stack> stacks;
+    private List<User> members;
+    private User leader;
+    private String imageUrl;
 
     public void approve(User user) {
         this.members.add(user);
     }
 
-    public List<User> getAllMembers() {
-        List<User> members = new ArrayList<>(this.members);
-        members.add(this.leader);
-        return members;
+    public void createProject() {
+        this.members.forEach(
+                member -> member.addPendingProject(this.projectId)
+        );
+        this.members = List.of(this.leader);
     }
 
     public Map<String, Context> toMailContext() {
