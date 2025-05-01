@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.out.persistence.mapper;
 
 import com.starmix.checkmate.adapter.out.persistence.entity.TaskEntity;
+import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class TaskMapper {
                 .assignee(UserMapper.toDomain(entity.getAssignee()))
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
-                .priority(entity.getPriority())
+                .priority(Priority.getPriority(entity.getPriority()))
                 .taskId(entity.getId())
                 .build();
     }
@@ -28,7 +29,7 @@ public class TaskMapper {
                 .assignee(UserMapper.toEntity(domain.getAssignee()))
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
-                .priority(domain.getPriority())
+                .priority(domain.getPriority().getPriorityNum())
                 .build();
     }
 
@@ -40,7 +41,7 @@ public class TaskMapper {
                 .assignee(UserMapper.toEntity(domain.getAssignee()))
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
-                .priority(domain.getPriority())
+                .priority(domain.getPriority().getPriorityNum())
                 .id(entity.getId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(LocalDateTime.now())

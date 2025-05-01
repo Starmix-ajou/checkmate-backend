@@ -17,6 +17,6 @@ public class Task {
     private User assignee;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer priority;
+    private Priority priority;
     private Epic epic;
 }

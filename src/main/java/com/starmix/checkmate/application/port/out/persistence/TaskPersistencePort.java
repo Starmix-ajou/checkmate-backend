@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface TaskPersistencePort {
     List<Task> findAll();
     Optional<Task> findById(String id);
+    String save(Task task);
+    String update(String id, Task task);
+    void delete(String id);
 }
