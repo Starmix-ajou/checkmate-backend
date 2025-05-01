@@ -33,7 +33,7 @@ public class TaskService {
     }
 
     public void createTask(CreateTaskRequest request) {
-        User assignee = userPersistencePort.findById(request.assigneeEmail())
+        User assignee = userPersistencePort.findByEmail(request.assigneeEmail())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
         Epic epic = epicPersistencePort.findById(request.epicId())
                 .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));

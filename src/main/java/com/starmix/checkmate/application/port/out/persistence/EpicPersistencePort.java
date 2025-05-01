@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface EpicPersistencePort {
     List<Epic> findAllByProjectId(String projectId);
     Optional<Epic> findById(String id);
+    String save(Epic epic);
 }

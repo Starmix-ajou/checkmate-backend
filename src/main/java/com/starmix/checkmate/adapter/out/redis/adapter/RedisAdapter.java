@@ -24,7 +24,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public void save(RedisType cacheType, String key, String value) {
         try {
-            redisTemplate.opsForValue().set(cacheType.getKey() + key, value);
+            redisTemplate.opsForValue().set(key, value);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -33,8 +33,8 @@ public class RedisAdapter implements RedisPort {
     @Override
     public void save(RedisType cacheType, String key, String value, long timeout, TimeUnit timeUnit) {
         try {
-            redisTemplate.opsForValue().set(cacheType.getKey() + key, value);
-            redisTemplate.expire(cacheType.getKey() + key, timeout, timeUnit);
+            redisTemplate.opsForValue().set( key, value);
+            redisTemplate.expire(key, timeout, timeUnit);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -43,7 +43,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public String get(RedisType cacheType, String key) {
         try {
-            return redisTemplate.opsForValue().get(cacheType.getKey() + key);
+            return redisTemplate.opsForValue().get(key);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -54,7 +54,7 @@ public class RedisAdapter implements RedisPort {
         try {
             for (Object value : values) {
                 String json = objectMapper.writeValueAsString(value);
-                redisTemplate.opsForSet().add(cacheType.getKey() + key, json);
+                redisTemplate.opsForSet().add(key, json);
             }
         } catch (JsonProcessingException e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -64,7 +64,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public <T> List<T> getSet(RedisType cacheType, String key, Class<T> clazz) {
         try {
-            Set<String> jsonSet = redisTemplate.opsForSet().members(cacheType.getKey() + key);
+            Set<String> jsonSet = redisTemplate.opsForSet().members(key);
             if (jsonSet == null || jsonSet.isEmpty()) {
                 return List.of();
             }
@@ -81,7 +81,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public boolean isInclude(RedisType cacheType, String key, String value) {
         try {
-            return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(cacheType.getKey() + key, value));
+            return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, value));
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -90,7 +90,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public boolean exists(RedisType cacheType, String key) {
         try {
-            return redisTemplate.hasKey(cacheType.getKey() + key);
+            return redisTemplate.hasKey(key);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -99,7 +99,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public void delete(RedisType cacheType, String key) {
         try {
-            redisTemplate.delete(cacheType.getKey() + key);
+            redisTemplate.delete(key);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -141,11 +141,11 @@ public class RedisAdapter implements RedisPort {
     @Override
     public void updateSet(RedisType cacheType, String key, List<?> newValues) {
         try {
-            redisTemplate.delete(cacheType.getKey() + key);
+            redisTemplate.delete(key);
 
             for (Object value : newValues) {
                 String json = objectMapper.writeValueAsString(value);
-                redisTemplate.opsForSet().add(cacheType.getKey() + key, json);
+                redisTemplate.opsForSet().add(key, json);
             }
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
