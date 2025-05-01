@@ -38,4 +38,14 @@ public class EpicPersistenceAdapter implements EpicPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public String save(Epic epic) {
+        try {
+            EpicEntity epicEntity = EpicMapper.toEntity(epic);
+            return epicMongoRepository.save(epicEntity).getId();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -20,7 +20,12 @@ public class User {
     private Role role;
 
     public void addProfile(Profile profile) {
-        this.profiles.add(profile);
+        boolean exists = profiles.stream().anyMatch(
+                p -> p.getProjectId().equals(profile.getProjectId())
+        );
+        if (!exists) {
+            profiles.add(profile);
+        }
     }
 
     public void removeProfile(Profile profile) {
@@ -36,7 +41,7 @@ public class User {
     }
 
     public Profile getProfileByProjectId(String projectId) {
-        return this.profiles.stream().filter(
+        return profiles.stream().filter(
                 profile -> profile.getProjectId().equals(projectId)
         ).findFirst().orElseThrow(() -> new CustomException("Permission denied", HttpStatus.FORBIDDEN));
     }
@@ -50,18 +55,5 @@ public class User {
                 .profiles(new ArrayList<>())
                 .role(Role.DEVELOPER)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        String profilesString = (profiles != null && !profiles.isEmpty()) ? profiles.getFirst().toString() : "No profiles";
-        return "User{" +
-                "userId='" + userId + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", profiles=" + profilesString +
-                ", role=" + role +
-                '}';
     }
 }

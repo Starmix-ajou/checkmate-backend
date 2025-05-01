@@ -67,7 +67,7 @@ public class TestController {
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
         ).toList();
 
-        Project project = request.toDomain(leader, members);
+        Project project = Project.createTemporaryProject(request, leader, members);
         project.createProject(leader, members);
 
         userPersistencePort.save(leader);

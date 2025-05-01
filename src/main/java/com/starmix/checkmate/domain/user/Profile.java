@@ -12,8 +12,6 @@ import java.util.List;
 public class Profile {
     private List<Stack> stacks;
     private List<String> positions;
-
-    @JsonIgnore
     private String projectId;
 
     @JsonIgnore

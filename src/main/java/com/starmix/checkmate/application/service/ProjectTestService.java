@@ -8,7 +8,6 @@ import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
 import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
-import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
@@ -45,7 +44,7 @@ public class ProjectTestService {
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
         ).toList();
 
-        Project project = request.toDomain(leader, members);
+        Project project = Project.createTemporaryProject(request, leader, members);
 
         redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 

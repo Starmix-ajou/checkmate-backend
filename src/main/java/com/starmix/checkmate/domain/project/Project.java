@@ -1,14 +1,17 @@
 package com.starmix.checkmate.domain.project;
 
+import com.starmix.checkmate.adapter.in.common.UserDto;
+import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
+import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
+import com.starmix.checkmate.global.exception.CustomException;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Builder(toBuilder = true)
@@ -31,6 +34,56 @@ public class Project {
         );
     }
 
+    public static Project createTemporaryProject(
+            CreateFeatureDefinitionRequest request,
+            User leader, List<User> members
+    ) {
+        String projectId = UUID.randomUUID().toString();
+
+        List<UserDto> memberDtos = new ArrayList<>(request.members());
+
+        UserDto requestLeader = memberDtos.stream()
+                .filter(dto -> dto.email().equals(leader.getEmail()))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("Leader Not Found", HttpStatus.BAD_REQUEST));
+
+        Profile requestLeaderProfile = Profile.builder()
+                .stacks(requestLeader.profile().stacks())
+                .positions(requestLeader.profile().positions())
+                .projectId(projectId)
+                .isActive(false)
+                .build();
+        leader.addProfile(requestLeaderProfile);
+
+        memberDtos.remove(requestLeader);
+        List<Profile> memberProfiles = memberDtos.stream().map(
+                memberDto -> Profile.builder()
+                        .stacks(memberDto.profile().stacks())
+                        .positions(memberDto.profile().positions())
+                        .projectId(projectId)
+                        .isActive(false)
+                        .build()
+        ).toList();
+
+        for (User member : members) {
+            Profile profile = memberProfiles.stream()
+                    .filter(p -> p.getProjectId().equals(projectId))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException("Profile Not Found", HttpStatus.BAD_REQUEST));
+            member.addProfile(profile);
+        }
+
+        return Project.builder()
+                .projectId(projectId)
+                .title(request.title())
+                .description(request.description())
+                .startDate(request.startDate())
+                .endDate(request.endDate())
+                .leader(leader)
+                .members(members)
+                .build();
+    }
+
     public Map<String, Context> toMailContext() {
         Map<String, Context> mailContextMap = new HashMap<>();
         this.members.forEach(member -> {
@@ -43,19 +96,5 @@ public class Project {
             mailContextMap.put(member.getEmail(), context);
         });
         return mailContextMap;
-    }
-
-    @Override
-    public String toString() {
-        return "Project{" +
-                "projectId='" + projectId + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", members=" + members +
-                ", leader=" + leader.toString() +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
     }
 }

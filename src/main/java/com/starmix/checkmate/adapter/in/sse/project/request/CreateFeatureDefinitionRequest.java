@@ -16,39 +16,4 @@ public record CreateFeatureDefinitionRequest(
         LocalDate endDate,
         List<UserDto> members,
         String definitionUrl
-) {
-    public Project toDomain(User leader, List<User> members) {
-        String projectId = UUID.randomUUID().toString();
-
-        this.members.forEach(
-                userDto -> {
-                    Profile profile = userDto.profile();
-                    profile.init(projectId);
-
-                    if(userDto.email().equals(leader.getEmail())) {
-                        leader.addProfile(profile);
-                    }
-                }
-        );
-
-        for (UserDto userDto : this.members) {
-            Profile profile = userDto.profile();
-            profile.init(projectId);
-
-            members.stream()
-                    .filter(member -> member.getEmail().equals(userDto.email()))
-                    .findFirst()
-                    .ifPresent(member -> member.addProfile(profile));
-        }
-
-        return Project.builder()
-                .projectId(projectId)
-                .title(this.title)
-                .description(this.description)
-                .startDate(this.startDate)
-                .endDate(this.endDate)
-                .leader(leader)
-                .members(members)
-                .build();
-    }
-}
+) { }

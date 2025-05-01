@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.in.http.epic;
 
+import com.starmix.checkmate.adapter.in.http.epic.request.CreateEpicRequest;
 import com.starmix.checkmate.application.service.EpicService;
 import com.starmix.checkmate.domain.epic.Epic;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,11 @@ public class EpicController {
     ) {
         List<Epic> epics = epicService.getEpicsByProjectId(projectId);
         return ResponseEntity.ok().body(epics);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createEpic(@RequestBody CreateEpicRequest request) {
+        epicService.createEpic(request);
+        return ResponseEntity.ok().body(null);
     }
 }

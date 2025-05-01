@@ -120,8 +120,12 @@ public class ProjectService {
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
         ).toList();
 
-        Project project = request.toDomain(leader, members);
-
+        Project project = Project.createTemporaryProject(request, leader, members);
+        project.getMembers().forEach(
+                member -> member.getProfiles().forEach(
+                        profile -> System.out.println(member.getEmail() + profile.getProjectId())
+                )
+        );
         redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 
         Suggestion suggestion = aiPort.createFunctionDefinition(project, request.definitionUrl());
