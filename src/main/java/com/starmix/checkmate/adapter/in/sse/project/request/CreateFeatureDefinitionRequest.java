@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.in.sse.project.request;
 
+import com.starmix.checkmate.adapter.in.common.UserDto;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
@@ -16,17 +17,12 @@ public record CreateFeatureDefinitionRequest(
         List<UserDto> members,
         String definitionUrl
 ) {
-    public record UserDto(
-            String email,
-            Profile profile
-    ) {}
-
     public Project toDomain(User leader, List<User> members) {
         String projectId = UUID.randomUUID().toString();
 
         this.members.forEach(
                 userDto -> {
-                    Profile profile = userDto.profile;
+                    Profile profile = userDto.profile();
                     profile.init(projectId);
 
                     if(userDto.email().equals(leader.getEmail())) {
@@ -36,7 +32,7 @@ public record CreateFeatureDefinitionRequest(
         );
 
         for (UserDto userDto : this.members) {
-            Profile profile = userDto.profile;
+            Profile profile = userDto.profile();
             profile.init(projectId);
 
             members.stream()
