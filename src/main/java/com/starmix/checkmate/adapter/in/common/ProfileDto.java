@@ -6,6 +6,5 @@ import java.util.List;
 
 public record ProfileDto (
     List<Stack> stacks,
-    List<String> positions,
-    String projectId
+    List<String> positions
 ) { }

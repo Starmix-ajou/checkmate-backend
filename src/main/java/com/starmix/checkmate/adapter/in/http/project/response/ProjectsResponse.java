@@ -31,4 +31,12 @@ public record ProjectsResponse(
                 .profile(profile)
                 .build();
     }
+
+    public static List<ProjectsResponse> toProjectResponse(User user, List<Project> projects) {
+        return projects.stream().map(
+                project -> ProjectsResponse.fromDomain(
+                        project, user.getProfileByProjectId(project.getProjectId())
+                )
+        ).toList();
+    }
 }

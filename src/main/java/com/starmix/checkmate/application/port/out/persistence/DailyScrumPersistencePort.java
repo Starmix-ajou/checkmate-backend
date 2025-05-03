@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface DailyScrumPersistencePort {
     List<DailyScrum> findAllByProjectId(String projectId);
-    Optional<DailyScrum> findByTimestamp(LocalDate timestamp);
+    Optional<DailyScrum> findByTimestampAndProjectId(String projectId, LocalDate timestamp);
+    String save(DailyScrum dailyScrum);
 }

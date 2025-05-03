@@ -6,7 +6,9 @@ import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecific
 import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureDefinitionFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureSpecificationFeignResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureDefinitionFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureSpecificationFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
@@ -33,21 +35,24 @@ public class AIAdapter implements AIPort {
                     .definitionUrl(definitionUrl)
                     .build();
             CreateFeatureDefinitionFeignResponse response = aiFeignClient.createFeatureDefinition(request);
-            return response.suggestion();
+            return response.suggestion().toDomain();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public FeedbackFeignResponse feedbackFeatureDefinition(String email, String feedback) {
+    public FeedbackDto feedbackFeatureDefinition(String email, String feedback) {
         try {
             FeedbackFeignRequest request = FeedbackFeignRequest.builder()
                     .email(email)
                     .feedback(feedback)
                     .build();
-            return aiFeignClient.feedbackFeatureDefinition(request);
+            FeedbackFeatureDefinitionFeignResponse response = aiFeignClient.feedbackFeatureDefinition(request);
+            return FeedbackDto.fromFeatureDefinition(response);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -61,19 +66,22 @@ public class AIAdapter implements AIPort {
             CreateFeatureSpecificationFeignResponse response = aiFeignClient.createFeatureSpecification(request);
             return response.features();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public FeedbackFeignResponse feedbackFeatureSpecification(String email, String feedback) {
+    public FeedbackDto feedbackFeatureSpecification(String email, String feedback) {
         try {
             FeedbackFeignRequest request = FeedbackFeignRequest.builder()
                     .email(email)
                     .feedback(feedback)
                     .build();
-            return aiFeignClient.feedbackFeatureSpecification(request);
+            FeedbackFeatureSpecificationFeignResponse response = aiFeignClient.feedbackFeatureSpecification(request);
+            return FeedbackDto.fromFeatureSpecification(response);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

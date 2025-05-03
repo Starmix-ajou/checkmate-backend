@@ -10,4 +10,10 @@ public class Feature {
     private final String useCase;
     private final String input;
     private final String output;
+
+    public static Feature fromFeatureName(String featureName) {
+        return Feature.builder()
+                .name(featureName)
+                .build();
+    }
 }

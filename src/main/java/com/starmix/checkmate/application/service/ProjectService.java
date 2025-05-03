@@ -7,7 +7,7 @@ import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
@@ -48,28 +48,11 @@ public class ProjectService {
         return switch (status) {
             case ACTIVE -> {
                 List<Project> projects = projectPersistencePort.findActiveProjects();
-                yield projects.stream().map(
-                        project -> {
-                            Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
-                                    .findFirst()
-                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
-                            return ProjectsResponse.fromDomain(project, profile);
-                        }
-                ).toList();
+                yield ProjectsResponse.toProjectResponse(user, projects);
             }
             case ARCHIVED -> {
                 List<Project> projects = projectPersistencePort.findArchivedProjects();
-
-                yield projects.stream().map(
-                        project -> {
-                            Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
-                                    .findFirst()
-                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
-                            return ProjectsResponse.fromDomain(project, profile);
-                        }
-                ).toList();
+                yield ProjectsResponse.toProjectResponse(user, projects);
             }
             case PENDING -> {
                 List<String> pendingProjectIds = user.getProfiles().stream()
@@ -83,25 +66,11 @@ public class ProjectService {
                 List<Project> projects = pendingProjectIds.stream()
                         .map(projectId -> projectPersistencePort.findById(projectId).orElse(null))
                         .toList();
-                yield projects.stream().map(project -> {
-                    Profile profile = user.getProfiles().stream()
-                            .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
-                            .findFirst()
-                            .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
-                    return ProjectsResponse.fromDomain(project, profile);
-                }).toList();
+                yield ProjectsResponse.toProjectResponse(user, projects);
             }
             case null -> {
                 List<Project> projects = projectPersistencePort.findByMemberIdsContaining(user.getUserId());
-                yield projects.stream().map(
-                        project -> {
-                            Profile profile = user.getProfiles().stream()
-                                    .filter(projectProfile -> projectProfile.getProjectId().equals(project.getProjectId()))
-                                    .findFirst()
-                                    .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
-                            return ProjectsResponse.fromDomain(project, profile);
-                        }
-                ).toList();
+                yield ProjectsResponse.toProjectResponse(user, projects);
             }
         };
     }
@@ -121,11 +90,6 @@ public class ProjectService {
         ).toList();
 
         Project project = Project.createTemporaryProject(request, leader, members);
-        project.getMembers().forEach(
-                member -> member.getProfiles().forEach(
-                        profile -> System.out.println(member.getEmail() + profile.getProjectId())
-                )
-        );
         redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
 
         Suggestion suggestion = aiPort.createFunctionDefinition(project, request.definitionUrl());
@@ -137,13 +101,8 @@ public class ProjectService {
 
     public FeedbackResponse feedbackFeatureDefinition(FeedbackRequest request) {
         String email = jwtUtil.extractEmail();
-
-        FeedbackFeignResponse response = aiPort.feedbackFeatureDefinition(email, request.feedback());
-
-        return FeedbackResponse.builder()
-                .features(response.features())
-                .isNextStep(response.isNextStep())
-                .build();
+        FeedbackDto response = aiPort.feedbackFeatureDefinition(email, request.feedback());
+        return FeedbackResponse.fromFeedbackDto(response);
     }
 
     public CreateFeatureSpecificationResponse createFeatureSpecification() {
@@ -159,7 +118,7 @@ public class ProjectService {
     public FeedbackResponse feedbackFeatureSpecification(FeedbackRequest request) {
         String email = jwtUtil.extractEmail();
 
-        FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
+        FeedbackDto response = aiPort.feedbackFeatureSpecification(email, request.feedback());
         if(response.isNextStep()) {
             Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
 
@@ -179,10 +138,7 @@ public class ProjectService {
             contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
         }
 
-        return FeedbackResponse.builder()
-                .features(response.features())
-                .isNextStep(response.isNextStep())
-                .build();
+        return FeedbackResponse.fromFeedbackDto(response);
     }
 
     public void approve(String projectId) {
@@ -194,6 +150,7 @@ public class ProjectService {
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
         user.approve(project.getProjectId());
+        userPersistencePort.save(user);
     }
 
     public void deny(String projectId) {
@@ -205,5 +162,6 @@ public class ProjectService {
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
         user.deny(project.getProjectId());
+        userPersistencePort.save(user);
     }
 }

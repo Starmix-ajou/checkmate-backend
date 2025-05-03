@@ -5,7 +5,8 @@ import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecific
 import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureDefinitionFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateFeatureSpecificationFeignResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureDefinitionFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureSpecificationFeignResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,11 +17,11 @@ public interface AIFeignClient {
     CreateFeatureDefinitionFeignResponse createFeatureDefinition(CreateFeatureDefinitionFeignRequest request);
 
     @PutMapping("/project/definition")
-    FeedbackFeignResponse feedbackFeatureDefinition(FeedbackFeignRequest request);
+    FeedbackFeatureDefinitionFeignResponse feedbackFeatureDefinition(FeedbackFeignRequest request);
 
     @PostMapping("/project/specification")
     CreateFeatureSpecificationFeignResponse createFeatureSpecification(CreateFeatureSpecificationFeignRequest request);
 
     @PutMapping("/project/specification")
-    FeedbackFeignResponse feedbackFeatureSpecification(FeedbackFeignRequest request);
+    FeedbackFeatureSpecificationFeignResponse feedbackFeatureSpecification(FeedbackFeignRequest request);
 }

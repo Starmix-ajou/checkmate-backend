@@ -5,7 +5,7 @@ import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeignResponse;
+import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureSpecificationFeignResponse;
 import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
@@ -68,7 +68,7 @@ public class ProjectTestService {
         String email = jwtUtil.extractEmail();
 
 //        FeedbackFeignResponse response = aiPort.feedbackFeatureDefinition(email, request.feedback());
-        FeedbackFeignResponse response = FeedbackFeignResponse.builder()
+        FeedbackFeatureSpecificationFeignResponse response = FeedbackFeatureSpecificationFeignResponse.builder()
                 .features((List.of(
                         Feature.builder()
                                 .name("테스트 기능")
@@ -105,7 +105,7 @@ public class ProjectTestService {
         String email = jwtUtil.extractEmail();
 
 //        FeedbackFeignResponse response = aiPort.feedbackFeatureSpecification(email, request.feedback());
-        FeedbackFeignResponse response = FeedbackFeignResponse.builder()
+        FeedbackFeatureSpecificationFeignResponse response = FeedbackFeatureSpecificationFeignResponse.builder()
                 .features((List.of(
                         Feature.builder()
                                 .name("테스트 기능")

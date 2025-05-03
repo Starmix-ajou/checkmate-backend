@@ -32,6 +32,7 @@ public class DailyScrumMapper {
                 .map(TaskMapper::toEntity).toList();
 
         return DailyScrumEntity.builder()
+                .id(domain.getDailyScrumId())
                 .timestamp(domain.getTimestamp())
                 .todoTasks(todoTasks)
                 .doneTasks(doneTasks)

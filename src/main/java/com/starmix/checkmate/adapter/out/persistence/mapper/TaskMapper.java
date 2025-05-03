@@ -23,6 +23,7 @@ public class TaskMapper {
 
     public static TaskEntity toEntity(Task domain) {
         return TaskEntity.builder()
+                .id(domain.getTaskId())
                 .title(domain.getTitle())
                 .description(domain.getDescription())
                 .status(domain.getStatus())
