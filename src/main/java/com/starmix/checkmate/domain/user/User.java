@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Builder(toBuilder = true)
 @Getter
@@ -40,13 +41,6 @@ public class User {
         removeProfile(getProfileByProjectId(projectId));
     }
 
-    public Profile getProfileByProjectId(String projectId) {
-        return profiles.stream().filter(
-                profile -> profile.getProjectId().equals(projectId)
-        ).findFirst().orElseThrow(() -> new CustomException("Permission denied", HttpStatus.FORBIDDEN));
-    }
-
-
     public static User register(OAuthUserInfo oAuthUserInfo) {
         return User.builder()
                 .email(oAuthUserInfo.email())
@@ -55,5 +49,24 @@ public class User {
                 .profiles(new ArrayList<>())
                 .role(Role.DEVELOPER)
                 .build();
+    }
+
+    public Profile getProfileByProjectId(String projectId) {
+        return profiles.stream()
+                .filter(profile -> profile.getProjectId().equals(projectId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, email);
     }
 }

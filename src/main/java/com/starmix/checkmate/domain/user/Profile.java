@@ -1,6 +1,7 @@
 package com.starmix.checkmate.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.starmix.checkmate.adapter.in.common.ProfileDto;
 import com.starmix.checkmate.domain.common.Stack;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +18,13 @@ public class Profile {
     @JsonIgnore
     private Boolean isActive;
 
-    public void init(String projectId) {
-        this.projectId = projectId;
-        this.isActive = false;
+    public static Profile init(ProfileDto profileDto, String projectId) {
+        return Profile.builder()
+                .stacks(profileDto.stacks())
+                .positions(profileDto.positions())
+                .projectId(projectId)
+                .isActive(false)
+                .build();
     }
 
     public void activeProfile() {
@@ -28,15 +33,5 @@ public class Profile {
 
     public void inactiveProfile() {
         this.isActive = false;
-    }
-
-    @Override
-    public String toString() {
-        return "Profile{" +
-                "stacks=" + stacks +
-                ", positions=" + positions +
-                ", projectId='" + projectId + '\'' +
-                ", isActive=" + isActive +
-                '}';
     }
 }

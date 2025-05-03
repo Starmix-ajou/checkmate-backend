@@ -12,6 +12,8 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder(toBuilder = true)
@@ -40,37 +42,22 @@ public class Project {
     ) {
         String projectId = UUID.randomUUID().toString();
 
-        List<UserDto> memberDtos = new ArrayList<>(request.members());
+        Map<String, UserDto> requestMemberMap = request.members().stream()
+                .collect(Collectors.toMap(UserDto::email, Function.identity()));
 
-        UserDto requestLeader = memberDtos.stream()
-                .filter(dto -> dto.email().equals(leader.getEmail()))
-                .findFirst()
-                .orElseThrow(() -> new CustomException("Leader Not Found", HttpStatus.BAD_REQUEST));
+        UserDto requestLeader = requestMemberMap.get(leader.getEmail());
+        if (requestLeader == null) {
+            throw new CustomException("Leader Not Found", HttpStatus.BAD_REQUEST);
+        }
 
-        Profile requestLeaderProfile = Profile.builder()
-                .stacks(requestLeader.profile().stacks())
-                .positions(requestLeader.profile().positions())
-                .projectId(projectId)
-                .isActive(false)
-                .build();
-        leader.addProfile(requestLeaderProfile);
-
-        memberDtos.remove(requestLeader);
-        List<Profile> memberProfiles = memberDtos.stream().map(
-                memberDto -> Profile.builder()
-                        .stacks(memberDto.profile().stacks())
-                        .positions(memberDto.profile().positions())
-                        .projectId(projectId)
-                        .isActive(false)
-                        .build()
-        ).toList();
+        leader.addProfile(Profile.init(requestLeader.profile(), projectId));
 
         for (User member : members) {
-            Profile profile = memberProfiles.stream()
-                    .filter(p -> p.getProjectId().equals(projectId))
-                    .findFirst()
-                    .orElseThrow(() -> new CustomException("Profile Not Found", HttpStatus.BAD_REQUEST));
-            member.addProfile(profile);
+            UserDto requestMember = requestMemberMap.get(member.getEmail());
+            if (requestMember == null) {
+                throw new CustomException("Member Not Found", HttpStatus.BAD_REQUEST);
+            }
+            member.addProfile(Profile.init(requestMember.profile(), projectId));
         }
 
         return Project.builder()
@@ -96,5 +83,10 @@ public class Project {
             mailContextMap.put(member.getEmail(), context);
         });
         return mailContextMap;
+    }
+
+    public Boolean isMember(User user) {
+        List<User> members = new ArrayList<>(this.members);
+        return members.contains(user);
     }
 }

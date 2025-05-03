@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface DailyScrumMongoRepository extends MongoRepository<DailyScrumEntity, String> {
     List<DailyScrumEntity> findAllByProjectId(String projectId);
-    Optional<DailyScrumEntity> findByTimestamp(LocalDate timestamp);
+    Optional<DailyScrumEntity> findByProjectIdAndTimestamp(String projectId, LocalDate timestamp);
 }
