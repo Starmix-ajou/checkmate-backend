@@ -32,20 +32,12 @@ public class DailyScrumController {
         return ResponseEntity.ok().body(dailyScrum);
     }
 
-    @PutMapping("/today")
-    public ResponseEntity<Void> updateDailyScrum (
-            @RequestBody UpdateDailyScrumRequest request,
-            @RequestParam String projectId
-    ) {
-        dailyScrumService.updateDailyScrum(projectId, request);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping
     public ResponseEntity<DailyScrum> createDailyScrum (
-            @RequestParam String projectId
+            @RequestParam String projectId,
+            @RequestBody UpdateDailyScrumRequest request
     ) {
-        dailyScrumService.createDailyScrum(projectId);
+        dailyScrumService.createDailyScrum(projectId, request);
         return ResponseEntity.ok().build();
     }
 }
