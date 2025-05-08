@@ -4,13 +4,13 @@ import com.starmix.checkmate.domain.project.Project;
 import lombok.Builder;
 
 @Builder
-public record ProjectDto(
+public record ProjectBriefDto(
         String projectId,
         String title,
         String imageUrl
 ) {
-    public static ProjectDto fromDomain(Project project) {
-        return ProjectDto.builder()
+    public static ProjectBriefDto fromDomain(Project project) {
+        return ProjectBriefDto.builder()
                 .projectId(project.getProjectId())
                 .title(project.getTitle())
                 .imageUrl(project.getImageUrl())

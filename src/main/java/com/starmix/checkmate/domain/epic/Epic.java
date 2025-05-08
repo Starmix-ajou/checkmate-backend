@@ -10,4 +10,5 @@ public class Epic {
     private String title;
     private String description;
     private String projectId;
+    private String sprintId;
 }

@@ -5,10 +5,13 @@ import com.starmix.checkmate.adapter.out.persistence.mapper.SprintMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.SprintMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.domain.sprint.Sprint;
+import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -18,7 +21,21 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
 
     @Override
     public List<Sprint> findAllByProjectId(String projectId) {
-        List<SprintEntity> sprintEntities = sprintMongoRepository.findAllByProjectId(projectId);
-        return sprintEntities.stream().map(SprintMapper::toDomain).toList();
+        try {
+            List<SprintEntity> sprintEntities = sprintMongoRepository.findAllByProjectId(projectId);
+            return sprintEntities.stream().map(SprintMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Optional<Sprint> findById(String id) {
+        try {
+            Optional<SprintEntity> sprintEntity = sprintMongoRepository.findById(id);
+            return sprintEntity.map(SprintMapper::toDomain);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

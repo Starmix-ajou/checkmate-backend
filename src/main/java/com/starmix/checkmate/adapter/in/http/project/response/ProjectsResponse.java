@@ -1,6 +1,6 @@
 package com.starmix.checkmate.adapter.in.http.project.response;
 
-import com.starmix.checkmate.adapter.in.common.ProjectDto;
+import com.starmix.checkmate.adapter.in.common.ProjectBriefDto;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Builder
 public record ProjectsResponse(
-        ProjectDto project,
+        ProjectBriefDto project,
         Profile profile,
         LocalDate startDate,
         LocalDate endDate,
@@ -20,7 +20,7 @@ public record ProjectsResponse(
 ) {
     public static ProjectsResponse fromDomain(Project project, Profile profile) {
         return ProjectsResponse.builder()
-                .project(ProjectDto.fromDomain(project))
+                .project(ProjectBriefDto.fromDomain(project))
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .members(project.getMembers())

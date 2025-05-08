@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.in.http.task;
 
+import com.starmix.checkmate.adapter.in.common.TaskDto;
 import com.starmix.checkmate.adapter.in.http.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.http.task.request.UpdateTaskRequest;
 import com.starmix.checkmate.application.service.TaskService;
@@ -24,8 +25,8 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<Task> getTask (@PathVariable String taskId) {
-        Task task = taskService.getTask(taskId);
+    public ResponseEntity<TaskDto> getTask (@PathVariable String taskId) {
+        TaskDto task = taskService.getTask(taskId);
         return ResponseEntity.ok().body(task);
     }
 
