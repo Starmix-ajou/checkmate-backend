@@ -13,4 +13,5 @@ public class EpicEntity extends BaseEntity {
     private String title;
     private String description;
     private String projectId;
+    private String sprintId;
 }

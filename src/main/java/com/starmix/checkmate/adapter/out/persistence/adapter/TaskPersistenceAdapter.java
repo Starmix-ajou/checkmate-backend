@@ -1,23 +1,34 @@
 package com.starmix.checkmate.adapter.out.persistence.adapter;
 
+import com.starmix.checkmate.adapter.out.persistence.entity.EpicEntity;
 import com.starmix.checkmate.adapter.out.persistence.entity.TaskEntity;
+import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.TaskMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
+import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
 public class TaskPersistenceAdapter implements TaskPersistencePort {
 
     private final TaskMongoRepository taskMongoRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public List<Task> findAll() {
@@ -68,5 +79,69 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public List<Task> filterTasks(
+            String projectId, String epicId, String sprintId,
+            String assigneeEmail, Priority priority,
+            LocalDate startDate, LocalDate endDate
+    ) {
+        List<Criteria> taskCriteriaList = new ArrayList<>();
+
+        if (epicId != null || projectId != null || sprintId != null) {
+            Query epicQuery = new Query();
+            List<Criteria> epicCriteriaList = new ArrayList<>();
+
+            if (epicId != null) {
+                epicCriteriaList.add(Criteria.where("_id").is(epicId));
+            }
+            if (projectId != null) {
+                epicCriteriaList.add(Criteria.where("projectId").is(projectId));
+            }
+            if (sprintId != null) {
+                epicCriteriaList.add(Criteria.where("sprintId").is(sprintId));
+            }
+
+            epicQuery.addCriteria(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
+
+            List<String> epicIds = mongoTemplate.find(epicQuery, EpicEntity.class)
+                    .stream().map(EpicEntity::getId).collect(Collectors.toList());
+
+            if (!epicIds.isEmpty()) {
+                taskCriteriaList.add(Criteria.where("epic.$id").in(epicIds));
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
+        if (assigneeEmail != null) {
+            Query userQuery = new Query(Criteria.where("email").is(assigneeEmail));
+            UserEntity user = mongoTemplate.findOne(userQuery, UserEntity.class);
+            if (user != null) {
+                taskCriteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(user.getId())));
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
+        if (priority != null) {
+            taskCriteriaList.add(Criteria.where("priority").is(priority.getPriorityNum()));
+        }
+
+        if (startDate != null) {
+            taskCriteriaList.add(Criteria.where("startDate").gte(startDate));
+        }
+        if (endDate != null) {
+            taskCriteriaList.add(Criteria.where("endDate").lte(endDate));
+        }
+
+        Query taskQuery = new Query();
+        if (!taskCriteriaList.isEmpty()) {
+            taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
+        }
+
+        return mongoTemplate.find(taskQuery, TaskEntity.class)
+                .stream().map(TaskMapper::toDomain).toList();
     }
 }

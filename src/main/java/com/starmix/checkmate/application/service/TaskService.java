@@ -10,6 +10,7 @@ import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePor
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
+import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,8 +29,15 @@ public class TaskService {
     private final EpicPersistencePort epicPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
 
-    public List<Task> getTasks() {
-        return taskPersistencePort.findAll();
+    public List<Task> getTasks(
+            String projectId, String epicId, String sprintId,
+            String assigneeEmail, Priority priority,
+            LocalDate startDate, LocalDate endDate
+    ) {
+        return taskPersistencePort.filterTasks(
+                projectId, epicId, sprintId, assigneeEmail,
+                priority, startDate, endDate
+        );
     }
 
     public TaskDto getTask(String taskId) {
