@@ -8,6 +8,8 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Builder(toBuilder = true)
 @Getter
@@ -19,16 +21,13 @@ public class DailyScrum {
     private String projectId;
 
     public void updateTasks(List<Task> todoTasks, List<Task> doneTasks, User user) {
-        List<Task> filteredTodoTasks = this.todoTasks.stream()
-                .filter(task -> !task.getAssignee().equals(user))
-                .toList();
+        this.todoTasks = this.todoTasks.stream()
+                .filter(task -> !Objects.equals(task.getAssignee(), user))
+                .collect(Collectors.toCollection(ArrayList::new));
 
-        List<Task> filteredDoneTasks = this.doneTasks.stream()
-                .filter(task -> !task.getAssignee().equals(user))
-                .toList();
-
-        this.todoTasks = new ArrayList<>(filteredTodoTasks);
-        this.doneTasks = new ArrayList<>(filteredDoneTasks);
+        this.doneTasks = this.doneTasks.stream()
+                .filter(task -> !Objects.equals(task.getAssignee(), user))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         this.todoTasks.addAll(todoTasks);
         this.doneTasks.addAll(doneTasks);

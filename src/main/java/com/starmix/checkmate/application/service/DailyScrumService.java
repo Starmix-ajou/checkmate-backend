@@ -38,7 +38,7 @@ public class DailyScrumService {
         return dailyScrum.orElse(null);
     }
 
-    public void createDailyScrum(String projectId, UpdateDailyScrumRequest request) {
+    public DailyScrum createDailyScrum(String projectId, UpdateDailyScrumRequest request) {
         String email = jwtUtil.extractEmail();
         User user = userPersistencePort.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
@@ -49,12 +49,12 @@ public class DailyScrumService {
             throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
         }
         Optional<DailyScrum> dailyScrumOptional = dailyScrumPersistencePort.findByTimestampAndProjectId(projectId, LocalDate.now());
-
+        DailyScrum dailyScrum;
         if(dailyScrumOptional.isEmpty()) {
-            DailyScrum dailyScrum = DailyScrum.create(projectId);
+             dailyScrum = DailyScrum.create(projectId);
             dailyScrumPersistencePort.save(dailyScrum);
         } else {
-            DailyScrum dailyScrum = dailyScrumOptional.get();
+            dailyScrum = dailyScrumOptional.get();
             List<Task> todoTasks = request.todoTaskIds().stream().map(
                     taskId -> taskPersistencePort.findById(taskId)
                             .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND))
@@ -67,5 +67,6 @@ public class DailyScrumService {
             dailyScrum.updateTasks(todoTasks, doneTasks, user);
             dailyScrumPersistencePort.save(dailyScrum);
         }
+        return dailyScrum;
     }
 }

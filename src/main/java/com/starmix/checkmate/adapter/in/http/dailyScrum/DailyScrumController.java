@@ -37,7 +37,7 @@ public class DailyScrumController {
             @RequestParam String projectId,
             @RequestBody UpdateDailyScrumRequest request
     ) {
-        dailyScrumService.createDailyScrum(projectId, request);
-        return ResponseEntity.ok().build();
+        DailyScrum dailyScrum = dailyScrumService.createDailyScrum(projectId, request);
+        return ResponseEntity.ok().body(dailyScrum);
     }
 }
