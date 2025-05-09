@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,61 +88,70 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             String assigneeEmail, Priority priority,
             LocalDate startDate, LocalDate endDate
     ) {
-        List<Criteria> taskCriteriaList = new ArrayList<>();
+        try {
+            List<Criteria> taskCriteriaList = new ArrayList<>();
 
-        if (epicId != null || projectId != null || sprintId != null) {
-            Query epicQuery = new Query();
-            List<Criteria> epicCriteriaList = new ArrayList<>();
+            if (epicId != null || projectId != null || sprintId != null) {
+                List<Criteria> epicCriteriaList = new ArrayList<>();
+                if (epicId != null) {
+                    epicCriteriaList.add(Criteria.where("_id").is(new ObjectId(epicId)));
+                }
+                if (projectId != null) {
+                    epicCriteriaList.add(Criteria.where("projectId").is(projectId));
+                }
+                if (sprintId != null) {
+                    epicCriteriaList.add(Criteria.where("sprintId").is(sprintId));
+                }
 
-            if (epicId != null) {
-                epicCriteriaList.add(Criteria.where("_id").is(epicId));
+                Query epicQuery = new Query(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
+                List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
+
+                if (epics.isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                List<ObjectId> epicObjectIds = epics.stream()
+                        .map(e -> new ObjectId(e.getId()))
+                        .collect(Collectors.toList());
+
+                taskCriteriaList.add(Criteria.where("epic.$id").in(epicObjectIds));
             }
-            if (projectId != null) {
-                epicCriteriaList.add(Criteria.where("projectId").is(projectId));
+
+            if (assigneeEmail != null) {
+                Query userQuery = new Query(Criteria.where("email").is(assigneeEmail));
+                UserEntity user = mongoTemplate.findOne(userQuery, UserEntity.class);
+                if (user != null) {
+                    taskCriteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(user.getId())));
+                } else {
+                    return Collections.emptyList();
+                }
             }
-            if (sprintId != null) {
-                epicCriteriaList.add(Criteria.where("sprintId").is(sprintId));
+
+            if (priority != null) {
+                taskCriteriaList.add(Criteria.where("priority").is(priority.getPriorityNum()));
             }
 
-            epicQuery.addCriteria(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
-
-            List<String> epicIds = mongoTemplate.find(epicQuery, EpicEntity.class)
-                    .stream().map(EpicEntity::getId).collect(Collectors.toList());
-
-            if (!epicIds.isEmpty()) {
-                taskCriteriaList.add(Criteria.where("epic.$id").in(epicIds));
-            } else {
-                return new ArrayList<>();
+            if (startDate != null) {
+                taskCriteriaList.add(Criteria.where("startDate").gte(startDate));
             }
-        }
 
-        if (assigneeEmail != null) {
-            Query userQuery = new Query(Criteria.where("email").is(assigneeEmail));
-            UserEntity user = mongoTemplate.findOne(userQuery, UserEntity.class);
-            if (user != null) {
-                taskCriteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(user.getId())));
-            } else {
-                return new ArrayList<>();
+            if (endDate != null) {
+                taskCriteriaList.add(Criteria.where("endDate").lte(endDate));
             }
-        }
 
-        if (priority != null) {
-            taskCriteriaList.add(Criteria.where("priority").is(priority.getPriorityNum()));
-        }
+            Query taskQuery = new Query();
+            if (!taskCriteriaList.isEmpty()) {
+                taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
+            }
 
-        if (startDate != null) {
-            taskCriteriaList.add(Criteria.where("startDate").gte(startDate));
-        }
-        if (endDate != null) {
-            taskCriteriaList.add(Criteria.where("endDate").lte(endDate));
-        }
+            List<TaskEntity> taskEntities = mongoTemplate.find(taskQuery, TaskEntity.class);
 
-        Query taskQuery = new Query();
-        if (!taskCriteriaList.isEmpty()) {
-            taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
-        }
+            return taskEntities.stream()
+                    .map(TaskMapper::toDomain)
+                    .collect(Collectors.toList());
 
-        return mongoTemplate.find(taskQuery, TaskEntity.class)
-                .stream().map(TaskMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

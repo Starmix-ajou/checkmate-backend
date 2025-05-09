@@ -18,6 +18,7 @@ public class EpicMapper {
 
     public static EpicEntity toEntity(Epic domain) {
         return EpicEntity.builder()
+                .id(domain.getEpicId())
                 .title(domain.getTitle())
                 .description(domain.getDescription())
                 .projectId(domain.getProjectId())

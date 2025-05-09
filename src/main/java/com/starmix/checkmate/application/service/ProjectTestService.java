@@ -123,7 +123,7 @@ public class ProjectTestService {
                     member -> userPersistencePort.findById(member.getUserId())
                             .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
             ).toList();
-            project.createProject(leader, members);
+            leader.approve(project.getProjectId());
 
             userPersistencePort.save(leader);
             members.forEach(userPersistencePort::save);

@@ -9,6 +9,6 @@ public interface ProjectPersistencePort {
     List<Project> findByMemberIdsContaining(String memberId);
     Optional<Project> findById(String id);
     String save(Project project);
-    List<Project> findActiveProjects();
-    List<Project> findArchivedProjects();
+    List<Project> findActiveProjects(String memberId);
+    List<Project> findArchivedProjects(String memberId);
 }

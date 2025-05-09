@@ -22,7 +22,7 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<Task>> getTasks (
-            @RequestParam(required = false) String projectId,
+            @RequestParam String projectId,
             @RequestParam(required = false) String epicId,
             @RequestParam(required = false) String sprintId,
             @RequestParam(required = false) String assigneeEmail,

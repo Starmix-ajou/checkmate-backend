@@ -68,7 +68,7 @@ public class TestController {
         ).toList();
 
         Project project = Project.createTemporaryProject(request, leader, members);
-        project.createProject(leader, members);
+        leader.approve(project.getProjectId());
 
         userPersistencePort.save(leader);
         members.forEach(userPersistencePort::save);

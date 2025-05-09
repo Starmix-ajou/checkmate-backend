@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface ProjectMongoRepository extends MongoRepository<ProjectEntity, String> {
     List<ProjectEntity> findByMemberIdsContaining(String memberId);
-    List<ProjectEntity> findByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate todayForStartDate, LocalDate todayForEndDate);
-    List<ProjectEntity> findByEndDateBefore(LocalDate today);
+    List<ProjectEntity> findByMemberIdsContainingAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            String memberId, LocalDate todayForStartDate, LocalDate todayForEndDate
+    );
+    List<ProjectEntity> findByMemberIdsContainingAndEndDateBefore(String memberId, LocalDate today);
 }
