@@ -47,11 +47,11 @@ public class ProjectService {
 
         return switch (status) {
             case ACTIVE -> {
-                List<Project> projects = projectPersistencePort.findActiveProjects();
+                List<Project> projects = projectPersistencePort.findActiveProjects(user.getUserId());
                 yield ProjectsResponse.toProjectResponse(user, projects);
             }
             case ARCHIVED -> {
-                List<Project> projects = projectPersistencePort.findArchivedProjects();
+                List<Project> projects = projectPersistencePort.findArchivedProjects(user.getUserId());
                 yield ProjectsResponse.toProjectResponse(user, projects);
             }
             case PENDING -> {
@@ -128,8 +128,7 @@ public class ProjectService {
                     member -> userPersistencePort.findById(member.getUserId())
                             .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
             ).toList();
-            project.createProject(leader, members);
-
+            leader.approve(project.getProjectId());
             userPersistencePort.save(leader);
             members.forEach(userPersistencePort::save);
             projectPersistencePort.save(project);

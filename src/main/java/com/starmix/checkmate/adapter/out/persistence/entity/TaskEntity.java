@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Document(collection = "tasks")
 @SuperBuilder
@@ -28,5 +27,5 @@ public class TaskEntity extends BaseEntity {
     private Integer priority;
 
     @DBRef
-    private List<EpicEntity> epic;
+    private EpicEntity epic;
 }

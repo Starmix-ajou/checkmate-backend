@@ -48,25 +48,19 @@ public class DailyScrumService {
         if(!project.isMember(user)) {
             throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
         }
-        Optional<DailyScrum> dailyScrumOptional = dailyScrumPersistencePort.findByTimestampAndProjectId(projectId, LocalDate.now());
-        DailyScrum dailyScrum;
-        if(dailyScrumOptional.isEmpty()) {
-             dailyScrum = DailyScrum.create(projectId);
-            dailyScrumPersistencePort.save(dailyScrum);
-        } else {
-            dailyScrum = dailyScrumOptional.get();
-            List<Task> todoTasks = request.todoTaskIds().stream().map(
-                    taskId -> taskPersistencePort.findById(taskId)
-                            .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND))
-            ).toList();
-            List<Task> doneTasks = request.doneTaskIds().stream().map(
-                    taskId -> taskPersistencePort.findById(taskId)
-                            .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND))
-            ).toList();
+        DailyScrum dailyScrum = dailyScrumPersistencePort.findByTimestampAndProjectId(projectId, LocalDate.now())
+                .orElse(DailyScrum.create(projectId));
+        List<Task> todoTasks = request.todoTaskIds().stream().map(
+                taskId -> taskPersistencePort.findById(taskId)
+                        .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND))
+        ).toList();
+        List<Task> doneTasks = request.doneTaskIds().stream().map(
+                taskId -> taskPersistencePort.findById(taskId)
+                        .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND))
+        ).toList();
 
-            dailyScrum.updateTasks(todoTasks, doneTasks, user);
-            dailyScrumPersistencePort.save(dailyScrum);
-        }
+        dailyScrum.updateTasks(todoTasks, doneTasks, user);
+        dailyScrumPersistencePort.save(dailyScrum);
         return dailyScrum;
     }
 }

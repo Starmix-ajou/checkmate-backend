@@ -27,15 +27,6 @@ public class Project {
     private User leader;
     private String imageUrl;
 
-    public void createProject(User leader, List<User> members) {
-        leader.addProfile(this.leader.getProfileByProjectId(this.projectId));
-        leader.approve(this.projectId);
-
-        members.forEach(member ->
-                member.addProfile(this.leader.getProfileByProjectId(this.projectId))
-        );
-    }
-
     public static Project createTemporaryProject(
             CreateFeatureDefinitionRequest request,
             User leader, List<User> members

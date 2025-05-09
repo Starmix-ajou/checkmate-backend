@@ -57,11 +57,13 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     }
 
     @Override
-    public List<Project> findActiveProjects() {
+    public List<Project> findActiveProjects(String memberId) {
         try {
             LocalDate today = LocalDate.now();
             List<ProjectEntity> projectEntities =
-                    projectMongoRepository.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(today, today);
+                    projectMongoRepository.findByMemberIdsContainingAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                            memberId, today, today
+                    );
             return projectEntities.stream().map(this::toProjectWithMembersAndLeader).toList();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -69,10 +71,12 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     }
 
     @Override
-    public List<Project> findArchivedProjects() {
+    public List<Project> findArchivedProjects(String memberId) {
         try {
             LocalDate today = LocalDate.now();
-            List<ProjectEntity> projectEntities = projectMongoRepository.findByEndDateBefore(today);
+            List<ProjectEntity> projectEntities = projectMongoRepository.findByMemberIdsContainingAndEndDateBefore(
+                    memberId, today
+            );
             return projectEntities.stream().map(this::toProjectWithMembersAndLeader).toList();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
