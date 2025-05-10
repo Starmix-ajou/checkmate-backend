@@ -60,6 +60,9 @@ public class DailyScrumService {
         ).toList();
 
         dailyScrum.updateTasks(todoTasks, doneTasks, user);
+        dailyScrum.getTodoTasks().forEach(taskPersistencePort::save);
+        dailyScrum.getDoneTasks().forEach(taskPersistencePort::save);
+        
         dailyScrumPersistencePort.save(dailyScrum);
         return dailyScrum;
     }

@@ -19,4 +19,8 @@ public class Task {
     private LocalDate endDate;
     private Priority priority;
     private Epic epic;
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }
