@@ -1,5 +1,6 @@
 package com.starmix.checkmate.domain.dailyScrum;
 
+import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
@@ -28,6 +29,9 @@ public class DailyScrum {
         this.doneTasks = this.doneTasks.stream()
                 .filter(task -> !Objects.equals(task.getAssignee(), user))
                 .collect(Collectors.toCollection(ArrayList::new));
+
+        todoTasks.forEach(task -> task.updateStatus(Status.IN_PROGRESS));
+        doneTasks.forEach(task -> task.updateStatus(Status.DONE));
 
         this.todoTasks.addAll(todoTasks);
         this.doneTasks.addAll(doneTasks);
