@@ -16,7 +16,7 @@ public class SseEmitterManager {
     public SseEmitterManager(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(this::sendKeepAlive, 30, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::sendKeepAlive, 15, 15, TimeUnit.SECONDS);
     }
 
     public SseEmitter addEmitter(String userId) {
@@ -25,6 +25,17 @@ public class SseEmitterManager {
 
         emitter.onCompletion(() -> emitters.remove(userId));
         emitter.onTimeout(() -> emitters.remove(userId));
+        emitter.onError((e) -> emitters.remove(userId));
+
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("init")
+                        .data("connected"));
+            } catch (IOException e) {
+                emitters.remove(userId);
+            }
+        });
 
         return emitter;
     }
