@@ -39,19 +39,4 @@ public class DailyScrumMapper {
                 .projectId(domain.getProjectId())
                 .build();
     }
-    public static DailyScrumEntity updateEntity(DailyScrumEntity entity, DailyScrum domain) {
-        List<TaskEntity> todoTasks = domain.getTodoTasks().stream()
-                .map(TaskMapper::toEntity).toList();
-        List<TaskEntity> doneTasks = domain.getDoneTasks().stream()
-                .map(TaskMapper::toEntity).toList();
-
-        return DailyScrumEntity.builder()
-                .timestamp(entity.getTimestamp())
-                .todoTasks(todoTasks)
-                .doneTasks(doneTasks)
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }

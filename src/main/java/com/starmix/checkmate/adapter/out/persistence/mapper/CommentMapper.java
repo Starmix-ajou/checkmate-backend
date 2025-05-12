@@ -23,14 +23,4 @@ public class CommentMapper {
                 .content(domain.getContent())
                 .build();
     }
-    public static CommentEntity updateEntity(CommentEntity entity, Comment domain) {
-        return CommentEntity.builder()
-                .taskId(domain.getTaskId())
-                .author(domain.getAuthor())
-                .content(domain.getContent())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }

@@ -3,8 +3,6 @@ package com.starmix.checkmate.adapter.out.persistence.mapper;
 import com.starmix.checkmate.adapter.out.persistence.entity.EpicEntity;
 import com.starmix.checkmate.domain.epic.Epic;
 
-import java.time.LocalDateTime;
-
 public class EpicMapper {
 
     public static Epic toDomain(EpicEntity entity) {
@@ -22,16 +20,6 @@ public class EpicMapper {
                 .title(domain.getTitle())
                 .description(domain.getDescription())
                 .projectId(domain.getProjectId())
-                .build();
-    }
-    public static EpicEntity updateEntity(EpicEntity entity, Epic domain) {
-        return EpicEntity.builder()
-                .title(domain.getTitle())
-                .description(domain.getDescription())
-                .projectId(domain.getProjectId())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

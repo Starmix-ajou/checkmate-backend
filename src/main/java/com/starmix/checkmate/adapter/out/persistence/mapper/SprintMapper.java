@@ -29,17 +29,4 @@ public class SprintMapper {
                 .endDate(domain.getEndDate())
                 .build();
     }
-    public static SprintEntity updateEntity(SprintEntity entity, Sprint domain) {
-        return SprintEntity.builder()
-                .title(domain.getTitle())
-                .description(domain.getDescription())
-                .sequence(domain.getSequence())
-                .projectId(domain.getProjectId())
-                .startDate(domain.getStartDate())
-                .endDate(domain.getEndDate())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }

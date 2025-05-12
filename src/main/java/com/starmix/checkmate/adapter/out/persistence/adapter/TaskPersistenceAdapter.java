@@ -32,16 +32,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<Task> findAll() {
-        try {
-            List<TaskEntity> tasks = taskMongoRepository.findAll();
-            return tasks.stream().map(TaskMapper::toDomain).toList();
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
     public Optional<Task> findById(String id) {
         try {
             Optional<TaskEntity> taskEntity = taskMongoRepository.findById(id);
@@ -56,18 +46,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
         try {
             TaskEntity taskEntity = TaskMapper.toEntity(task);
             return taskMongoRepository.save(taskEntity).getId();
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public String update(String id, Task task) {
-        try {
-            TaskEntity taskEntity = taskMongoRepository.findById(id)
-                    .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
-            TaskEntity updateTaskEntity = TaskMapper.updateEntity(taskEntity, task);
-            return taskMongoRepository.save(updateTaskEntity).getId();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

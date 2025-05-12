@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface SprintPersistencePort {
     List<Sprint> findAllByProjectId(String projectId);
     Optional<Sprint> findById(String id);
+    String save(Sprint sprint);
+    Integer getNextSequence();
 }

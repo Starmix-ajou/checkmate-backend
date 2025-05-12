@@ -38,4 +38,19 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public String save(Sprint sprint) {
+        return "";
+    }
+
+    @Override
+    public Integer getNextSequence() {
+        try {
+            long sequence = sprintMongoRepository.count();
+            return (int) sequence + 1;
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

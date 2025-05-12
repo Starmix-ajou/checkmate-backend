@@ -54,16 +54,10 @@ public class TaskService {
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
         Epic epic = epicPersistencePort.findById(request.epicId())
                 .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
-        Task task = Task.builder()
-                .title(request.title())
-                .description(request.description())
-                .status(request.status())
-                .assignee(assignee)
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .priority(request.priority())
-                .epic(epic)
-                .build();
+        Task task = Task.create(
+                request.title(), request.description(), request.status(), assignee,
+                request.startDate(), request.endDate(), request.priority(), epic
+        );
 
         taskPersistencePort.save(task);
     }
@@ -78,6 +72,7 @@ public class TaskService {
         Epic epic = epicPersistencePort.findById(request.epicId())
                 .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
         Task task = Task.builder()
+                .taskId(taskId)
                 .title(request.title())
                 .description(request.description())
                 .status(request.status())
@@ -88,6 +83,6 @@ public class TaskService {
                 .epic(epic)
                 .build();
 
-        taskPersistencePort.update(taskId, task);
+        taskPersistencePort.save(task);
     }
 }

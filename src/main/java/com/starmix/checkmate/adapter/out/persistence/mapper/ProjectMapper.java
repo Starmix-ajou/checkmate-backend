@@ -38,21 +38,4 @@ public class ProjectMapper {
                 .build();
     }
 
-    public static ProjectEntity updateEntity(ProjectEntity entity, Project domain) {
-        List<String> memberIds = domain.getMembers().stream()
-                .map(User::getUserId).toList();
-
-        return ProjectEntity.builder()
-                .title(domain.getTitle())
-                .description(domain.getDescription())
-                .startDate(domain.getStartDate())
-                .endDate(domain.getEndDate())
-                .memberIds(memberIds)
-                .leaderId(domain.getLeader().getUserId())
-                .imageUrl(domain.getImageUrl())
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }
