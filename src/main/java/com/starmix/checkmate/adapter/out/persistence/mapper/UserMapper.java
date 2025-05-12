@@ -28,17 +28,4 @@ public class UserMapper {
                 .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
-
-    public static UserEntity updateEntity(UserEntity entity, User domain) {
-        return UserEntity.builder()
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .name(domain.getName())
-                .email(domain.getEmail())
-                .profiles(domain.getProfiles())
-                .role(domain.getRole())
-                .profileImageUrl(domain.getProfileImageUrl())
-                .build();
-    }
 }

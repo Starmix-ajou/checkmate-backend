@@ -35,20 +35,4 @@ public class TaskMapper {
                 .epic(EpicMapper.toEntity(domain.getEpic()))
                 .build();
     }
-
-    public static TaskEntity updateEntity(TaskEntity entity, Task domain) {
-        return TaskEntity.builder()
-                .title(domain.getTitle())
-                .description(domain.getDescription())
-                .status(domain.getStatus())
-                .assignee(UserMapper.toEntity(domain.getAssignee()))
-                .startDate(domain.getStartDate())
-                .endDate(domain.getEndDate())
-                .priority(domain.getPriority().getPriorityNum())
-                .epic(EpicMapper.toEntity(domain.getEpic()))
-                .id(entity.getId())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }
