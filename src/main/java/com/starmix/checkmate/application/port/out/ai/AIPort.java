@@ -1,5 +1,6 @@
 package com.starmix.checkmate.application.port.out.ai;
 
+import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.domain.project.Feature;
 import com.starmix.checkmate.domain.project.Project;
@@ -12,4 +13,5 @@ public interface AIPort {
     FeedbackDto feedbackFeatureDefinition(String email, String feedback);
     List<Feature> createFeatureSpecification(String email);
     FeedbackDto feedbackFeatureSpecification(String email, String feedback);
+    CreateSprintFeignResponse createSprint(String projectId, List<String> pendingTaskIds);
 }
