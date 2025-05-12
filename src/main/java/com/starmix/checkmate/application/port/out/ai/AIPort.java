@@ -2,7 +2,7 @@ package com.starmix.checkmate.application.port.out.ai;
 
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 

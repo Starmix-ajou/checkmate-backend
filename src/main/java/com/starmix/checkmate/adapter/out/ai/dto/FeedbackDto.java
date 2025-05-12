@@ -2,7 +2,7 @@ package com.starmix.checkmate.adapter.out.ai.dto;
 
 import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureDefinitionFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.FeedbackFeatureSpecificationFeignResponse;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import lombok.Builder;
 
 import java.util.List;

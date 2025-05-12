@@ -7,7 +7,7 @@ import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.*;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.global.exception.CustomException;
