@@ -5,6 +5,7 @@ import com.starmix.checkmate.domain.task.Priority;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -18,7 +19,9 @@ public class Feature {
     private final String preCondition;
     private final String postCondition;
     private final List<Stack> stacks;
-    private final Time time;
+    private final Integer expectedDays;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
     private final Integer difficulty;
     private final Priority priority;
     private final String projectId;

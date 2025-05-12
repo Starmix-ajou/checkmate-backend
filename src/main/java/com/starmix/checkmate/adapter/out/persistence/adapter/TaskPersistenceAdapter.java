@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -62,23 +61,33 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
     @Override
     public List<Task> filterTasks(
-            String projectId, String epicId, String sprintId,
-            String assigneeEmail, Priority priority,
-            LocalDate startDate, LocalDate endDate
+            String projectId,
+            List<String> epicIds,
+            List<String> sprintIds,
+            List<String> assigneeEmails,
+            List<Priority> priorities,
+            LocalDate startDate,
+            LocalDate endDate
     ) {
         try {
             List<Criteria> taskCriteriaList = new ArrayList<>();
 
-            if (epicId != null || projectId != null || sprintId != null) {
+            if (epicIds != null || projectId != null || sprintIds != null) {
                 List<Criteria> epicCriteriaList = new ArrayList<>();
-                if (epicId != null) {
-                    epicCriteriaList.add(Criteria.where("_id").is(new ObjectId(epicId)));
+
+                if (epicIds != null && !epicIds.isEmpty()) {
+                    List<ObjectId> epicObjectIds = epicIds.stream()
+                            .map(ObjectId::new)
+                            .toList();
+                    epicCriteriaList.add(Criteria.where("_id").in(epicObjectIds));
                 }
+
                 if (projectId != null) {
                     epicCriteriaList.add(Criteria.where("projectId").is(projectId));
                 }
-                if (sprintId != null) {
-                    epicCriteriaList.add(Criteria.where("sprintId").is(sprintId));
+
+                if (sprintIds != null && !sprintIds.isEmpty()) {
+                    epicCriteriaList.add(Criteria.where("sprintId").in(sprintIds));
                 }
 
                 Query epicQuery = new Query(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
@@ -90,23 +99,31 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
                 List<ObjectId> epicObjectIds = epics.stream()
                         .map(e -> new ObjectId(e.getId()))
-                        .collect(Collectors.toList());
+                        .toList();
 
                 taskCriteriaList.add(Criteria.where("epic.$id").in(epicObjectIds));
             }
 
-            if (assigneeEmail != null) {
-                Query userQuery = new Query(Criteria.where("email").is(assigneeEmail));
-                UserEntity user = mongoTemplate.findOne(userQuery, UserEntity.class);
-                if (user != null) {
-                    taskCriteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(user.getId())));
-                } else {
+            if (assigneeEmails != null && !assigneeEmails.isEmpty()) {
+                Query userQuery = new Query(Criteria.where("email").in(assigneeEmails));
+                List<UserEntity> users = mongoTemplate.find(userQuery, UserEntity.class);
+
+                if (users.isEmpty()) {
                     return Collections.emptyList();
                 }
+
+                List<ObjectId> userIds = users.stream()
+                        .map(u -> new ObjectId(u.getId()))
+                        .toList();
+
+                taskCriteriaList.add(Criteria.where("assignee.$id").in(userIds));
             }
 
-            if (priority != null) {
-                taskCriteriaList.add(Criteria.where("priority").is(priority.getPriorityNum()));
+            if (priorities != null && !priorities.isEmpty()) {
+                List<Integer> priorityNums = priorities.stream()
+                        .map(Priority::getPriorityNum)
+                        .toList();
+                taskCriteriaList.add(Criteria.where("priority").in(priorityNums));
             }
 
             if (startDate != null) {
@@ -126,7 +143,7 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
             return taskEntities.stream()
                     .map(TaskMapper::toDomain)
-                    .collect(Collectors.toList());
+                    .toList();
 
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

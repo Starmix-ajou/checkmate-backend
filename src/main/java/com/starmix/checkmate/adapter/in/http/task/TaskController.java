@@ -23,10 +23,10 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getTasks (
             @RequestParam String projectId,
-            @RequestParam(required = false) String epicId,
-            @RequestParam(required = false) String sprintId,
-            @RequestParam(required = false) String assigneeEmail,
-            @RequestParam(required = false) Priority priority,
+            @RequestParam(required = false) List<String> epicId,
+            @RequestParam(required = false) List<String> sprintId,
+            @RequestParam(required = false) List<String> assigneeEmail,
+            @RequestParam(required = false) List<Priority> priority,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
     ) {
