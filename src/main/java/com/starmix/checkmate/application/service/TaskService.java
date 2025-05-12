@@ -29,15 +29,25 @@ public class TaskService {
     private final EpicPersistencePort epicPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
 
-    public List<Task> getTasks(
+    public List<TaskDto> getTasks(
             String projectId, List<String> epicId, List<String> sprintId,
             List<String> assigneeEmail, List<Priority> priority,
             LocalDate startDate, LocalDate endDate
     ) {
-        return taskPersistencePort.filterTasks(
+        List<Task> tasks = taskPersistencePort.filterTasks(
                 projectId, epicId, sprintId, assigneeEmail,
                 priority, startDate, endDate
         );
+
+        return tasks.stream().map(
+                task -> {
+                    Epic epic = task.getEpic();
+                    Sprint sprint = sprintPersistencePort.findById(epic.getSprintId())
+                            .orElseThrow(() -> new CustomException("Sprint not found : " + epic.getSprintId(), HttpStatus.NOT_FOUND));
+                    EpicDto epicDto = EpicDto.fromDomain(epic, sprint);
+                    return TaskDto.fromDomain(task, epicDto);
+                }
+        ).toList();
     }
 
     public TaskDto getTask(String taskId) {

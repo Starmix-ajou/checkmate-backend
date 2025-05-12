@@ -65,13 +65,15 @@ public class Project {
     public Map<String, Context> toMailContext() {
         Map<String, Context> mailContextMap = new HashMap<>();
         this.members.forEach(member -> {
-            Context context = new Context();
-            context.setVariable("memberName", member.getName());
-            context.setVariable("projectName", this.title);
-            context.setVariable("projectPeriod", String.format("%s ~ %s", startDate, endDate));
-            context.setVariable("projectJoinLink", "https://checkmate.it.kr");
+            if(!member.getUserId().equals(this.leader.getUserId())) {
+                Context context = new Context();
+                context.setVariable("memberName", member.getName());
+                context.setVariable("projectName", this.title);
+                context.setVariable("projectPeriod", String.format("%s ~ %s", startDate, endDate));
+                context.setVariable("projectJoinLink", "https://checkmate.it.kr");
 
-            mailContextMap.put(member.getEmail(), context);
+                mailContextMap.put(member.getEmail(), context);
+            }
         });
         return mailContextMap;
     }

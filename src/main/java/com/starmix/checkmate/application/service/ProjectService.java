@@ -118,18 +118,21 @@ public class ProjectService {
     public FeedbackResponse feedbackFeatureSpecification(FeedbackRequest request) {
         String email = jwtUtil.extractEmail();
 
+        Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
         FeedbackDto response = aiPort.feedbackFeatureSpecification(email, request.feedback());
         if(response.isNextStep()) {
-            Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
-
-            User leader = userPersistencePort.findById(project.getLeader().getUserId())
-                    .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
             List<User> members = project.getMembers().stream().map(
-                    member -> userPersistencePort.findById(member.getUserId())
-                            .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
+                    member -> {
+                        User user = userPersistencePort.findById(member.getUserId())
+                                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                        user.addProfile(member.getProfileByProjectId(project.getProjectId()));
+                        if(member.getUserId().equals(project.getLeader().getUserId())) {
+                            user.approve(project.getProjectId());
+                        }
+                        return user;
+                    }
             ).toList();
-            leader.approve(project.getProjectId());
-            userPersistencePort.save(leader);
+
             members.forEach(userPersistencePort::save);
             projectPersistencePort.save(project);
 
@@ -137,7 +140,7 @@ public class ProjectService {
             contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
         }
 
-        return FeedbackResponse.fromFeedbackDto(response);
+        return FeedbackResponse.fromFeedbackDto(response, project.getProjectId());
     }
 
     public void approve(String projectId) {

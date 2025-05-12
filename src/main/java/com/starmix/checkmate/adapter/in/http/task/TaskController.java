@@ -3,6 +3,7 @@ package com.starmix.checkmate.adapter.in.http.task;
 import com.starmix.checkmate.adapter.in.common.TaskDto;
 import com.starmix.checkmate.adapter.in.http.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.http.task.request.UpdateTaskRequest;
+import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.application.service.TaskService;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
@@ -21,7 +22,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasks (
+    public ResponseEntity<List<TaskDto>> getTasks (
             @RequestParam String projectId,
             @RequestParam(required = false) List<String> epicId,
             @RequestParam(required = false) List<String> sprintId,
@@ -30,7 +31,7 @@ public class TaskController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate
     ) {
-        List<Task> tasks = taskService.getTasks(
+        List<TaskDto> tasks = taskService.getTasks(
                 projectId, epicId, sprintId, assigneeEmail,
                 priority, startDate, endDate
         );
