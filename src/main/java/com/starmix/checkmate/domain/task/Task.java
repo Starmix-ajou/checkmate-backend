@@ -1,7 +1,7 @@
 package com.starmix.checkmate.domain.task;
 
 import com.starmix.checkmate.domain.epic.Epic;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;

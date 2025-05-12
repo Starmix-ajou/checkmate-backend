@@ -15,7 +15,7 @@ import com.starmix.checkmate.application.port.out.mail.MailPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.domain.user.Profile;

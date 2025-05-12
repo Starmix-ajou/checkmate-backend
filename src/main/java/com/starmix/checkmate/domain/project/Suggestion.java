@@ -1,5 +1,6 @@
 package com.starmix.checkmate.domain.project;
 
+import com.starmix.checkmate.domain.feature.Feature;
 import lombok.Builder;
 import lombok.Getter;
 

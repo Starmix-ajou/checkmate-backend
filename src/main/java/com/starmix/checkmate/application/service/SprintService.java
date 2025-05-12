@@ -14,7 +14,7 @@ import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePor
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.epic.EpicDetail;
-import com.starmix.checkmate.domain.project.Feature;
+import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.global.exception.CustomException;
