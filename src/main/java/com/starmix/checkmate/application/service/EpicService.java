@@ -23,6 +23,7 @@ public class EpicService {
                 .title(request.title())
                 .title(request.title())
                 .description(request.description())
+                .sprintId(request.sprintId())
                 .projectId(request.projectId())
                 .build();
         epicPersistencePort.save(epic);

@@ -41,7 +41,12 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
 
     @Override
     public String save(Sprint sprint) {
-        return "";
+        try {
+            SprintEntity sprintEntity = SprintMapper.toEntity(sprint);
+            return sprintMongoRepository.save(sprintEntity).getId();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

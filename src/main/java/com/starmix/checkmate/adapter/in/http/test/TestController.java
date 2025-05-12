@@ -1,12 +1,17 @@
 package com.starmix.checkmate.adapter.in.http.test;
 
+import com.starmix.checkmate.adapter.in.http.epic.request.CreateEpicRequest;
+import com.starmix.checkmate.adapter.in.http.test.request.CreateSprintTestRequest;
 import com.starmix.checkmate.adapter.in.sse.common.SseEmitterManager;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
+import com.starmix.checkmate.application.service.EpicService;
 import com.starmix.checkmate.application.service.ProjectTestService;
 import com.starmix.checkmate.domain.project.Project;
+import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
@@ -29,6 +34,8 @@ public class TestController {
 
     private final ProjectTestService projectService;
     private final SseEmitterManager sseEmitterManager;
+    private final SprintPersistencePort sprintPersistencePort;
+    private final EpicService epicService;
 
     @PostMapping("/definition")
     public void createFeatureDefinition(@RequestBody CreateFeatureDefinitionRequest request) {
@@ -74,5 +81,24 @@ public class TestController {
         members.forEach(userPersistencePort::save);
         projectPersistencePort.save(project);
         return ResponseEntity.ok().body(project);
+    }
+
+    @Transactional
+    @PostMapping("/sprint/create")
+    public ResponseEntity<Sprint> createSprintTest (
+            @RequestBody CreateSprintTestRequest request
+    ) {
+        Integer sequence = sprintPersistencePort.getNextSequence();
+        Sprint sprint = request.toDomain(sequence);
+        sprintPersistencePort.save(sprint);
+        return ResponseEntity.ok().body(sprint);
+    }
+
+
+    @Transactional
+    @PostMapping
+    public ResponseEntity<Void> createEpic(@RequestBody CreateEpicRequest request) {
+        epicService.createEpic(request);
+        return ResponseEntity.ok().body(null);
     }
 }

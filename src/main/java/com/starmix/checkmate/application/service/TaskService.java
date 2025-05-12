@@ -44,7 +44,7 @@ public class TaskService {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
         Sprint sprint = sprintPersistencePort.findById(task.getEpic().getSprintId())
-                .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("Sprint not found : " + task.getEpic().getSprintId(), HttpStatus.NOT_FOUND));
         EpicDto epicDto = EpicDto.fromDomain(task.getEpic(), sprint);
         return TaskDto.fromDomain(task, epicDto);
     }

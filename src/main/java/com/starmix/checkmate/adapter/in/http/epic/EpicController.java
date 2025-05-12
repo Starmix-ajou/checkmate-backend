@@ -23,10 +23,4 @@ public class EpicController {
         List<Epic> epics = epicService.getEpicsByProjectId(projectId);
         return ResponseEntity.ok().body(epics);
     }
-
-    @PostMapping
-    public ResponseEntity<Void> createEpic(@RequestBody CreateEpicRequest request) {
-        epicService.createEpic(request);
-        return ResponseEntity.ok().body(null);
-    }
 }
