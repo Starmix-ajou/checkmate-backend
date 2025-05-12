@@ -12,8 +12,8 @@ public interface TaskPersistencePort {
     String save(Task task);
     void delete(String id);
     List<Task> filterTasks(
-            String projectId, String epicId, String sprintId,
-            String assigneeEmail, Priority priority,
+            String projectId, List<String> epicId, List<String> sprintId,
+            List<String> assigneeEmail, List<Priority> priority,
             LocalDate startDate, LocalDate endDate
     );
 }

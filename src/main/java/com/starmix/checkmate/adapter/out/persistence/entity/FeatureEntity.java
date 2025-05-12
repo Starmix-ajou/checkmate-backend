@@ -1,12 +1,12 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
 import com.starmix.checkmate.domain.common.Stack;
-import com.starmix.checkmate.domain.feature.Time;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -22,7 +22,9 @@ public class FeatureEntity extends BaseEntity {
     private String preCondition;
     private String postCondition;
     private List<Stack> stacks;
-    private Time time;
+    private Integer expectedDays;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer difficulty;
     private Integer priority;
     private String projectId;

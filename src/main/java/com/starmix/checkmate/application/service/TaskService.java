@@ -30,8 +30,8 @@ public class TaskService {
     private final SprintPersistencePort sprintPersistencePort;
 
     public List<Task> getTasks(
-            String projectId, String epicId, String sprintId,
-            String assigneeEmail, Priority priority,
+            String projectId, List<String> epicId, List<String> sprintId,
+            List<String> assigneeEmail, List<Priority> priority,
             LocalDate startDate, LocalDate endDate
     ) {
         return taskPersistencePort.filterTasks(
