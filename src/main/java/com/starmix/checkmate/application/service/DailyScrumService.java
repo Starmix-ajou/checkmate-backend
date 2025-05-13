@@ -39,9 +39,7 @@ public class DailyScrumService {
     }
 
     public DailyScrum createDailyScrum(String projectId, UpdateDailyScrumRequest request) {
-        String email = jwtUtil.extractEmail();
-        User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        User user = jwtUtil.extractUser();
 
         Project project = projectPersistencePort.findById(projectId)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
