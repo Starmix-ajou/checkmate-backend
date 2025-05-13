@@ -42,9 +42,7 @@ public class ProjectService {
     private final MailPort mailPort;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status) {
-        String email = jwtUtil.extractEmail();
-        User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        User user = jwtUtil.extractUser();
 
         return switch (status) {
             case ACTIVE -> {
@@ -82,16 +80,14 @@ public class ProjectService {
     }
 
     public CreateFeatureDefinitionResponse createFeatureDefinition(CreateFeatureDefinitionRequest request) {
-        String email = jwtUtil.extractEmail();
-        User leader = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        User leader = jwtUtil.extractUser();
         List<User> members = request.members().stream().map(
                 member -> userPersistencePort.findByEmail(member.email())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))
         ).toList();
 
         Project project = Project.createTemporaryProject(request, leader, members);
-        redisPort.saveObject(RedisType.PROJECT_INFO, email, project);
+        redisPort.saveObject(RedisType.PROJECT_INFO, leader.getEmail(), project);
 
         Suggestion suggestion = aiPort.createFunctionDefinition(project, request.definitionUrl());
 
@@ -145,24 +141,18 @@ public class ProjectService {
     }
 
     public void approve(String projectId) {
-        String email = jwtUtil.extractEmail();
-
         Project project = projectPersistencePort.findById(projectId)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        User user = jwtUtil.extractUser();
 
         user.approve(project.getProjectId());
         userPersistencePort.save(user);
     }
 
     public void deny(String projectId) {
-        String email = jwtUtil.extractEmail();
-
         Project project = projectPersistencePort.findById(projectId)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        User user = userPersistencePort.findByEmail(email)
-                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+        User user = jwtUtil.extractUser();
 
         user.deny(project.getProjectId());
         userPersistencePort.save(user);

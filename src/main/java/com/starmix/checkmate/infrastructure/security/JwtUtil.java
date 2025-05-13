@@ -1,5 +1,7 @@
 package com.starmix.checkmate.infrastructure.security;
 
+import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
+import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.config.JwtConfig;
 import io.jsonwebtoken.Claims;
@@ -22,6 +24,7 @@ public class JwtUtil {
     private static final String TOKEN_PREFIX = "Bearer ";
 
     private final JwtConfig jwtConfig;
+    private final UserPersistencePort userPersistencePort;
 
     public String getToken() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -57,6 +60,11 @@ public class JwtUtil {
 
     public String extractEmail() {
         return extractEmail(getToken());
+    }
+
+    public User extractUser() {
+        return userPersistencePort.findByEmail(extractEmail())
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
     }
 
     private String extractEmail(String token) {

@@ -29,16 +29,12 @@ public class User {
         }
     }
 
-    public void removeProfile(Profile profile) {
-        this.profiles.remove(profile);
-    }
-
     public void approve(String projectId) {
         getProfileByProjectId(projectId).activeProfile();
     }
 
     public void deny(String projectId) {
-        removeProfile(getProfileByProjectId(projectId));
+        this.profiles.remove(getProfileByProjectId(projectId));
     }
 
     public static User register(OAuthUserInfo oAuthUserInfo) {
