@@ -1,5 +1,6 @@
 package com.starmix.checkmate.domain.feature;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.starmix.checkmate.domain.common.Stack;
 import com.starmix.checkmate.domain.task.Priority;
 import lombok.Builder;
@@ -16,14 +17,23 @@ public class Feature {
     private final String useCase;
     private final String input;
     private final String output;
+    @JsonIgnore
     private final String preCondition;
+    @JsonIgnore
     private final String postCondition;
+    @JsonIgnore
     private final List<Stack> stacks;
+    @JsonIgnore
     private final Integer expectedDays;
+    @JsonIgnore
     private final LocalDate startDate;
+    @JsonIgnore
     private final LocalDate endDate;
+    @JsonIgnore
     private final Integer difficulty;
+    @JsonIgnore
     private final Priority priority;
+    @JsonIgnore
     private final String projectId;
 
     public static Feature fromFeatureName(String featureName) {

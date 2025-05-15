@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.out.ai.adapter;
 
+import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.out.ai.client.AIFeignClient;
 import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureDefinitionFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecificationFeignRequest;
@@ -69,11 +70,14 @@ public class AIAdapter implements AIPort {
     }
 
     @Override
-    public FeedbackDto feedbackFeatureSpecification(String email, String feedback) {
+    public FeedbackDto feedbackFeatureSpecification(String email, FeedbackFeatureSpecificationRequest feedback) {
         try {
             FeedbackFeignRequest request = FeedbackFeignRequest.builder()
                     .email(email)
-                    .feedback(feedback)
+                    .feedback(feedback.feedback())
+                    .createdFeatures(feedback.createdFeatures())
+                    .modifiedFeatures(feedback.modifiedFeatures())
+                    .deletedFeatures(feedback.deletedFeatures())
                     .build();
             FeedbackFeatureSpecificationFeignResponse response = aiFeignClient.feedbackFeatureSpecification(request);
             return FeedbackDto.fromFeatureSpecification(response);

@@ -2,6 +2,7 @@ package com.starmix.checkmate.adapter.in.sse.project;
 
 import com.starmix.checkmate.adapter.in.sse.common.SseEmitterManager;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
+import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
@@ -37,7 +38,7 @@ public class ProjectSseController {
     }
 
     @PutMapping("/specification")
-    public void feedbackFeatureSpecification(@RequestBody FeedbackRequest request) {
+    public void feedbackFeatureSpecification(@RequestBody FeedbackFeatureSpecificationRequest request) {
         FeedbackResponse response = projectService.feedbackFeatureSpecification(request);
         sseEmitterManager.sendEvent("feedback-feature-specification", response);
     }

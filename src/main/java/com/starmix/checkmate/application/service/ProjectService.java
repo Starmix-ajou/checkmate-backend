@@ -3,6 +3,7 @@ package com.starmix.checkmate.application.service;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
+import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
 import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
@@ -115,11 +116,11 @@ public class ProjectService {
                 .build();
     }
 
-    public FeedbackResponse feedbackFeatureSpecification(FeedbackRequest request) {
+    public FeedbackResponse feedbackFeatureSpecification(FeedbackFeatureSpecificationRequest request) {
         String email = jwtUtil.extractEmail();
 
         Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
-        FeedbackDto response = aiPort.feedbackFeatureSpecification(email, request.feedback());
+        FeedbackDto response = aiPort.feedbackFeatureSpecification(email, request);
         if(response.isNextStep()) {
             List<User> members = project.getMembers().stream().map(
                     member -> {
