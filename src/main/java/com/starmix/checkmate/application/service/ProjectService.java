@@ -1,6 +1,7 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
@@ -156,5 +157,31 @@ public class ProjectService {
 
         user.deny(project.getProjectId());
         userPersistencePort.save(user);
+    }
+
+    public void deleteProject(String projectId) {
+        User user = jwtUtil.extractUser();
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        if(!project.isLeader(user)) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
+
+        projectPersistencePort.delete(projectId);
+    }
+
+    public void updateProject(String projectId, UpdateProjectRequest request) {
+        User user = jwtUtil.extractUser();
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        if(!project.isLeader(user)) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
+
+        project.update(
+                request.title(), request.description(),
+                request.endDate(), request.imageUrl()
+        );
+        projectPersistencePort.save(project);
     }
 }

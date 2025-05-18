@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.http.project;
 
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
@@ -46,6 +47,21 @@ public class ProjectController {
             @PathVariable String id
     ) {
         projectService.deny(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("{projectId}")
+    public ResponseEntity<Void> updateProject(
+            @PathVariable String projectId,
+            @RequestBody UpdateProjectRequest request
+    ) {
+        projectService.updateProject(projectId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable String projectId) {
+        projectService.deleteProject(projectId);
         return ResponseEntity.ok().build();
     }
 }

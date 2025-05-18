@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -104,8 +105,9 @@ public class TaskService {
 
     public List<TaskScheduleResponse> getTaskSchedule(String projectId) {
         String assigneeId = jwtUtil.extractUser().getUserId();
-        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY);
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
         List<Task> tasks = taskPersistencePort.findMyTasksByStartDateAndEndDate(
                 projectId, assigneeId, startOfWeek, endOfWeek
         );

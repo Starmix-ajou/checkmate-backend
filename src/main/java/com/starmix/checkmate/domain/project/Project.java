@@ -86,4 +86,14 @@ public class Project {
     public Boolean isLeader(User user) {
         return leader.equals(user);
     }
+
+    public void update(
+            String title, String description,
+            LocalDate endDate, String imageUrl
+    ) {
+        this.title = title;
+        this.description = description;
+        this.endDate = endDate;
+        this.imageUrl = imageUrl;
+    }
 }

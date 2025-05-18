@@ -11,4 +11,5 @@ public interface ProjectPersistencePort {
     String save(Project project);
     List<Project> findActiveProjects(String memberId);
     List<Project> findArchivedProjects(String memberId);
+    void delete(String projectId);
 }
