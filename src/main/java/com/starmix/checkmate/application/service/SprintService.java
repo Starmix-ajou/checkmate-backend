@@ -7,16 +7,14 @@ import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignRes
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.adapter.out.redis.dto.SprintDetail;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
-import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.FeaturePersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.epic.EpicDetail;
 import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
+import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +32,7 @@ public class SprintService {
     private final AIPort aIPort;
     private final EpicPersistencePort epicPersistencePort;
     private final FeaturePersistencePort featurePersistencePort;
+    private final UserPersistencePort userPersistencePort;
 
     public List<Sprint> getSprintsByProjectId(String projectId) {
         return sprintPersistencePort.findAllByProjectId(projectId);
@@ -87,14 +86,19 @@ public class SprintService {
         List<UpdateSprintResponse> response = request.stream().map(requestItem -> {
             Epic epic = epicPersistencePort.findById(requestItem.epicId())
                     .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
-            requestItem.tasks().forEach(
+            List<Task> tasks = requestItem.tasks().stream().map(
                     task -> {
-                        task.updateEpic(epic);
-                        taskPersistencePort.save(task);
+                        User assignee = userPersistencePort.findByEmail(task.assigneeEmail())
+                                .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+                        Task createdTask = Task.create(
+                                task.title(), task.description(), task.status(), assignee,
+                                task.startDate(), task.endDate(), task.priority(), epic
+                        );
+                        taskPersistencePort.save(createdTask);
+                        return createdTask;
                     }
-            );
-
-            return UpdateSprintResponse.fromEpicAndTasks(epic, requestItem.tasks());
+            ).toList();
+            return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
         }).toList();
         sprintDetail.epics().forEach(epicPersistencePort::save);
         sprintPersistencePort.save(sprintDetail.sprint());
