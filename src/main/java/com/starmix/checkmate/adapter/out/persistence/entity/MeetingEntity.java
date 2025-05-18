@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Document(collection = "meetings")
@@ -20,4 +21,5 @@ public class MeetingEntity extends BaseEntity {
     @DBRef
     private UserEntity master;
     private String projectId;
+    private LocalDate timestamp;
 }
