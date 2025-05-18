@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
     private final SprintPersistencePort sprintPersistencePort;
-    private final EpicService epicService;
 
     @Transactional
     @PostMapping("/sprint")
@@ -27,12 +26,5 @@ public class TestController {
         Sprint sprint = request.toDomain(sequence);
         sprintPersistencePort.save(sprint);
         return ResponseEntity.ok().body(sprint);
-    }
-
-    @Transactional
-    @PostMapping("/epic")
-    public ResponseEntity<Void> createEpic(@RequestBody CreateEpicRequest request) {
-        epicService.createEpic(request);
-        return ResponseEntity.ok().body(null);
     }
 }

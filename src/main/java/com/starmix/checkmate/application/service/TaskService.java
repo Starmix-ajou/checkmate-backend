@@ -49,8 +49,7 @@ public class TaskService {
         return tasks.stream().map(
                 task -> {
                     Epic epic = task.getEpic();
-                    Sprint sprint = sprintPersistencePort.findById(epic.getSprintId())
-                            .orElseThrow(() -> new CustomException("Sprint not found : " + epic.getSprintId(), HttpStatus.NOT_FOUND));
+                    Sprint sprint = findSprintByTask(projectId, endDate);
                     EpicDto epicDto = EpicDto.fromDomain(epic, sprint);
                     return TaskDto.fromDomain(task, epicDto);
                 }
@@ -60,8 +59,7 @@ public class TaskService {
     public TaskDto getTask(String taskId) {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
-        Sprint sprint = sprintPersistencePort.findById(task.getEpic().getSprintId())
-                .orElseThrow(() -> new CustomException("Sprint not found : " + task.getEpic().getSprintId(), HttpStatus.NOT_FOUND));
+        Sprint sprint = findSprintByTask(task.getEpic().getProjectId(), task.getEndDate());
         EpicDto epicDto = EpicDto.fromDomain(task.getEpic(), sprint);
         return TaskDto.fromDomain(task, epicDto);
     }
@@ -126,5 +124,16 @@ public class TaskService {
         String assigneeId = jwtUtil.extractUser().getUserId();
         List<Task> tasks = taskPersistencePort.findByAssigneeId(projectId, assigneeId);
         return TaskCountResponse.fromDomain(tasks);
+    }
+
+    private Sprint findSprintByTask(String projectId, LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+        if(today.isAfter(endDate)) {
+            return sprintPersistencePort.findSprintByDate(projectId, endDate)
+                    .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+        } else {
+            return sprintPersistencePort.findCurrentSprint(projectId)
+                    .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+        }
     }
 }

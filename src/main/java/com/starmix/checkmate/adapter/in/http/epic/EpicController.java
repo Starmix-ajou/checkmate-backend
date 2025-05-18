@@ -5,6 +5,7 @@ import com.starmix.checkmate.application.service.EpicService;
 import com.starmix.checkmate.domain.epic.Epic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,5 +23,15 @@ public class EpicController {
     ) {
         List<Epic> epics = epicService.getEpicsByProjectId(projectId);
         return ResponseEntity.ok().body(epics);
+    }
+
+    @Transactional
+    @PostMapping
+    public ResponseEntity<Void> createEpic(
+            @RequestParam String projectId,
+            @RequestBody CreateEpicRequest request
+    ) {
+        epicService.createEpic(projectId, request);
+        return ResponseEntity.ok().body(null);
     }
 }

@@ -12,10 +12,9 @@ public class Epic {
     private String title;
     private String description;
     private String projectId;
-    private String sprintId;
 
     public static Epic create(
-            String title, String description, String projectId, String sprintId
+            String title, String description, String projectId
     ) {
         String epicId = UUID.randomUUID().toString();
 
@@ -24,7 +23,6 @@ public class Epic {
                 .title(title)
                 .description(description)
                 .projectId(projectId)
-                .sprintId(sprintId)
                 .build();
     }
 }

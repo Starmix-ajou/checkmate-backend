@@ -49,7 +49,7 @@ public class SprintService {
         List<EpicDetail> epicDetails = response.epics().stream().map(
                 epic -> {
                     Epic createdEpic = Epic.create(
-                            epic.title(), epic.description(), projectId, sprint.getSprintId()
+                            epic.title(), epic.description(), projectId
                     );
                     List<Task> tasks = epic.featureIds().stream().map(
                             featureId -> {
