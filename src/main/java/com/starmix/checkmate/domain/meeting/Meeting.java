@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,13 +22,16 @@ public class Meeting {
 
     public static Meeting create(User creator, String projectId) {
         String meetingId = UUID.randomUUID().toString();
+        LocalDate today = LocalDate.now();
+        String title = today.format(DateTimeFormatter.ofPattern("MM월 dd일")) + "의 회의록";
 
         return Meeting.builder()
                 .meetingId(meetingId)
+                .title(title)
                 .participants(List.of(creator))
                 .master(creator)
                 .projectId(projectId)
-                .timestamp(LocalDate.now())
+                .timestamp(today)
                 .build();
     }
 
