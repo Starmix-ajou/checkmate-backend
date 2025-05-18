@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.http.auth;
 
 import com.starmix.checkmate.adapter.in.http.auth.request.GoogleAccessTokenRequest;
+import com.starmix.checkmate.adapter.in.http.auth.response.GetIsLeaderResponse;
 import com.starmix.checkmate.adapter.in.http.auth.response.UserInfoResponse;
 import com.starmix.checkmate.application.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserInfoResponse> login (@RequestBody GoogleAccessTokenRequest request) {
+    public ResponseEntity<UserInfoResponse> login(@RequestBody GoogleAccessTokenRequest request) {
         UserInfoResponse response = authService.authenticate(request);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/is-leader")
+    public ResponseEntity<GetIsLeaderResponse> getIsLeader(@RequestParam String projectId) {
+        GetIsLeaderResponse response = authService.getIsLeader(projectId);
         return ResponseEntity.ok().body(response);
     }
 }
