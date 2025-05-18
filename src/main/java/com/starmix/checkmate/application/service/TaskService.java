@@ -4,6 +4,8 @@ import com.starmix.checkmate.adapter.in.common.EpicDto;
 import com.starmix.checkmate.adapter.in.common.TaskDto;
 import com.starmix.checkmate.adapter.in.http.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.http.task.request.UpdateTaskRequest;
+import com.starmix.checkmate.adapter.in.http.task.response.TaskCountResponse;
+import com.starmix.checkmate.adapter.in.http.task.response.TaskScheduleResponse;
 import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
@@ -15,10 +17,12 @@ import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
+import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,6 +33,7 @@ public class TaskService {
     private final UserPersistencePort userPersistencePort;
     private final EpicPersistencePort epicPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
+    private final JwtUtil jwtUtil;
 
     public List<TaskDto> getTasks(
             String projectId, List<String> epicId, List<String> sprintId,
@@ -95,5 +100,29 @@ public class TaskService {
                 .build();
 
         taskPersistencePort.save(task);
+    }
+
+    public List<TaskScheduleResponse> getTaskSchedule(String projectId) {
+        String assigneeId = jwtUtil.extractUser().getUserId();
+        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY);
+        List<Task> tasks = taskPersistencePort.findMyTasksByStartDateAndEndDate(
+                projectId, assigneeId, startOfWeek, endOfWeek
+        );
+
+        return startOfWeek.datesUntil(endOfWeek.plusDays(1))
+                .map(date -> TaskScheduleResponse.fromDomain(
+                        tasks.stream()
+                                .filter(task -> !task.getStartDate().isAfter(date) && !task.getEndDate().isBefore(date))
+                                .toList(),
+                        date
+                ))
+                .toList();
+    }
+
+    public TaskCountResponse getTaskCount(String projectId) {
+        String assigneeId = jwtUtil.extractUser().getUserId();
+        List<Task> tasks = taskPersistencePort.findByAssigneeId(projectId, assigneeId);
+        return TaskCountResponse.fromDomain(tasks);
     }
 }

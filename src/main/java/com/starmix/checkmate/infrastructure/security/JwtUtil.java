@@ -21,8 +21,6 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    private static final String TOKEN_PREFIX = "Bearer ";
-
     private final JwtConfig jwtConfig;
     private final UserPersistencePort userPersistencePort;
 
