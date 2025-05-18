@@ -11,6 +11,7 @@ import com.starmix.checkmate.application.port.out.persistence.UserPersistencePor
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -32,11 +33,11 @@ public class TaskService {
     public List<TaskDto> getTasks(
             String projectId, List<String> epicId, List<String> sprintId,
             List<String> assigneeEmail, List<Priority> priority,
-            LocalDate startDate, LocalDate endDate
+            LocalDate startDate, LocalDate endDate, List<Status> status
     ) {
         List<Task> tasks = taskPersistencePort.filterTasks(
                 projectId, epicId, sprintId, assigneeEmail,
-                priority, startDate, endDate
+                priority, startDate, endDate, status
         );
 
         return tasks.stream().map(

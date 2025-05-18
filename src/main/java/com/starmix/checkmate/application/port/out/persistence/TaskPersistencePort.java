@@ -1,6 +1,7 @@
 package com.starmix.checkmate.application.port.out.persistence;
 
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 
 import java.time.LocalDate;
@@ -14,6 +15,6 @@ public interface TaskPersistencePort {
     List<Task> filterTasks(
             String projectId, List<String> epicId, List<String> sprintId,
             List<String> assigneeEmail, List<Priority> priority,
-            LocalDate startDate, LocalDate endDate
+            LocalDate startDate, LocalDate endDate, List<Status> status
     );
 }

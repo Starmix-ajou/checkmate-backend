@@ -7,6 +7,7 @@ import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.TaskMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -61,13 +62,9 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
     @Override
     public List<Task> filterTasks(
-            String projectId,
-            List<String> epicIds,
-            List<String> sprintIds,
-            List<String> assigneeEmails,
-            List<Priority> priorities,
-            LocalDate startDate,
-            LocalDate endDate
+            String projectId, List<String> epicIds, List<String> sprintIds,
+            List<String> assigneeEmails, List<Priority> priorities,
+            LocalDate startDate, LocalDate endDate, List<Status> status
     ) {
         try {
             List<Criteria> taskCriteriaList = new ArrayList<>();
@@ -132,6 +129,10 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
             if (endDate != null) {
                 taskCriteriaList.add(Criteria.where("endDate").lte(endDate));
+            }
+
+            if (status != null && !status.isEmpty()) {
+                taskCriteriaList.add(Criteria.where("status").in(status));
             }
 
             Query taskQuery = new Query();
