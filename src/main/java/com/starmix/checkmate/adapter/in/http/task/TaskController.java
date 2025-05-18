@@ -6,6 +6,7 @@ import com.starmix.checkmate.adapter.in.http.task.request.UpdateTaskRequest;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.application.service.TaskService;
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +30,12 @@ public class TaskController {
             @RequestParam(required = false) List<String> assigneeEmail,
             @RequestParam(required = false) List<Priority> priority,
             @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate
-    ) {
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) List<Status> status
+            ) {
         List<TaskDto> tasks = taskService.getTasks(
                 projectId, epicId, sprintId, assigneeEmail,
-                priority, startDate, endDate
+                priority, startDate, endDate, status
         );
         return ResponseEntity.ok().body(tasks);
     }
