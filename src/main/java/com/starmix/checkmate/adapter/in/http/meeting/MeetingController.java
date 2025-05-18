@@ -22,4 +22,10 @@ public class MeetingController {
         List<Meeting> meetings = meetingService.getMeetingsByProjectId(projectId);
         return ResponseEntity.ok().body(meetings);
     }
+
+    @GetMapping("/create")
+    public ResponseEntity<Meeting> createMeeting(@RequestParam String projectId) {
+        Meeting meeting = meetingService.createMeeting(projectId);
+        return ResponseEntity.ok().body(meeting);
+    }
 }
