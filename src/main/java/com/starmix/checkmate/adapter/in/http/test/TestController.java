@@ -19,7 +19,7 @@ public class TestController {
     private final EpicService epicService;
 
     @Transactional
-    @PostMapping("/sprint/create")
+    @PostMapping("/sprint")
     public ResponseEntity<Sprint> createSprintTest (
             @RequestBody CreateSprintTestRequest request
     ) {
@@ -30,7 +30,7 @@ public class TestController {
     }
 
     @Transactional
-    @PostMapping
+    @PostMapping("/epic")
     public ResponseEntity<Void> createEpic(@RequestBody CreateEpicRequest request) {
         epicService.createEpic(request);
         return ResponseEntity.ok().body(null);

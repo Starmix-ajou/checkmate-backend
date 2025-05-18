@@ -17,4 +17,6 @@ public interface TaskPersistencePort {
             List<String> assigneeEmail, List<Priority> priority,
             LocalDate startDate, LocalDate endDate, List<Status> status
     );
+    List<Task> findByAssigneeId(String projectId, String assigneeId);
+    List<Task> findMyTasksByStartDateAndEndDate(String projectId, String assigneeId, LocalDate startDate, LocalDate endDate);
 }

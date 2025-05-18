@@ -150,4 +150,80 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public List<Task> findByAssigneeId(String projectId, String assigneeId) {
+        try {
+            List<Criteria> taskCriteriaList = new ArrayList<>();
+
+            if (projectId != null) {
+                Query epicQuery = new Query(Criteria.where("projectId").is(projectId));
+                List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
+
+                if (epics.isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                List<ObjectId> epicObjectIds = epics.stream()
+                        .map(e -> new ObjectId(e.getId()))
+                        .toList();
+
+                taskCriteriaList.add(Criteria.where("epic.$id").in(epicObjectIds));
+            }
+
+            if (assigneeId != null) {
+                taskCriteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(assigneeId)));
+            }
+
+            Query taskQuery = new Query();
+            if (!taskCriteriaList.isEmpty()) {
+                taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
+            }
+
+            List<TaskEntity> taskEntities = mongoTemplate.find(taskQuery, TaskEntity.class);
+            return taskEntities.stream().map(TaskMapper::toDomain).toList();
+
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<Task> findMyTasksByStartDateAndEndDate(
+            String projectId, String assigneeId, LocalDate startDate, LocalDate endDate
+    ) {
+        try {
+            List<Criteria> criteriaList = new ArrayList<>();
+
+            criteriaList.add(Criteria.where("startDate").lte(endDate));
+            criteriaList.add(Criteria.where("endDate").gte(startDate));
+
+            if (assigneeId != null) {
+                criteriaList.add(Criteria.where("assignee.$id").is(new ObjectId(assigneeId)));
+            }
+
+            if (projectId != null) {
+                Query epicQuery = new Query(Criteria.where("projectId").is(projectId));
+                List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
+
+                if (epics.isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                List<ObjectId> epicIds = epics.stream()
+                        .map(e -> new ObjectId(e.getId()))
+                        .toList();
+
+                criteriaList.add(Criteria.where("epic.$id").in(epicIds));
+            }
+
+            Query query = new Query(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+            List<TaskEntity> tasks = mongoTemplate.find(query, TaskEntity.class);
+
+            return tasks.stream().map(TaskMapper::toDomain).toList();
+
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
