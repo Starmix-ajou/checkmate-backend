@@ -82,4 +82,8 @@ public class Project {
         List<User> members = new ArrayList<>(this.members);
         return members.contains(user);
     }
+
+    public Boolean isLeader(User user) {
+        return leader.equals(user);
+    }
 }
