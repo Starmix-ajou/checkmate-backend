@@ -27,7 +27,6 @@ public class MeetingService {
 
     public Meeting createMeeting(String projectId) {
         User creator = jwtUtil.extractUser();
-        System.out.println(projectId);
         Meeting meeting = Meeting.create(creator, projectId);
         String meetingId = meetingPersistencePort.save(meeting);
         return meetingPersistencePort.findById(meetingId)
