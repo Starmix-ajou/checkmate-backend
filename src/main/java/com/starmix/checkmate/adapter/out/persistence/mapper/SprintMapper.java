@@ -14,6 +14,9 @@ public class SprintMapper {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .sprintId(entity.getId())
+                .epics(entity.getEpics().stream().map(
+                        EpicMapper::toDomain
+                ).toList())
                 .build();
     }
 
@@ -26,6 +29,9 @@ public class SprintMapper {
                 .startDate(domain.getStartDate())
                 .endDate(domain.getEndDate())
                 .id(domain.getSprintId())
+                .epics(domain.getEpics().stream().map(
+                        EpicMapper::toEntity
+                ).toList())
                 .build();
     }
 }

@@ -1,11 +1,14 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
+import com.starmix.checkmate.domain.epic.Epic;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Document(collection = "sprints")
 @Getter
@@ -18,4 +21,6 @@ public class SprintEntity extends BaseEntity {
     private String projectId;
     private LocalDate startDate;
     private LocalDate endDate;
+    @DBRef
+    private List<EpicEntity> epics;
 }
