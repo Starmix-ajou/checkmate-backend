@@ -14,9 +14,11 @@ import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
+import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
+import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
@@ -41,6 +43,7 @@ public class ProjectService {
     private final JwtUtil jwtUtil;
     private final UserPersistencePort userPersistencePort;
     private final MailPort mailPort;
+    private final EpicPersistencePort epicPersistencePort;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status) {
         User user = jwtUtil.extractUser();
@@ -133,6 +136,11 @@ public class ProjectService {
 
             members.forEach(userPersistencePort::save);
             projectPersistencePort.save(project);
+
+            response.features().forEach(feature -> {
+                Epic epic = Epic.fromFeature(feature);
+                epicPersistencePort.save(epic);
+            });
 
             Map<String, Context> contexts = project.toMailContext();
             contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
