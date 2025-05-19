@@ -4,7 +4,10 @@ import com.starmix.checkmate.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
 
 @Document(collection = "comments")
 @Getter
@@ -12,6 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class CommentEntity extends BaseEntity {
     private String taskId;
-    private User author;
-    private String content;
+    @DBRef
+    private UserEntity author;
+    private String message;
+    private LocalDateTime timestamp;
+    private Boolean isModified;
 }

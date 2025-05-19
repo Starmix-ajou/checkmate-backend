@@ -1,6 +1,6 @@
 package com.starmix.checkmate.domain.project;
 
-import com.starmix.checkmate.adapter.in.common.UserDto;
+import com.starmix.checkmate.adapter.in.common.ProfileDto;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
@@ -12,8 +12,6 @@ import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder(toBuilder = true)
@@ -33,23 +31,14 @@ public class Project {
     ) {
         String projectId = UUID.randomUUID().toString();
 
-        Map<String, UserDto> requestMemberMap = request.members().stream()
-                .collect(Collectors.toMap(UserDto::email, Function.identity()));
-
-        UserDto requestLeader = requestMemberMap.get(leader.getEmail());
-        if (requestLeader == null) {
-            throw new CustomException("Leader Not Found", HttpStatus.BAD_REQUEST);
-        }
-
-        leader.addProfile(Profile.init(requestLeader.profile(), projectId));
-
-        for (User member : members) {
-            UserDto requestMember = requestMemberMap.get(member.getEmail());
-            if (requestMember == null) {
-                throw new CustomException("Member Not Found", HttpStatus.BAD_REQUEST);
-            }
-            member.addProfile(Profile.init(requestMember.profile(), projectId));
-        }
+        members.forEach(member -> {
+            ProfileDto profile = request.members().stream()
+                    .filter(userBrief -> userBrief.email().equals(member.getEmail()))
+                    .map(CreateFeatureDefinitionRequest.UserBrief::profile)
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException("Member Not Found", HttpStatus.BAD_REQUEST));
+            member.addProfile(Profile.init(profile, projectId));
+        });
 
         return Project.builder()
                 .projectId(projectId)

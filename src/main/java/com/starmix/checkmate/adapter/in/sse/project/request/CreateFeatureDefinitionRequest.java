@@ -1,9 +1,6 @@
 package com.starmix.checkmate.adapter.in.sse.project.request;
 
-import com.starmix.checkmate.adapter.in.common.UserDto;
-import com.starmix.checkmate.domain.project.Project;
-import com.starmix.checkmate.domain.user.Profile;
-import com.starmix.checkmate.domain.user.User;
+import com.starmix.checkmate.adapter.in.common.ProfileDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +10,11 @@ public record CreateFeatureDefinitionRequest(
         String description,
         LocalDate startDate,
         LocalDate endDate,
-        List<UserDto> members,
+        List<UserBrief> members,
         String definitionUrl
-) { }
+) {
+    public record UserBrief(
+            String email,
+            ProfileDto profile
+    ) { }
+}
