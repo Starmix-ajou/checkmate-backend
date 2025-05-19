@@ -4,7 +4,6 @@ import com.starmix.checkmate.adapter.out.persistence.entity.ProjectEntity;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.user.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProjectMapper {

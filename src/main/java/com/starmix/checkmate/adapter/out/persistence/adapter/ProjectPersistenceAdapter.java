@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,18 +27,6 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
     private final ProjectMongoRepository projectMongoRepository;
     private final UserMongoRepository userMongoRepository;
     private final MongoTemplate mongoTemplate;
-
-    @Override
-    public List<Project> findByMemberIdsContaining(String memberId) {
-        try {
-            List<ProjectEntity> projectEntities = projectMongoRepository.findByMemberIdsContaining(memberId);
-            return projectEntities.stream()
-                    .map(this::toProjectWithMembersAndLeader)
-                    .toList();
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @Override
     public Optional<Project> findById(String id) {
@@ -56,33 +43,6 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
         try {
             ProjectEntity projectEntity = ProjectMapper.toEntity(project);
             return projectMongoRepository.save(projectEntity).getId();
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public List<Project> findActiveProjects(String memberId) {
-        try {
-            LocalDate today = LocalDate.now();
-            List<ProjectEntity> projectEntities =
-                    projectMongoRepository.findByMemberIdsContainingAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                            memberId, today, today
-                    );
-            return projectEntities.stream().map(this::toProjectWithMembersAndLeader).toList();
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public List<Project> findArchivedProjects(String memberId) {
-        try {
-            LocalDate today = LocalDate.now();
-            List<ProjectEntity> projectEntities = projectMongoRepository.findByMemberIdsContainingAndEndDateBefore(
-                    memberId, today
-            );
-            return projectEntities.stream().map(this::toProjectWithMembersAndLeader).toList();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -118,6 +78,16 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
             mongoTemplate.remove(dailyScrumQuery, DailyScrumEntity.class);
 
             projectMongoRepository.deleteById(projectId);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<Project> findByProjectIds(List<String> projectIds) {
+        try {
+            List<ProjectEntity> projectEntities = projectMongoRepository.findAllById(projectIds);
+            return projectEntities.stream().map(this::toProjectWithMembersAndLeader).toList();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
