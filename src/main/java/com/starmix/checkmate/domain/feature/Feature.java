@@ -22,8 +22,6 @@ public class Feature {
     @JsonIgnore
     private final String postCondition;
     @JsonIgnore
-    private final List<Stack> stacks;
-    @JsonIgnore
     private final Integer expectedDays;
     @JsonIgnore
     private final LocalDate startDate;
