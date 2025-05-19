@@ -51,6 +51,13 @@ public class Project {
                 .build();
     }
 
+    public void addMember(User member) {
+        if (this.members.contains(member)) {
+            throw new CustomException("Member Already Exists", HttpStatus.BAD_REQUEST);
+        }
+        this.members.add(member);
+    }
+
     public Map<String, Context> toMailContext() {
         Map<String, Context> mailContextMap = new HashMap<>();
         this.members.forEach(member -> {
@@ -64,6 +71,18 @@ public class Project {
                 mailContextMap.put(member.getEmail(), context);
             }
         });
+        return mailContextMap;
+    }
+
+    public Map<String, Context> toMailContext(User user) {
+        Map<String, Context> mailContextMap = new HashMap<>();
+        Context context = new Context();
+        context.setVariable("memberName", user.getName());
+        context.setVariable("projectName", this.title);
+        context.setVariable("projectPeriod", String.format("%s ~ %s", startDate, endDate));
+        context.setVariable("projectJoinLink", "https://checkmate.it.kr");
+
+        mailContextMap.put(user.getEmail(), context);
         return mailContextMap;
     }
 
