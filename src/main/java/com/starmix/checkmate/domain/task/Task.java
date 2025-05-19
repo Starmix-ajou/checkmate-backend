@@ -1,7 +1,6 @@
 package com.starmix.checkmate.domain.task;
 
 import com.starmix.checkmate.domain.epic.Epic;
-import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +24,20 @@ public class Task {
         this.status = status;
     }
 
-    public void updateEpic(Epic epic) {
-        this.epic = epic;
+    public static Task init(
+            String title, String description, User assignee,
+            LocalDate startDate, LocalDate endDate, Priority priority, Epic epic
+    ) {
+        return Task.builder()
+                .title(title)
+                .description(description)
+                .status(Status.TODO)
+                .assignee(assignee)
+                .startDate(startDate)
+                .endDate(endDate)
+                .priority(priority)
+                .epic(epic)
+                .build();
     }
 
     public static Task create(
@@ -42,11 +53,6 @@ public class Task {
                 .endDate(endDate)
                 .priority(priority)
                 .epic(epic)
-                .build();
-    }
-
-    public static Task fromFeature(Feature feature) {
-        return Task.builder()
                 .build();
     }
 }

@@ -21,6 +21,7 @@ import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -64,6 +65,7 @@ public class TaskService {
         return TaskDto.fromDomain(task, epicDto);
     }
 
+    @Transactional
     public void createTask(CreateTaskRequest request) {
         User assignee = userPersistencePort.findByEmail(request.assigneeEmail())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));

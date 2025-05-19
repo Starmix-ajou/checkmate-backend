@@ -5,6 +5,7 @@ import com.starmix.checkmate.adapter.out.slack.log.SlackLogLevel;
 import com.starmix.checkmate.application.port.out.slack.SlackPort;
 import com.starmix.checkmate.infrastructure.config.SpringEnv;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -81,25 +80,17 @@ public class GlobalExceptionHandler {
                 .body(new ErrorDto("서버 내부 오류가 발생했습니다."));
     }
 
-    private String formatAsJson(String description) {
-        if (description == null) {
-            return "";
-        }
-        return description
-                .replace("(", "(\n  ")
-                .replace(")", "\n)")
-                .replace(", ", ",\n  ");
-    }
-
-    private String getStackTrace(Throwable ex) {
-        StringWriter sw = new StringWriter();
-        ex.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-    }
-
     private void logToSlack(LocalDateTime timestamp, Throwable ex, SlackLogLevel logLevel) {
-        if (springEnv.isDevProfile() || springEnv.isProdProfile()) {
-            slackPort.sendMsg(timestamp, "Exception 발생", formatAsJson(getStackTrace(ex)), logLevel, SlackLabel.SYSTEM_ALERT);
+        String errorMessage = ex.getMessage();
+        if (errorMessage == null || errorMessage.isBlank()) {
+            errorMessage = ExceptionUtils.getStackTrace(ex);
+        }
+
+        if (errorMessage.length() > 3500) {
+            errorMessage = errorMessage.substring(0, 3500) + "\n...(생략됨)";
+        }
+        if(springEnv.isDevProfile() || springEnv.isProdProfile()) {
+            slackPort.sendMsg(timestamp, "Exception 발생", errorMessage, logLevel, SlackLabel.SYSTEM_ALERT);
         }
     }
 }

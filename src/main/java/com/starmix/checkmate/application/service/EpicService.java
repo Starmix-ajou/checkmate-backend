@@ -9,6 +9,7 @@ import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class EpicService {
         return epicPersistencePort.findAllByProjectId(projectId);
     }
 
+    @Transactional
     public void createEpic(String projectId, CreateEpicRequest request) {
         Sprint sprint = sprintPersistencePort.findCurrentSprint(projectId)
                 .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));

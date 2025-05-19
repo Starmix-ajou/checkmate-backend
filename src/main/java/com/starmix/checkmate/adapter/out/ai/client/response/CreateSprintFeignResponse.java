@@ -1,5 +1,7 @@
 package com.starmix.checkmate.adapter.out.ai.client.response;
 
+import com.starmix.checkmate.domain.task.Status;
+import com.starmix.checkmate.domain.task.Task;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -10,10 +12,18 @@ public record CreateSprintFeignResponse(
         SprintBrief sprint,
         List<EpicWithFeatures> epics
 ) {
-    public record EpicWithFeatures(
+    public record TaskBrief(
             String title,
             String description,
-            List<String> featureIds
+            String assigneeId,
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer priority
+    ) { }
+
+    public record EpicWithFeatures(
+            String epicId,
+            List<TaskBrief> tasks
     ) { }
 
     public record SprintBrief(

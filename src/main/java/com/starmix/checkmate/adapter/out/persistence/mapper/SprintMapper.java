@@ -4,7 +4,6 @@ import com.starmix.checkmate.adapter.out.persistence.entity.SprintEntity;
 import com.starmix.checkmate.domain.sprint.Sprint;
 
 public class SprintMapper {
-
     public static Sprint toDomain(SprintEntity entity) {
         return Sprint.builder()
                 .title(entity.getTitle())
