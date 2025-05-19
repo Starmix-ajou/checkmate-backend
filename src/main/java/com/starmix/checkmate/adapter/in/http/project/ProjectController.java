@@ -1,10 +1,13 @@
 package com.starmix.checkmate.adapter.in.http.project;
 
+import com.starmix.checkmate.adapter.in.common.UserDto;
+import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
+import com.starmix.checkmate.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +53,7 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("{projectId}")
+    @PutMapping("/{projectId}")
     public ResponseEntity<Void> updateProject(
             @PathVariable String projectId,
             @RequestBody UpdateProjectRequest request
@@ -59,9 +62,18 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{projectId}")
+    @DeleteMapping("/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable String projectId) {
         projectService.deleteProject(projectId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{projectId}/invite")
+    public ResponseEntity<Void> invite(
+            @PathVariable String projectId,
+            @RequestBody InviteProjectRequest request
+    ) {
+        projectService.invite(projectId, request);
         return ResponseEntity.ok().build();
     }
 }

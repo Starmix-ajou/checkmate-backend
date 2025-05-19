@@ -1,5 +1,6 @@
 package com.starmix.checkmate.application.service;
 
+import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
@@ -23,6 +24,7 @@ import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.domain.user.Profile;
+import com.starmix.checkmate.domain.user.Role;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
@@ -191,5 +193,28 @@ public class ProjectService {
                 request.endDate(), request.imageUrl()
         );
         projectPersistencePort.save(project);
+    }
+
+    public void invite(String projectId, InviteProjectRequest request) {
+        User leader = jwtUtil.extractUser();
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        if(!project.isLeader(leader)) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
+
+        User user = userPersistencePort.findByEmail(request.email())
+                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+        if(request.role().equals(Role.DEVELOPER)) {
+
+        }
+        user.addProfile(Profile.init(request.profile(), projectId));
+        project.addMember(user);
+
+        userPersistencePort.save(user);
+        projectPersistencePort.save(project);
+
+        Map<String, Context> contexts = project.toMailContext(user);
+        contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
     }
 }
