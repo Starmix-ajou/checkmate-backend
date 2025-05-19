@@ -10,9 +10,8 @@ import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
-import com.starmix.checkmate.domain.epic.EpicDetail;
-import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.sprint.Sprint;
+import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -31,7 +30,6 @@ public class SprintService {
     private final RedisPort redisPort;
     private final AIPort aIPort;
     private final EpicPersistencePort epicPersistencePort;
-    private final FeaturePersistencePort featurePersistencePort;
     private final UserPersistencePort userPersistencePort;
 
     public List<Sprint> getSprintsByProjectId(String projectId) {
@@ -46,36 +44,29 @@ public class SprintService {
                 response.sprint().title(), response.sprint().description(), sequence,
                 projectId, response.sprint().startDate(), response.sprint().endDate()
         );
-        List<EpicDetail> epicDetails = response.epics().stream().map(
-                epic -> {
-                    Epic createdEpic = Epic.create(
-                            epic.title(), epic.description(), projectId
-                    );
-                    List<Task> tasks = epic.featureIds().stream().map(
-                            featureId -> {
-                                Feature feature = featurePersistencePort.findById(featureId)
-                                        .orElseThrow(() -> new CustomException("Feature not found", HttpStatus.NOT_FOUND));
-                                return Task.fromFeature(feature);
-                            }
-                    ).toList();
-                    return EpicDetail.builder()
-                            .epic(createdEpic)
-                            .tasks(tasks)
-                            .build();
-                }
-        ).toList();
+        List<UpdateSprintResponse> updateSprintResponses = response.epics().stream().map(epicWithFeatures -> {
+            Epic epic = epicPersistencePort.findById(epicWithFeatures.epicId())
+                    .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+            List<Task> tasks = epicWithFeatures.tasks().stream().map(taskBrief -> {
+                User assignee = userPersistencePort.findById(taskBrief.assigneeId())
+                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
+                Task task = Task.init(
+                        taskBrief.title(), taskBrief.description(), assignee, taskBrief.startDate(),
+                        taskBrief.endDate(), Priority.getPriority(taskBrief.priority()), epic
+                );
+                taskPersistencePort.save(task);
+                return task;
+            }).toList();
+            return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
+        }).toList();
 
         SprintDetail sprintDetail = SprintDetail.builder()
                 .sprint(sprint)
-                .epics(epicDetails.stream().map(EpicDetail::epic).toList())
+                .epics(updateSprintResponses.stream().map(UpdateSprintResponse::epic).toList())
                 .build();
         redisPort.saveObject(RedisType.SPRINT_INFO, projectId, sprintDetail);
 
-        return epicDetails.stream().map(
-                epicDetail -> UpdateSprintResponse.fromEpicAndTasks(
-                        epicDetail.epic(), epicDetail.tasks()
-                )
-        ).toList();
+        return updateSprintResponses;
     }
 
     public List<UpdateSprintResponse> updateSprint(
