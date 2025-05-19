@@ -2,6 +2,7 @@ package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.http.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
@@ -170,24 +171,12 @@ public class ProjectService {
     }
 
     public void deleteProject(String projectId) {
-        User user = jwtUtil.extractUser();
-        Project project = projectPersistencePort.findById(projectId)
-                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        if(!project.isLeader(user)) {
-            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
-        }
-
+        isAuthorizedLeader(projectId);
         projectPersistencePort.delete(projectId);
     }
 
     public void updateProject(String projectId, UpdateProjectRequest request) {
-        User user = jwtUtil.extractUser();
-        Project project = projectPersistencePort.findById(projectId)
-                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        if(!project.isLeader(user)) {
-            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
-        }
-
+        Project project = isAuthorizedLeader(projectId);
         project.update(
                 request.title(), request.description(),
                 request.endDate(), request.imageUrl()
@@ -196,25 +185,56 @@ public class ProjectService {
     }
 
     public void invite(String projectId, InviteProjectRequest request) {
-        User leader = jwtUtil.extractUser();
-        Project project = projectPersistencePort.findById(projectId)
-                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        if(!project.isLeader(leader)) {
-            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
-        }
+        Project project = isAuthorizedLeader(projectId);
 
         User user = userPersistencePort.findByEmail(request.email())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
         if(request.role().equals(Role.DEVELOPER)) {
-
+            user.addProfile(Profile.init(request.profile(), projectId));
+            project.addMember(user);
+        } else {
+            user.addProfile(Profile.initProductManager(projectId));
+            project.changeProductManager(user);
         }
-        user.addProfile(Profile.init(request.profile(), projectId));
-        project.addMember(user);
 
         userPersistencePort.save(user);
         projectPersistencePort.save(project);
 
         Map<String, Context> contexts = project.toMailContext(user);
         contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
+    }
+
+    public void updateMember(String projectId, String memberId, UpdateMemberRequest request) {
+        User member = isAuthorizedMember(projectId, memberId);
+        member.getProfileByProjectId(projectId).updatePositions(request.positions());
+        userPersistencePort.save(member);
+    }
+
+    public void deleteMember(String projectId, String memberId) {
+        User member = isAuthorizedMember(projectId, memberId);
+        member.deleteProfileByProjectId(projectId);
+        userPersistencePort.save(member);
+    }
+
+    private User isAuthorizedMember(String projectId, String memberId) {
+        User user = jwtUtil.extractUser();
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        User member = userPersistencePort.findById(memberId)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+        if(!project.isLeader(user) || member.getUserId().equals(user.getUserId())) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
+        return member;
+    }
+
+    private Project isAuthorizedLeader(String projectId) {
+        User leader = jwtUtil.extractUser();
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        if(!project.isLeader(leader)) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
+        return project;
     }
 }

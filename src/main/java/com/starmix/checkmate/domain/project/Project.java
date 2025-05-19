@@ -23,6 +23,7 @@ public class Project {
     private LocalDate endDate;
     private List<User> members;
     private User leader;
+    private User productManager;
     private String imageUrl;
 
     public static Project createTemporaryProject(
@@ -56,6 +57,13 @@ public class Project {
             throw new CustomException("Member Already Exists", HttpStatus.BAD_REQUEST);
         }
         this.members.add(member);
+    }
+
+    public void changeProductManager(User productManager) {
+        if (this.productManager.equals(productManager)) {
+            throw new CustomException("Product Manager Already Exists", HttpStatus.BAD_REQUEST);
+        }
+        this.productManager = productManager;
     }
 
     public Map<String, Context> toMailContext() {
@@ -93,6 +101,10 @@ public class Project {
 
     public Boolean isLeader(User user) {
         return leader.equals(user);
+    }
+
+    public Boolean isProductManager(User user) {
+        return productManager.equals(user);
     }
 
     public void update(
