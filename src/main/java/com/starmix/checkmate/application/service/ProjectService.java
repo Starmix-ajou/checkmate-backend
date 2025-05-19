@@ -34,8 +34,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Service
@@ -50,35 +54,29 @@ public class ProjectService {
 
     public List<ProjectsResponse> getProjects(ProjectStatus status) {
         User user = jwtUtil.extractUser();
+        List<Profile> profiles = Optional.ofNullable(user.getProfiles()).orElse(Collections.emptyList());
 
-        return switch (status) {
-            case ACTIVE -> {
-                List<Project> projects = projectPersistencePort.findActiveProjects(user.getUserId());
-                yield ProjectsResponse.toProjectResponse(user, projects);
-            }
-            case ARCHIVED -> {
-                List<Project> projects = projectPersistencePort.findArchivedProjects(user.getUserId());
-                yield ProjectsResponse.toProjectResponse(user, projects);
-            }
-            case PENDING -> {
-                List<String> pendingProjectIds = user.getProfiles().stream()
-                        .filter(profile -> !profile.getIsActive())
-                        .map(Profile::getProjectId)
-                        .toList();
-                if(pendingProjectIds.isEmpty()) {
-                    yield List.of();
-                }
-
-                List<Project> projects = pendingProjectIds.stream()
-                        .map(projectId -> projectPersistencePort.findById(projectId).orElse(null))
-                        .toList();
-                yield ProjectsResponse.toProjectResponse(user, projects);
-            }
-            case null -> {
-                List<Project> projects = projectPersistencePort.findByMemberIdsContaining(user.getUserId());
-                yield ProjectsResponse.toProjectResponse(user, projects);
-            }
+        List<String> projectIds = switch (status) {
+            case ACTIVE -> filterProjectIds(profiles, Profile::getIsActive);
+            case PENDING -> filterProjectIds(profiles, p -> !p.getIsActive());
+            case ARCHIVED -> profiles.stream()
+                    .map(Profile::getProjectId)
+                    .toList();
+            case null -> profiles.stream()
+                    .map(Profile::getProjectId)
+                    .toList();
         };
+
+        List<Project> projects = projectPersistencePort.findByProjectIds(projectIds);
+
+        if (status == ProjectStatus.ARCHIVED) {
+            LocalDate today = LocalDate.now();
+            projects = projects.stream()
+                    .filter(project -> project.getEndDate().isBefore(today))
+                    .toList();
+        }
+
+        return ProjectsResponse.toProjectResponse(user, projects);
     }
 
     public Project getProject(String projectId) {
@@ -237,4 +235,12 @@ public class ProjectService {
         }
         return project;
     }
+
+    private List<String> filterProjectIds(List<Profile> profiles, Predicate<Profile> predicate) {
+        return profiles.stream()
+                .filter(predicate)
+                .map(Profile::getProjectId)
+                .toList();
+    }
+
 }
