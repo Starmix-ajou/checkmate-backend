@@ -12,6 +12,7 @@ import java.util.List;
 public class Profile {
     private List<String> positions;
     private String projectId;
+    private Role role;
 
     @JsonIgnore
     private Boolean isActive;
@@ -21,7 +22,21 @@ public class Profile {
                 .positions(profileDto.positions())
                 .projectId(projectId)
                 .isActive(false)
+                .role(Role.DEVELOPER)
                 .build();
+    }
+
+    public static Profile initProductManager(String projectId) {
+        return Profile.builder()
+                .positions(List.of(Role.PRODUCT_MANAGER.getDescription()))
+                .projectId(projectId)
+                .isActive(false)
+                .role(Role.PRODUCT_MANAGER)
+                .build();
+    }
+
+    public void updatePositions(List<String> positions) {
+        this.positions = positions;
     }
 
     public void activeProfile() {

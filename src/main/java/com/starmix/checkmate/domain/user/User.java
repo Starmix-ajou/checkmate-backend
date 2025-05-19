@@ -18,7 +18,6 @@ public class User {
     private String email;
     private String profileImageUrl;
     private List<Profile> profiles;
-    private Role role;
 
     public void addProfile(Profile profile) {
         boolean exists = profiles.stream().anyMatch(
@@ -43,7 +42,6 @@ public class User {
                 .name(oAuthUserInfo.name())
                 .profileImageUrl(oAuthUserInfo.profileImage())
                 .profiles(new ArrayList<>())
-                .role(Role.DEVELOPER)
                 .build();
     }
 
@@ -52,6 +50,10 @@ public class User {
                 .filter(profile -> profile.getProjectId().equals(projectId))
                 .findFirst()
                 .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
+    }
+
+    public void deleteProfileByProjectId(String projectId) {
+        profiles.removeIf(profile -> profile.getProjectId().equals(projectId));
     }
 
     @Override

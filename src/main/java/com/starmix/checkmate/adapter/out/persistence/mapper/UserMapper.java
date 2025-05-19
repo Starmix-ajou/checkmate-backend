@@ -3,8 +3,6 @@ package com.starmix.checkmate.adapter.out.persistence.mapper;
 import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.domain.user.User;
 
-import java.time.LocalDateTime;
-
 public class UserMapper {
 
     public static User toDomain(UserEntity userEntity) {
@@ -12,7 +10,6 @@ public class UserMapper {
                 .name(userEntity.getName())
                 .email(userEntity.getEmail())
                 .profiles(userEntity.getProfiles())
-                .role(userEntity.getRole())
                 .profileImageUrl(userEntity.getProfileImageUrl())
                 .userId(userEntity.getId())
                 .build();
@@ -24,7 +21,6 @@ public class UserMapper {
                 .name(user.getName())
                 .email(user.getEmail())
                 .profiles(user.getProfiles())
-                .role(user.getRole())
                 .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }

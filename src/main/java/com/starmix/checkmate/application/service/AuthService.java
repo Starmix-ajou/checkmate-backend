@@ -8,6 +8,7 @@ import com.starmix.checkmate.application.port.out.oauth.GoogleOAuthPort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.domain.project.Project;
+import com.starmix.checkmate.domain.user.Role;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;

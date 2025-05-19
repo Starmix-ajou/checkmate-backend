@@ -3,6 +3,7 @@ package com.starmix.checkmate.adapter.in.http.project;
 import com.starmix.checkmate.adapter.in.common.UserDto;
 import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.http.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
@@ -68,12 +69,31 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{projectId}/invite")
+    @PostMapping("/{projectId}/member")
     public ResponseEntity<Void> invite(
             @PathVariable String projectId,
             @RequestBody InviteProjectRequest request
     ) {
         projectService.invite(projectId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{projectId}/member/{memberId}")
+    public ResponseEntity<Void> updateMember(
+            @PathVariable String projectId,
+            @PathVariable String memberId,
+            @RequestBody UpdateMemberRequest request
+    ) {
+        projectService.updateMember(projectId, memberId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{projectId}/member/{memberId}")
+    public ResponseEntity<Void> deleteMember(
+            @PathVariable String projectId,
+            @PathVariable String memberId
+    ) {
+        projectService.deleteMember(projectId, memberId);
         return ResponseEntity.ok().build();
     }
 }
