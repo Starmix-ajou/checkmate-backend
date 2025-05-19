@@ -21,7 +21,6 @@ public class FeatureEntity extends BaseEntity {
     private String output;
     private String preCondition;
     private String postCondition;
-    private List<Stack> stacks;
     private Integer expectedDays;
     private LocalDate startDate;
     private LocalDate endDate;

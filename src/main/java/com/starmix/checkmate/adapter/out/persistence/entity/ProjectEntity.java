@@ -18,7 +18,6 @@ public class ProjectEntity extends BaseEntity {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<Stack> stacks;
     private List<String> memberIds;
     private String leaderId;
     private String imageUrl;
