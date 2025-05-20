@@ -56,7 +56,18 @@ public class Project {
         if (this.members.contains(member)) {
             throw new CustomException("Member Already Exists", HttpStatus.BAD_REQUEST);
         }
-        this.members.add(member);
+        List<User> existingMembers = new ArrayList<>(this.members);
+        existingMembers.add(member);
+        this.members = existingMembers;
+    }
+
+    public void deleteMember(User member) {
+        if (!this.members.contains(member)) {
+            throw new CustomException("Member Not Exists", HttpStatus.BAD_REQUEST);
+        }
+        List<User> existingMembers = new ArrayList<>(this.members);
+        existingMembers.remove(member);
+        this.members = existingMembers;
     }
 
     public void changeProductManager(User productManager) {

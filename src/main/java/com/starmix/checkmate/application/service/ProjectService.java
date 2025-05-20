@@ -212,6 +212,11 @@ public class ProjectService {
         User member = isAuthorizedMember(projectId, memberId);
         member.deleteProfileByProjectId(projectId);
         userPersistencePort.save(member);
+
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        project.deleteMember(member);
+        projectPersistencePort.save(project);
     }
 
     private User isAuthorizedMember(String projectId, String memberId) {

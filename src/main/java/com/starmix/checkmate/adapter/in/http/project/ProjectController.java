@@ -1,6 +1,5 @@
 package com.starmix.checkmate.adapter.in.http.project;
 
-import com.starmix.checkmate.adapter.in.common.UserDto;
 import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.http.project.request.UpdateMemberRequest;
@@ -8,7 +7,6 @@ import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectReques
 import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
-import com.starmix.checkmate.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +29,7 @@ public class ProjectController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Project> getProjects (
+    public ResponseEntity<Project> getProject (
             @PathVariable String id
     ) {
         Project project = projectService.getProject(id);
