@@ -1,8 +1,10 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
+import com.starmix.checkmate.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -17,7 +19,9 @@ public class ProjectEntity extends BaseEntity {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<String> memberIds;
-    private String leaderId;
+    @DBRef
+    private List<User> members;
+    @DBRef
+    private User leader;
     private String imageUrl;
 }
