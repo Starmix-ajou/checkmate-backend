@@ -73,10 +73,7 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
                 List<Criteria> epicCriteriaList = new ArrayList<>();
 
                 if (epicIds != null && !epicIds.isEmpty()) {
-                    List<ObjectId> epicObjectIds = epicIds.stream()
-                            .map(ObjectId::new)
-                            .toList();
-                    epicCriteriaList.add(Criteria.where("_id").in(epicObjectIds));
+                    epicCriteriaList.add(Criteria.where("_id").in(epicIds));
                 }
 
                 if (projectId != null) {
@@ -94,11 +91,9 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
                     return Collections.emptyList();
                 }
 
-                List<ObjectId> epicObjectIds = epics.stream()
-                        .map(e -> new ObjectId(e.getId()))
-                        .toList();
+                List<String> epicEntityIds = epics.stream().map(EpicEntity::getId).toList();
 
-                taskCriteriaList.add(Criteria.where("epic.$id").in(epicObjectIds));
+                taskCriteriaList.add(Criteria.where("epic.$id").in(epicEntityIds));
             }
 
             if (assigneeEmails != null && !assigneeEmails.isEmpty()) {
@@ -145,7 +140,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             return taskEntities.stream()
                     .map(TaskMapper::toDomain)
                     .toList();
-
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -164,11 +158,8 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
                     return Collections.emptyList();
                 }
 
-                List<ObjectId> epicObjectIds = epics.stream()
-                        .map(e -> new ObjectId(e.getId()))
-                        .toList();
-
-                taskCriteriaList.add(Criteria.where("epic.$id").in(epicObjectIds));
+                List<String> epicIds = epics.stream().map(EpicEntity::getId).toList();
+                taskCriteriaList.add(Criteria.where("epic.$id").in(epicIds));
             }
 
             if (assigneeId != null) {
@@ -182,7 +173,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
             List<TaskEntity> taskEntities = mongoTemplate.find(taskQuery, TaskEntity.class);
             return taskEntities.stream().map(TaskMapper::toDomain).toList();
-
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -210,10 +200,7 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
                     return Collections.emptyList();
                 }
 
-                List<ObjectId> epicIds = epics.stream()
-                        .map(e -> new ObjectId(e.getId()))
-                        .toList();
-
+                List<String> epicIds = epics.stream().map(EpicEntity::getId).toList();
                 criteriaList.add(Criteria.where("epic.$id").in(epicIds));
             }
 
@@ -221,7 +208,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             List<TaskEntity> tasks = mongoTemplate.find(query, TaskEntity.class);
 
             return tasks.stream().map(TaskMapper::toDomain).toList();
-
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

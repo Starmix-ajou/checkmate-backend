@@ -7,10 +7,10 @@ public class EpicMapper {
 
     public static Epic toDomain(EpicEntity entity) {
         return Epic.builder()
+                .epicId(entity.getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .projectId(entity.getProjectId())
-                .epicId(entity.getId())
                 .build();
     }
 

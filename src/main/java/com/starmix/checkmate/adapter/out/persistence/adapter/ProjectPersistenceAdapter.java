@@ -50,9 +50,7 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
             Query epicQuery = new Query(Criteria.where("projectId").is(projectId));
             List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
 
-            List<ObjectId> epicIds = epics.stream()
-                    .map(e -> new ObjectId(e.getId()))
-                    .toList();
+            List<String> epicIds = epics.stream().map(EpicEntity::getId).toList();
 
             if (!epicIds.isEmpty()) {
                 Query taskQuery = new Query(Criteria.where("epic.$id").in(epicIds));

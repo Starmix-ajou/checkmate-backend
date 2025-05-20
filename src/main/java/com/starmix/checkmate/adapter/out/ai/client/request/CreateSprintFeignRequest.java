@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.out.ai.client.response;
+package com.starmix.checkmate.adapter.out.ai.client.request;
 
 import lombok.Builder;
 

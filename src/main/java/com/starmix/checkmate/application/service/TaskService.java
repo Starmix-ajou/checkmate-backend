@@ -118,8 +118,7 @@ public class TaskService {
                                 .filter(task -> !task.getStartDate().isAfter(date) && !task.getEndDate().isBefore(date))
                                 .toList(),
                         date
-                ))
-                .toList();
+                )).toList();
     }
 
     public TaskCountResponse getTaskCount(String projectId) {

@@ -10,11 +10,4 @@ public record CreateSprintTestRequest(
         String projectId,
         LocalDate startDate,
         LocalDate endDate
-) {
-    public Sprint toDomain(Integer sequence) {
-        return Sprint.create(
-                this.title, this.description, sequence,
-                this.projectId, this.startDate, this.endDate
-        );
-    }
-}
+) { }

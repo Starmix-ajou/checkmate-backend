@@ -139,7 +139,7 @@ public class ProjectService {
             projectPersistencePort.save(project);
 
             response.features().forEach(feature -> {
-                Epic epic = Epic.fromFeature(feature);
+                Epic epic = Epic.fromFeature(feature, project.getProjectId());
                 epicPersistencePort.save(epic);
             });
 

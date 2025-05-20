@@ -2,6 +2,7 @@ package com.starmix.checkmate.adapter.out.ai.client;
 
 import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureDefinitionFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecificationFeignRequest;
+import com.starmix.checkmate.adapter.out.ai.client.request.CreateSprintFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.*;
 import org.springframework.cloud.openfeign.FeignClient;

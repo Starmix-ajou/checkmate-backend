@@ -19,7 +19,6 @@ public class Sprint {
     private String projectId;
     private LocalDate startDate;
     private LocalDate endDate;
-
     @Builder.Default
     private List<Epic> epics = new ArrayList<>();
 
@@ -37,11 +36,10 @@ public class Sprint {
                 .projectId(projectId)
                 .startDate(startDate)
                 .endDate(endDate)
-                .epics(new ArrayList<>())
                 .build();
     }
 
     public void addEpic(Epic epic) {
-        epics.add(epic);
+        this.epics.add(epic);
     }
 }

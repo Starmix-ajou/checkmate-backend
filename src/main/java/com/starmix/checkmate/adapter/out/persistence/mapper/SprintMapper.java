@@ -3,6 +3,9 @@ package com.starmix.checkmate.adapter.out.persistence.mapper;
 import com.starmix.checkmate.adapter.out.persistence.entity.SprintEntity;
 import com.starmix.checkmate.domain.sprint.Sprint;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class SprintMapper {
     public static Sprint toDomain(SprintEntity entity) {
         return Sprint.builder()
@@ -15,7 +18,7 @@ public class SprintMapper {
                 .sprintId(entity.getId())
                 .epics(entity.getEpics().stream().map(
                         EpicMapper::toDomain
-                ).toList())
+                ).collect(Collectors.toCollection(ArrayList::new)))
                 .build();
     }
 

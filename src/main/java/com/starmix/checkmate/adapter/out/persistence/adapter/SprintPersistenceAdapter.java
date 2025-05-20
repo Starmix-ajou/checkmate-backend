@@ -51,9 +51,9 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
     }
 
     @Override
-    public Integer getNextSequence() {
+    public Integer getNextSequence(String projectId) {
         try {
-            long sequence = sprintMongoRepository.count();
+            long sequence = sprintMongoRepository.countByProjectId(projectId);
             return (int) sequence + 1;
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -27,14 +27,14 @@ public class Epic {
                 .build();
     }
 
-    public static Epic fromFeature(Feature feature) {
+    public static Epic fromFeature(Feature feature, String projectId) {
         String epicId = UUID.randomUUID().toString();
 
         return Epic.builder()
                 .epicId(epicId)
                 .title(feature.getName())
                 .description(feature.getUseCase())
-                .projectId(feature.getProjectId())
+                .projectId(projectId)
                 .build();
     }
 }
