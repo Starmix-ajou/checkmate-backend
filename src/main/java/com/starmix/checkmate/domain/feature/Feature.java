@@ -1,13 +1,11 @@
 package com.starmix.checkmate.domain.feature;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.starmix.checkmate.domain.common.Stack;
 import com.starmix.checkmate.domain.task.Priority;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Builder(toBuilder = true)

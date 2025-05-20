@@ -38,7 +38,7 @@ public class SprintService {
 
     public List<UpdateSprintResponse> createSprint(String projectId, CreateSprintRequest request) {
         CreateSprintFeignResponse response = aIPort.createSprint(projectId, request.pendingTaskIds());
-        Integer sequence = sprintPersistencePort.getNextSequence();
+        Integer sequence = sprintPersistencePort.getNextSequence(projectId);
 
         Sprint sprint = Sprint.create(
                 response.sprint().title(), response.sprint().description(), sequence,

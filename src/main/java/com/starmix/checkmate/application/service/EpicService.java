@@ -27,14 +27,9 @@ public class EpicService {
     @Transactional
     public void createEpic(String projectId, CreateEpicRequest request) {
         Sprint sprint = sprintPersistencePort.findCurrentSprint(projectId)
-                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
 
-        Epic epic = Epic.builder()
-                .title(request.title())
-                .title(request.title())
-                .description(request.description())
-                .projectId(projectId)
-                .build();
+        Epic epic = Epic.create(request.title(), request.description(), projectId);
         epicPersistencePort.save(epic);
 
         sprint.addEpic(epic);

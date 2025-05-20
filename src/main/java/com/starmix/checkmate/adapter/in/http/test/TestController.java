@@ -20,8 +20,11 @@ public class TestController {
     public ResponseEntity<Sprint> createSprintTest (
             @RequestBody CreateSprintTestRequest request
     ) {
-        Integer sequence = sprintPersistencePort.getNextSequence();
-        Sprint sprint = request.toDomain(sequence);
+        Integer sequence = sprintPersistencePort.getNextSequence(request.projectId());
+        Sprint sprint =  Sprint.create(
+                request.title(), request.description(), sequence,
+                request.projectId(), request.startDate(), request.endDate()
+        );
         sprintPersistencePort.save(sprint);
         return ResponseEntity.ok().body(sprint);
     }

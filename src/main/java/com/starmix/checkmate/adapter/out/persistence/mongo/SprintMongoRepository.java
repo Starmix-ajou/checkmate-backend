@@ -1,7 +1,6 @@
 package com.starmix.checkmate.adapter.out.persistence.mongo;
 
 import com.starmix.checkmate.adapter.out.persistence.entity.SprintEntity;
-import com.starmix.checkmate.domain.sprint.Sprint;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +14,5 @@ public interface SprintMongoRepository extends MongoRepository<SprintEntity, Str
     Optional<SprintEntity> findByProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
             String projectId, LocalDate startDate, LocalDate endDate
     );
+    long countByProjectId(String projectId);
 }
