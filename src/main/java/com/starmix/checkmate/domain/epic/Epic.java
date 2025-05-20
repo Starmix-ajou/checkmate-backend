@@ -13,6 +13,7 @@ public class Epic {
     private String title;
     private String description;
     private String projectId;
+    private String featureId;
 
     public static Epic create(
             String title, String description, String projectId
@@ -35,6 +36,7 @@ public class Epic {
                 .title(feature.getName())
                 .description(feature.getUseCase())
                 .projectId(projectId)
+                .featureId(feature.getFeatureId())
                 .build();
     }
 }
