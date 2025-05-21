@@ -5,8 +5,10 @@ import com.starmix.checkmate.adapter.out.persistence.mapper.EpicMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.EpicMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
+import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ public class EpicPersistenceAdapter implements EpicPersistencePort {
 
     private final EpicMongoRepository epicMongoRepository;
     private final SprintPersistencePort sprintPersistencePort;
+    private final TaskPersistencePort taskPersistencePort;
 
     @Override
     public List<Epic> filterEpics(String projectId, String sprintId) {
@@ -31,7 +34,12 @@ public class EpicPersistenceAdapter implements EpicPersistencePort {
                         .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
             }
             List<EpicEntity> epicEntities = epicMongoRepository.findAllByProjectId(projectId);
-            return epicEntities.stream().map(EpicMapper::toDomain).toList();
+            return epicEntities.stream().map(entity -> {
+                List<Task> tasks = taskPersistencePort.findAllByEpicId(entity.getId());
+                Epic epic = EpicMapper.toDomain(entity);
+                epic.updateDates(tasks);
+                return epic;
+            }).toList();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -41,7 +49,12 @@ public class EpicPersistenceAdapter implements EpicPersistencePort {
     public Optional<Epic> findById(String id) {
         try {
             Optional<EpicEntity> epicEntity = epicMongoRepository.findById(id);
-            return epicEntity.map(EpicMapper::toDomain);
+            return epicEntity.map(entity -> {
+                List<Task> tasks = taskPersistencePort.findAllByEpicId(entity.getId());
+                Epic epic = EpicMapper.toDomain(entity);
+                epic.updateDates(tasks);
+                return epic;
+            });
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
