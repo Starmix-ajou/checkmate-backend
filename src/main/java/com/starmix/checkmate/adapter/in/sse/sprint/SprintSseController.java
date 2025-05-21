@@ -21,12 +21,12 @@ public class SprintSseController {
     @PostMapping
     public void createSprint(@RequestParam String projectId, @RequestBody CreateSprintRequest request) {
         List<UpdateSprintResponse> response = sprintService.createSprint(projectId, request);
-        sseEmitterManager.sendEvent("create-feature-definition", response);
+        sseEmitterManager.sendEvent("create-sprint", response);
     }
 
     @PutMapping
     public void updateSprint(@RequestParam String projectId, @RequestBody List<UpdateSprintRequest> request) {
         List<UpdateSprintResponse> response = sprintService.updateSprint(projectId, request);
-        sseEmitterManager.sendEvent("feedback-feature-definition", response);
+        sseEmitterManager.sendEvent("feedback-sprint", response);
     }
 }
