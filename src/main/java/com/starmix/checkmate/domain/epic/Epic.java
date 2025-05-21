@@ -1,10 +1,13 @@
 package com.starmix.checkmate.domain.epic;
 
 import com.starmix.checkmate.domain.feature.Feature;
+import com.starmix.checkmate.domain.task.Task;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Builder(toBuilder = true)
@@ -44,7 +47,19 @@ public class Epic {
                 .build();
     }
 
-    public void updateDates(LocalDate startDate, LocalDate endDate) {
+    public void updateDates(List<Task> tasks) {
+        LocalDate startDate = tasks.stream()
+                .map(Task::getStartDate)
+                .filter(Objects::nonNull)
+                .min(LocalDate::compareTo)
+                .orElse(null);
+
+        LocalDate endDate = tasks.stream()
+                .map(Task::getEndDate)
+                .filter(Objects::nonNull)
+                .max(LocalDate::compareTo)
+                .orElse(null);
+
         this.startDate = startDate;
         this.endDate = endDate;
     }

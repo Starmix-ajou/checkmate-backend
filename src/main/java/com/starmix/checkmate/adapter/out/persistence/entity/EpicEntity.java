@@ -16,6 +16,4 @@ public class EpicEntity extends BaseEntity {
     private String description;
     private String projectId;
     private String featureId;
-    private LocalDate startDate;
-    private LocalDate endDate;
 }
