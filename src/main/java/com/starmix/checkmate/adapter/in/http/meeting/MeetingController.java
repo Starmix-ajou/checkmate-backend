@@ -28,4 +28,10 @@ public class MeetingController {
         Meeting meeting = meetingService.createMeeting(projectId);
         return ResponseEntity.ok().body(meeting);
     }
+
+    @DeleteMapping("/{meetingId}")
+    public ResponseEntity<Void> deleteMeeting(@PathVariable String meetingId) {
+        meetingService.deleteMeeting(meetingId);
+        return ResponseEntity.ok().build();
+    }
 }

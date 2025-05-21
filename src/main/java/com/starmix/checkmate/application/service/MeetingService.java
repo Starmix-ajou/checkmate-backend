@@ -47,4 +47,8 @@ public class MeetingService {
         meetingPersistencePort.save(meeting);
         return meeting;
     }
+
+    public void deleteMeeting(String meetingId) {
+        meetingPersistencePort.delete(meetingId);
+    }
 }
