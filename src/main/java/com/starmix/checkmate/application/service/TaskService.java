@@ -50,7 +50,7 @@ public class TaskService {
         return tasks.stream().map(
                 task -> {
                     Epic epic = task.getEpic();
-                    Sprint sprint = findSprintByTask(projectId, task.getEndDate());
+                    Sprint sprint = findSprintByEpic(epic);
                     EpicDto epicDto = EpicDto.fromDomain(epic, sprint);
                     return TaskDto.fromDomain(task, epicDto);
                 }
@@ -60,7 +60,7 @@ public class TaskService {
     public TaskDto getTask(String taskId) {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
-        Sprint sprint = findSprintByTask(task.getEpic().getProjectId(), task.getEndDate());
+        Sprint sprint = findSprintByEpic(task.getEpic());
         EpicDto epicDto = EpicDto.fromDomain(task.getEpic(), sprint);
         return TaskDto.fromDomain(task, epicDto);
     }
@@ -69,11 +69,16 @@ public class TaskService {
     public void createTask(CreateTaskRequest request) {
         User assignee = userPersistencePort.findByEmail(request.assigneeEmail())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-        Epic epic = epicPersistencePort.findById(request.epicId())
-                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+
+        // TODO: 중간 데모 이후 수정
+//        Epic epic = epicPersistencePort.findById(request.epicId())
+//                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+
+        List<Epic> epics = epicPersistencePort.filterEpics(request.projectId(), null);
+
         Task task = Task.create(
                 request.title(), request.description(), request.status(), assignee,
-                request.startDate(), request.endDate(), request.priority(), epic
+                request.startDate(), request.endDate(), request.priority(), epics.getFirst()
         );
 
         taskPersistencePort.save(task);
@@ -127,14 +132,12 @@ public class TaskService {
         return TaskCountResponse.fromDomain(tasks);
     }
 
-    private Sprint findSprintByTask(String projectId, LocalDate endDate) {
+    private Sprint findSprintByEpic(Epic epic) {
         LocalDate today = LocalDate.now();
-        if(today.isAfter(endDate)) {
-            return sprintPersistencePort.findSprintByDate(projectId, endDate)
-                    .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
-        } else {
-            return sprintPersistencePort.findCurrentSprint(projectId)
-                    .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
-        }
+        List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(epic.getEpicId());
+        return sprints.stream()
+                .filter(sprint -> !today.isBefore(sprint.getStartDate()) && !today.isAfter(sprint.getEndDate()))
+                .findFirst()
+                .orElse(null);
     }
 }

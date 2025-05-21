@@ -73,17 +73,6 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
     }
 
     @Override
-    public Optional<Sprint> findSprintByDate(String projectId, LocalDate date) {
-        try {
-            Optional<SprintEntity> sprintEntity = sprintMongoRepository
-                    .findByProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(projectId, date, date);
-            return sprintEntity.map(SprintMapper::toDomain);
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
     public List<Sprint> findSprintByEpicId(String epicId) {
         try {
             List<SprintEntity> sprintEntities = sprintMongoRepository.findByEpics_Id(epicId);

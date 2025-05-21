@@ -19,9 +19,9 @@ public enum Priority {
             throw new IllegalArgumentException("priorityNum cannot be null");
         }
 
-        if (priorityNum < 100) {
+        if (priorityNum <= 100) {
             return LOW;
-        } else if (priorityNum < 200) {
+        } else if (priorityNum <= 200) {
             return MEDIUM;
         } else {
             return HIGH;
