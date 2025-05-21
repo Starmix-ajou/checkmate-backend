@@ -9,4 +9,5 @@ public interface MeetingPersistencePort {
     List<Meeting> findAllByProjectId(String projectId);
     String save(Meeting meeting);
     Optional<Meeting> findById(String id);
+    void delete(String id);
 }

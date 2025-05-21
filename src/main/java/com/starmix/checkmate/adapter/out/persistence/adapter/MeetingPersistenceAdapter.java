@@ -48,4 +48,13 @@ public class MeetingPersistenceAdapter implements MeetingPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public void delete(String id) {
+        try {
+            meetingMongoRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
