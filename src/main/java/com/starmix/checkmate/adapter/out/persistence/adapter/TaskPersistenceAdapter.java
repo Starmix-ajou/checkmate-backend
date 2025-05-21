@@ -67,34 +67,33 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             LocalDate startDate, LocalDate endDate, List<Status> status
     ) {
         try {
-            List<Criteria> taskCriteriaList = new ArrayList<>();
-
-            if (epicIds != null || projectId != null || sprintIds != null) {
-                List<Criteria> epicCriteriaList = new ArrayList<>();
-
-                if (epicIds != null && !epicIds.isEmpty()) {
-                    epicCriteriaList.add(Criteria.where("_id").in(epicIds));
-                }
-
-                if (projectId != null) {
-                    epicCriteriaList.add(Criteria.where("projectId").is(projectId));
-                }
-
-                if (sprintIds != null && !sprintIds.isEmpty()) {
-                    epicCriteriaList.add(Criteria.where("sprintId").in(sprintIds));
-                }
-
-                Query epicQuery = new Query(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
-                List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
-
-                if (epics.isEmpty()) {
-                    return Collections.emptyList();
-                }
-
-                List<String> epicEntityIds = epics.stream().map(EpicEntity::getId).toList();
-
-                taskCriteriaList.add(Criteria.where("epic.$id").in(epicEntityIds));
+            if (projectId == null) {
+                throw new CustomException("projectId는 필수입니다.", HttpStatus.BAD_REQUEST);
             }
+
+            List<Criteria> epicCriteriaList = new ArrayList<>();
+            epicCriteriaList.add(Criteria.where("projectId").is(projectId));
+
+            if (epicIds != null && !epicIds.isEmpty()) {
+                epicCriteriaList.add(Criteria.where("_id").in(epicIds));
+            }
+
+            if (sprintIds != null && !sprintIds.isEmpty()) {
+                epicCriteriaList.add(Criteria.where("sprintId").in(sprintIds));
+            }
+
+            Query epicQuery = new Query(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
+            List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
+            if (epics.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            List<String> epicIdsForTasks = epics.stream()
+                    .map(EpicEntity::getId)
+                    .toList();
+
+            List<Criteria> taskCriteriaList = new ArrayList<>();
+            taskCriteriaList.add(Criteria.where("epic.$id").in(epicIdsForTasks));
 
             if (assigneeEmails != null && !assigneeEmails.isEmpty()) {
                 Query userQuery = new Query(Criteria.where("email").in(assigneeEmails));
@@ -131,15 +130,13 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             }
 
             Query taskQuery = new Query();
-            if (!taskCriteriaList.isEmpty()) {
-                taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
-            }
+            taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
 
             List<TaskEntity> taskEntities = mongoTemplate.find(taskQuery, TaskEntity.class);
-
             return taskEntities.stream()
                     .map(TaskMapper::toDomain)
                     .toList();
+
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

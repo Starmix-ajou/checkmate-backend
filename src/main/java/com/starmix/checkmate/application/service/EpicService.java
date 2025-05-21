@@ -34,7 +34,7 @@ public class EpicService {
                     return EpicResponse.fromDomain(
                             epic, tasks,
                             sprints.stream().max(Comparator.comparing(Sprint::getSequence))
-                                    .orElseThrow(() -> new CustomException("Sprint not found in Comparator", HttpStatus.NOT_FOUND))
+                                    .orElse(null)
                     );
                 }
         ).toList();

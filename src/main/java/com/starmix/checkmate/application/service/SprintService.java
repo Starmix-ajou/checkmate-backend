@@ -50,12 +50,10 @@ public class SprintService {
             List<Task> tasks = epicWithFeatures.tasks().stream().map(taskBrief -> {
                 User assignee = userPersistencePort.findById(taskBrief.assigneeId())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-                Task task = Task.init(
+                return Task.init(
                         taskBrief.title(), taskBrief.description(), assignee, taskBrief.startDate(),
                         taskBrief.endDate(), Priority.getPriority(taskBrief.priority()), epic
                 );
-                taskPersistencePort.save(task);
-                return task;
             }).toList();
             return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
         }).toList();
@@ -81,8 +79,8 @@ public class SprintService {
                     task -> {
                         User assignee = userPersistencePort.findByEmail(task.assigneeEmail())
                                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
-                        Task createdTask = Task.create(
-                                task.title(), task.description(), task.status(), assignee,
+                        Task createdTask = Task.init(
+                                task.title(), task.description(), assignee,
                                 task.startDate(), task.endDate(), task.priority(), epic
                         );
                         taskPersistencePort.save(createdTask);
