@@ -212,4 +212,14 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public List<Task> findAllByEpicId(String epicId) {
+        try {
+            List<TaskEntity> taskEntities = taskMongoRepository.findByEpic_Id(epicId);
+            return taskEntities.stream().map(TaskMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

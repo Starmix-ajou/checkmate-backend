@@ -19,4 +19,5 @@ public interface TaskPersistencePort {
     );
     List<Task> findByAssigneeId(String projectId, String assigneeId);
     List<Task> findMyTasksByStartDateAndEndDate(String projectId, String assigneeId, LocalDate startDate, LocalDate endDate);
+    List<Task> findAllByEpicId(String epicId);
 }

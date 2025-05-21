@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.http.epic;
 
 import com.starmix.checkmate.adapter.in.http.epic.request.CreateEpicRequest;
+import com.starmix.checkmate.adapter.in.http.epic.response.EpicResponse;
 import com.starmix.checkmate.application.service.EpicService;
 import com.starmix.checkmate.domain.epic.Epic;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +19,26 @@ public class EpicController {
     private final EpicService epicService;
 
     @GetMapping
-    public ResponseEntity<List<Epic>> getEpicsByProjectId (
-            @RequestParam String projectId
+    public ResponseEntity<List<EpicResponse>> getEpics (
+            @RequestParam String projectId,
+            @RequestParam(required = false) String sprintId
     ) {
-        List<Epic> epics = epicService.getEpicsByProjectId(projectId);
+        List<EpicResponse> epics = epicService.getEpics(projectId, sprintId);
         return ResponseEntity.ok().body(epics);
     }
 
-    @Transactional
     @PostMapping
     public ResponseEntity<Void> createEpic(
             @RequestParam String projectId,
             @RequestBody CreateEpicRequest request
     ) {
         epicService.createEpic(projectId, request);
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{epicId}")
+    public ResponseEntity<Void> deleteEpic(@PathVariable String epicId) {
+        epicService.deleteEpic(epicId);
+        return ResponseEntity.ok().build();
     }
 }

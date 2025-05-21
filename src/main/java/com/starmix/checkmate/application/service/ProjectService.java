@@ -35,10 +35,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -109,9 +106,7 @@ public class ProjectService {
 
     public CreateFeatureSpecificationResponse createFeatureSpecification() {
         String email = jwtUtil.extractEmail();
-
         List<Feature> features = aiPort.createFeatureSpecification(email);
-
         return CreateFeatureSpecificationResponse.builder()
                 .features(features)
                 .build();
@@ -242,10 +237,12 @@ public class ProjectService {
     }
 
     private List<String> filterProjectIds(List<Profile> profiles, Predicate<Profile> predicate) {
+        if (profiles == null || predicate == null) return Collections.emptyList();
+
         return profiles.stream()
                 .filter(predicate)
                 .map(Profile::getProjectId)
+                .filter(Objects::nonNull)
                 .toList();
     }
-
 }

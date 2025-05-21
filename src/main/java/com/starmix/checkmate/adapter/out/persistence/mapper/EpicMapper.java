@@ -12,6 +12,8 @@ public class EpicMapper {
                 .description(entity.getDescription())
                 .projectId(entity.getProjectId())
                 .featureId(entity.getFeatureId())
+                .startDate(entity.getStartDate())
+                .endDate(entity.getEndDate())
                 .build();
     }
 
@@ -22,6 +24,8 @@ public class EpicMapper {
                 .description(domain.getDescription())
                 .projectId(domain.getProjectId())
                 .featureId(domain.getFeatureId())
+                .startDate(domain.getStartDate())
+                .endDate(domain.getEndDate())
                 .build();
     }
 }

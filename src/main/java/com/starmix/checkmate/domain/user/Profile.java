@@ -15,13 +15,13 @@ public class Profile {
     private Role role;
 
     @JsonIgnore
-    private Boolean isActive;
+    @Builder.Default
+    private Boolean isActive = false;
 
     public static Profile init(ProfileDto profileDto, String projectId) {
         return Profile.builder()
                 .positions(profileDto.positions())
                 .projectId(projectId)
-                .isActive(false)
                 .role(Role.DEVELOPER)
                 .build();
     }
@@ -30,7 +30,6 @@ public class Profile {
         return Profile.builder()
                 .positions(List.of(Role.PRODUCT_MANAGER.getDescription()))
                 .projectId(projectId)
-                .isActive(false)
                 .role(Role.PRODUCT_MANAGER)
                 .build();
     }
@@ -41,9 +40,5 @@ public class Profile {
 
     public void activeProfile() {
         this.isActive = true;
-    }
-
-    public void inactiveProfile() {
-        this.isActive = false;
     }
 }

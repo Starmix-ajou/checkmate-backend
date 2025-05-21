@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+
 @Document(collection = "epics")
 @Getter
 @SuperBuilder
@@ -14,4 +16,6 @@ public class EpicEntity extends BaseEntity {
     private String description;
     private String projectId;
     private String featureId;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

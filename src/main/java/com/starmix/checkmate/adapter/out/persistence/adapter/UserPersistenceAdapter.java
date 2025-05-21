@@ -24,7 +24,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
             Optional<UserEntity> userEntity = userMongoRepository.findByEmail(email);
             return userEntity.map(UserMapper::toDomain);
         } catch (Exception e) {
-            throw new CustomException("UserPersistencePort", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -34,7 +34,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
             Optional<UserEntity> userEntity = userMongoRepository.findById(userId);
             return userEntity.map(UserMapper::toDomain);
         } catch (Exception e) {
-            throw new CustomException("UserPersistencePort", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -44,7 +44,7 @@ public class UserPersistenceAdapter implements UserPersistencePort {
             UserEntity userEntity = UserMapper.toEntity(user);
             userMongoRepository.save(userEntity);
         } catch (Exception e) {
-            throw new CustomException("UserPersistencePort", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

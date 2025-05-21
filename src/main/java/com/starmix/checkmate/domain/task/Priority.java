@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Priority {
-    HIGH(200),
-    MEDIUM(100),
-    LOW(0);
+    HIGH(300),
+    MEDIUM(200),
+    LOW(100);
 
     private final Integer priorityNum;
 
@@ -15,11 +15,16 @@ public enum Priority {
     }
 
     public static Priority getPriority(Integer priorityNum) {
-        for (Priority priority : Priority.values()) {
-            if (priority.getPriorityNum().equals(priorityNum)) {
-                return priority;
-            }
+        if (priorityNum == null) {
+            throw new IllegalArgumentException("priorityNum cannot be null");
         }
-        throw new IllegalArgumentException("Invalid priority number: " + priorityNum);
+
+        if (priorityNum < 100) {
+            return LOW;
+        } else if (priorityNum < 200) {
+            return MEDIUM;
+        } else {
+            return HIGH;
+        }
     }
 }
