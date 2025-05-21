@@ -82,4 +82,24 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public List<Sprint> findSprintByEpicId(String epicId) {
+        try {
+            List<SprintEntity> sprintEntities = sprintMongoRepository.findByEpics_Id(epicId);
+            return sprintEntities.stream().map(SprintMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void delete(String id) {
+        try {
+            sprintMongoRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }

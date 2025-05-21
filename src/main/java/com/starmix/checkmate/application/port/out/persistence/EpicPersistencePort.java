@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EpicPersistencePort {
-    List<Epic> findAllByProjectId(String projectId);
+    List<Epic> filterEpics(String projectId, String sprintId);
     Optional<Epic> findById(String id);
     String save(Epic epic);
+    void delete(String id);
 }

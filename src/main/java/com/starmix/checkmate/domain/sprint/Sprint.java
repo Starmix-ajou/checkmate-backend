@@ -1,8 +1,10 @@
 package com.starmix.checkmate.domain.sprint;
 
 import com.starmix.checkmate.domain.epic.Epic;
+import com.starmix.checkmate.global.exception.CustomException;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +42,11 @@ public class Sprint {
     }
 
     public void addEpic(Epic epic) {
-        this.epics.add(epic);
+        if (this.epics.contains(epic)) {
+            throw new CustomException("Epic Already Exists", HttpStatus.BAD_REQUEST);
+        }
+        List<Epic> existingEpics = new ArrayList<>(this.epics);
+        existingEpics.add(epic);
+        this.epics = existingEpics;
     }
 }

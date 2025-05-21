@@ -13,4 +13,6 @@ public interface SprintPersistencePort {
     Integer getNextSequence(String projectId);
     Optional<Sprint> findCurrentSprint(String projectId);
     Optional<Sprint> findSprintByDate(String projectId, LocalDate date);
+    List<Sprint> findSprintByEpicId(String epicId);
+    void delete(String id);
 }
