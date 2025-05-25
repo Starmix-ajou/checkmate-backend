@@ -34,9 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Service
@@ -54,22 +52,17 @@ public class ProjectService {
         List<Profile> profiles = Optional.ofNullable(user.getProfiles()).orElse(Collections.emptyList());
 
         List<String> projectIds = switch (status) {
-            case ACTIVE -> filterProjectIds(profiles, Profile::getIsActive);
-            case PENDING -> filterProjectIds(profiles, p -> !p.getIsActive());
-            case ARCHIVED -> profiles.stream()
-                    .map(Profile::getProjectId)
-                    .toList();
-            case null -> profiles.stream()
-                    .map(Profile::getProjectId)
-                    .toList();
+            case ACTIVE -> Profile.filterProjectIds(profiles, Profile::getIsActive);
+            case PENDING -> Profile.filterProjectIds(profiles, p -> !p.getIsActive());
+            case ARCHIVED -> Profile.filterProjectIds(profiles, p -> true);
+            case null -> Profile.filterProjectIds(profiles, p -> true);
         };
 
         List<Project> projects = projectPersistencePort.findByProjectIds(projectIds);
 
         if (status == ProjectStatus.ARCHIVED) {
-            LocalDate today = LocalDate.now();
             projects = projects.stream()
-                    .filter(project -> project.getEndDate().isBefore(today))
+                    .filter(Project::isArchived)
                     .toList();
         }
 
@@ -220,7 +213,7 @@ public class ProjectService {
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         User member = userPersistencePort.findById(memberId)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-        if(!project.isLeader(user) || member.getUserId().equals(user.getUserId())) {
+        if(!project.canManageMember(user, member)) {
             throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
         }
         return member;
@@ -236,13 +229,4 @@ public class ProjectService {
         return project;
     }
 
-    private List<String> filterProjectIds(List<Profile> profiles, Predicate<Profile> predicate) {
-        if (profiles == null || predicate == null) return Collections.emptyList();
-
-        return profiles.stream()
-                .filter(predicate)
-                .map(Profile::getProjectId)
-                .filter(Objects::nonNull)
-                .toList();
-    }
 }

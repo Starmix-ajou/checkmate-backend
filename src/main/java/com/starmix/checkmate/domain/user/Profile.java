@@ -5,7 +5,10 @@ import com.starmix.checkmate.adapter.in.common.ProfileDto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 @Builder(toBuilder = true)
 @Getter
@@ -40,5 +43,15 @@ public class Profile {
 
     public void activeProfile() {
         this.isActive = true;
+    }
+
+    public static List<String> filterProjectIds(List<Profile> profiles, Predicate<Profile> predicate) {
+        if (profiles == null || predicate == null) return Collections.emptyList();
+
+        return profiles.stream()
+                .filter(predicate)
+                .map(Profile::getProjectId)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

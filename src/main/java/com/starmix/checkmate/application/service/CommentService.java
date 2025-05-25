@@ -42,23 +42,23 @@ public class CommentService {
     }
 
     public void updateComment(String commentId, CommentRequest request) {
-        Comment comment = isAuthorizedAuthor(commentId);
+        User user = jwtUtil.extractUser();
+        Comment comment = commentPersistencePort.findById(commentId)
+                .orElseThrow(() -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
+        if(!comment.isAuthor(user)) {
+            throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
+        }
         comment.updateMessage(request.message());
         commentPersistencePort.save(comment);
     }
 
     public void deleteComment(String commentId) {
-        isAuthorizedAuthor(commentId);
-        commentPersistencePort.delete(commentId);
-    }
-
-    private Comment isAuthorizedAuthor(String commentId) {
         User user = jwtUtil.extractUser();
         Comment comment = commentPersistencePort.findById(commentId)
                 .orElseThrow(() -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
-        if(!comment.getAuthor().equals(user)) {
+        if(!comment.isAuthor(user)) {
             throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
         }
-        return comment;
+        commentPersistencePort.delete(commentId);
     }
 }

@@ -116,9 +116,7 @@ public class TaskService {
 
         return startOfWeek.datesUntil(endOfWeek.plusDays(1))
                 .map(date -> TaskScheduleResponse.fromDomain(
-                        tasks.stream()
-                                .filter(task -> !task.getStartDate().isAfter(date) && !task.getEndDate().isBefore(date))
-                                .toList(),
+                        Task.filterByDate(tasks, date),
                         date
                 )).toList();
     }
@@ -130,11 +128,7 @@ public class TaskService {
     }
 
     private Sprint findSprintByEpic(Epic epic) {
-        LocalDate today = LocalDate.now();
         List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(epic.getEpicId());
-        return sprints.stream()
-                .filter(sprint -> !today.isBefore(sprint.getStartDate()) && !today.isAfter(sprint.getEndDate()))
-                .findFirst()
-                .orElse(null);
+        return epic.findCurrentSprint(sprints);
     }
 }
