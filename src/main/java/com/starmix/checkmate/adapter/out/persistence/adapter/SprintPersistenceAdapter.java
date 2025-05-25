@@ -65,7 +65,7 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
         try {
             LocalDate today = LocalDate.now();
             Optional<SprintEntity> sprintEntity = sprintMongoRepository
-                    .findByProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(projectId, today, today);
+                    .findTopByProjectIdOrderBySequenceDesc(projectId);
             return sprintEntity.map(SprintMapper::toDomain);
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

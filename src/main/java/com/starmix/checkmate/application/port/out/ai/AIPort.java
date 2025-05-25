@@ -7,6 +7,7 @@ import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AIPort {
@@ -14,5 +15,5 @@ public interface AIPort {
     FeedbackDto feedbackFeatureDefinition(String email, String feedback);
     List<Feature> createFeatureSpecification(String email);
     FeedbackDto feedbackFeatureSpecification(String email, FeedbackFeatureSpecificationRequest feedback);
-    CreateSprintFeignResponse createSprint(String projectId, List<String> pendingTaskIds);
+    CreateSprintFeignResponse createSprint(String projectId, List<String> pendingTaskIds, LocalDate startDate);
 }

@@ -12,9 +12,7 @@ import java.util.Optional;
 @Repository
 public interface SprintMongoRepository extends MongoRepository<SprintEntity, String> {
     List<SprintEntity> findAllByProjectId(String projectId);
-    Optional<SprintEntity> findByProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-            String projectId, LocalDate startDate, LocalDate endDate
-    );
+    Optional<SprintEntity> findTopByProjectIdOrderBySequenceDesc(String projectId);
     long countByProjectId(String projectId);
     List<SprintEntity> findByEpics_Id(String epicId);
 }
