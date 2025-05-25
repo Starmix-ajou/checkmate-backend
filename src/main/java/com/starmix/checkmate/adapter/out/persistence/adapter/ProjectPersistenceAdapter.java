@@ -7,7 +7,6 @@ import com.starmix.checkmate.application.port.out.persistence.ProjectPersistence
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

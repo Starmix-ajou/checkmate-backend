@@ -70,15 +70,12 @@ public class TaskService {
         User assignee = userPersistencePort.findByEmail(request.assigneeEmail())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
 
-        // TODO: 중간 데모 이후 수정
-//        Epic epic = epicPersistencePort.findById(request.epicId())
-//                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
-
-        List<Epic> epics = epicPersistencePort.filterEpics(request.projectId(), null);
+        Epic epic = epicPersistencePort.findById(request.epicId())
+                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
 
         Task task = Task.create(
                 request.title(), request.description(), request.status(), assignee,
-                request.startDate(), request.endDate(), request.priority(), epics.getFirst()
+                request.startDate(), request.endDate(), request.priority(), epic
         );
 
         taskPersistencePort.save(task);

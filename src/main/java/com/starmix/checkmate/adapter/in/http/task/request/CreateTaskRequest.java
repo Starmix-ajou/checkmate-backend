@@ -13,7 +13,5 @@ public record CreateTaskRequest(
         LocalDate startDate,
         LocalDate endDate,
         Priority priority,
-        // TODO: 중간 데모 이후 수정
-        // String epicId,
-        String projectId
+        String epicId
 ) { }
