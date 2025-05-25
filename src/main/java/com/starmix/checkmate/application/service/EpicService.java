@@ -33,8 +33,7 @@ public class EpicService {
                     List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(epic.getEpicId());
                     return EpicResponse.fromDomain(
                             epic, tasks,
-                            sprints.stream().max(Comparator.comparing(Sprint::getSequence))
-                                    .orElse(null)
+                            epic.findLatestSprint(sprints)
                     );
                 }
         ).toList();

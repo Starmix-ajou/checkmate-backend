@@ -127,4 +127,13 @@ public class Project {
         this.endDate = endDate;
         this.imageUrl = imageUrl;
     }
+
+    public boolean isArchived() {
+        LocalDate today = LocalDate.now();
+        return this.endDate != null && this.endDate.isBefore(today);
+    }
+
+    public boolean canManageMember(User user, User member) {
+        return isLeader(user) && !user.equals(member);
+    }
 }

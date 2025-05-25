@@ -31,4 +31,8 @@ public class Comment {
         this.timestamp = LocalDateTime.now();
         this.isModified = true;
     }
+
+    public boolean isAuthor(User user) {
+        return this.author.equals(user);
+    }
 }

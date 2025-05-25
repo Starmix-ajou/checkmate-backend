@@ -25,22 +25,19 @@ public record TaskCountResponse(
                 .tasks(tasks.stream().map(TaskScheduleBrief::fromDomain).toList())
                 .build();
 
-        List<Task> todoTasks = tasks.stream()
-                .filter( task -> task.getStatus().equals(Status.TODO)).toList();
+        List<Task> todoTasks = Task.filterByStatus(tasks, Status.TODO);
         TaskCount todo = TaskCount.builder()
                 .count(todoTasks.size())
                 .tasks(todoTasks.stream().map(TaskScheduleBrief::fromDomain).toList())
                 .build();
 
-        List<Task> inProgressTasks = tasks.stream()
-                .filter( task -> task.getStatus().equals(Status.IN_PROGRESS)).toList();
+        List<Task> inProgressTasks = Task.filterByStatus(tasks, Status.IN_PROGRESS);
         TaskCount inProgress = TaskCount.builder()
                 .count(inProgressTasks.size())
                 .tasks(inProgressTasks.stream().map(TaskScheduleBrief::fromDomain).toList())
                 .build();
 
-        List<Task> doneTasks = tasks.stream()
-                .filter( task -> task.getStatus().equals(Status.DONE)).toList();
+        List<Task> doneTasks = Task.filterByStatus(tasks, Status.DONE);
         TaskCount done = TaskCount.builder()
                 .count(doneTasks.size())
                 .tasks(doneTasks.stream().map(TaskScheduleBrief::fromDomain).toList())

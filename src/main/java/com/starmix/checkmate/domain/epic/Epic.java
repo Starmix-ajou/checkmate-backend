@@ -1,11 +1,13 @@
 package com.starmix.checkmate.domain.epic;
 
 import com.starmix.checkmate.domain.feature.Feature;
+import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -62,5 +64,19 @@ public class Epic {
 
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public Sprint findCurrentSprint(List<Sprint> sprints) {
+        LocalDate today = LocalDate.now();
+        return sprints.stream()
+                .filter(sprint -> !today.isBefore(sprint.getStartDate()) && !today.isAfter(sprint.getEndDate()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Sprint findLatestSprint(List<Sprint> sprints) {
+        return sprints.stream()
+                .max(Comparator.comparing(Sprint::getSequence))
+                .orElse(null);
     }
 }
