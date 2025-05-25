@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -89,11 +90,16 @@ public class AIAdapter implements AIPort {
     }
 
     @Override
-    public CreateSprintFeignResponse createSprint(String projectId, List<String> pendingTaskIds) {
+    public CreateSprintFeignResponse createSprint(
+            String projectId,
+            List<String> pendingTaskIds,
+            LocalDate startDate
+    ) {
         try {
             CreateSprintFeignRequest request = CreateSprintFeignRequest.builder()
                     .projectId(projectId)
                     .pendingTaskIds(pendingTaskIds)
+                    .startDate(startDate)
                     .build();
             return aiFeignClient.createSprint(request);
         } catch (Exception e) {

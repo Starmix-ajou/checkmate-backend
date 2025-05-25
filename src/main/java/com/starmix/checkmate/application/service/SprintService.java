@@ -37,7 +37,13 @@ public class SprintService {
     }
 
     public List<UpdateSprintResponse> createSprint(String projectId, CreateSprintRequest request) {
-        CreateSprintFeignResponse response = aIPort.createSprint(projectId, request.pendingTaskIds());
+        Sprint currentSprint = sprintPersistencePort.findCurrentSprint(projectId)
+                .orElseThrow(() -> new CustomException("Current Sprint not found", HttpStatus.NOT_FOUND));
+        CreateSprintFeignResponse response = aIPort.createSprint(
+                projectId,
+                request.pendingTaskIds(),
+                currentSprint.getEndDate().plusDays(1)
+        );
         Integer sequence = sprintPersistencePort.getNextSequence(projectId);
 
         Sprint sprint = Sprint.create(
