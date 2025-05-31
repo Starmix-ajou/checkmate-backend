@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.rest.manager.project;
 
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectStatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
 import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;
@@ -50,6 +51,15 @@ public class ProjectManagerController {
             @PathVariable String projectId
     ) {
         ProjectUserResponse response = projectService.getMembers(projectId);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/{projectId}/statistics")
+    public ResponseEntity<ProjectStatisticsResponse> getProjectStatistics (
+            @PathVariable String projectId
+    ) {
+        ProjectStatisticsResponse response =
+                projectService.getProjectStatistics(projectId, Role.PRODUCT_MANAGER);
         return ResponseEntity.ok().body(response);
     }
 }

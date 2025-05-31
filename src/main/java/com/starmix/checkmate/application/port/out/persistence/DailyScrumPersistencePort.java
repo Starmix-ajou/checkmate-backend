@@ -10,4 +10,5 @@ public interface DailyScrumPersistencePort {
     List<DailyScrum> findAllByProjectId(String projectId);
     Optional<DailyScrum> findByTimestampAndProjectId(String projectId, LocalDate timestamp);
     String save(DailyScrum dailyScrum);
+    Integer countByStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
 }

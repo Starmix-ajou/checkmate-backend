@@ -1,6 +1,7 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectStatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
@@ -18,14 +19,14 @@ import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
-import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.*;
+import com.starmix.checkmate.application.port.out.persistence.dto.TaskCountPersistenceDto;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
+import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.Role;
 import com.starmix.checkmate.domain.user.User;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -48,6 +50,9 @@ public class ProjectService {
     private final UserPersistencePort userPersistencePort;
     private final MailPort mailPort;
     private final EpicPersistencePort epicPersistencePort;
+    private final TaskPersistencePort taskPersistencePort;
+    private final SprintPersistencePort sprintPersistencePort;
+    private final DailyScrumPersistencePort dailyScrumPersistencePort;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status, Role role) {
         User user = jwtUtil.extractUser();
@@ -229,6 +234,26 @@ public class ProjectService {
         return ProjectBriefResponse.fromDomain(project);
     }
 
+    public ProjectStatisticsResponse getProjectStatistics(String projectId, Role role) {
+        Sprint sprint = sprintPersistencePort.findCurrentSprint(projectId)
+                .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+
+        TaskCountPersistenceDto taskCounts =
+                taskPersistencePort.countByStartDateAndEndDate(sprint.getStartDate(), sprint.getEndDate());
+
+        Integer doneDays =
+                dailyScrumPersistencePort.countByStartDateAndEndDate(sprint.getStartDate(), sprint.getEndDate());
+        int totalDays = (int) ChronoUnit.DAYS.between(sprint.getStartDate(), sprint.getEndDate()) + 1;
+
+        Integer doneCount = null;
+        if(role.equals(Role.DEVELOPER)) {
+            // TODO: Review 기능 추가 이후 구현
+            doneCount = 0;
+        }
+
+        return ProjectStatisticsResponse.from(taskCounts, doneDays, totalDays, doneCount);
+    }
+
     private User isAuthorizedMember(String projectId, String memberId) {
         User user = jwtUtil.extractUser();
         Project project = projectPersistencePort.findById(projectId)
@@ -250,5 +275,4 @@ public class ProjectService {
         }
         return project;
     }
-
 }

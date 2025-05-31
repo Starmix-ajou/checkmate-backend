@@ -6,23 +6,24 @@ import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.TaskMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.dto.TaskCountPersistenceDto;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -215,6 +216,39 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
         try {
             List<TaskEntity> taskEntities = taskMongoRepository.findByEpic_Id(epicId);
             return taskEntities.stream().map(TaskMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public TaskCountPersistenceDto countByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
+        try {
+            Criteria criteria = Criteria.where("startDate").lte(endDate)
+                    .and("endDate").gte(startDate);
+
+            Aggregation aggregation = Aggregation.newAggregation(
+                    Aggregation.match(criteria),
+                    Aggregation.group("status").count().as("count")
+            );
+
+            AggregationResults<Document> results = mongoTemplate.aggregate(
+                    aggregation, TaskEntity.class, Document.class
+            );
+
+            Map<Status, Integer> statusMap = new EnumMap<>(Status.class);
+            for (Document doc : results.getMappedResults()) {
+                String statusStr = doc.getString("_id");
+                int count = doc.getInteger("count");
+                statusMap.put(Status.valueOf(statusStr), count);
+            }
+
+            return TaskCountPersistenceDto.builder()
+                    .todoCount(statusMap.getOrDefault(Status.TODO, 0))
+                    .inProgressCount(statusMap.getOrDefault(Status.IN_PROGRESS, 0))
+                    .doneCount(statusMap.getOrDefault(Status.DONE, 0))
+                    .totalCount(statusMap.values().stream().mapToInt(Integer::intValue).sum())
+                    .build();
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
