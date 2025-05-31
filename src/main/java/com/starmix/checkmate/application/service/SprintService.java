@@ -1,8 +1,8 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.sse.sprint.request.CreateSprintRequest;
-import com.starmix.checkmate.adapter.in.sse.sprint.request.UpdateSprintRequest;
-import com.starmix.checkmate.adapter.in.sse.sprint.response.UpdateSprintResponse;
+import com.starmix.checkmate.adapter.in.sse.web.sprint.request.CreateSprintRequest;
+import com.starmix.checkmate.adapter.in.sse.web.sprint.request.UpdateSprintRequest;
+import com.starmix.checkmate.adapter.in.sse.web.sprint.response.UpdateSprintResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignResponse;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.adapter.out.redis.dto.SprintDetail;

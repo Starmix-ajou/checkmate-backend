@@ -1,16 +1,16 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.http.project.request.InviteProjectRequest;
-import com.starmix.checkmate.adapter.in.http.project.request.ProjectStatus;
-import com.starmix.checkmate.adapter.in.http.project.request.UpdateMemberRequest;
-import com.starmix.checkmate.adapter.in.http.project.request.UpdateProjectRequest;
-import com.starmix.checkmate.adapter.in.http.project.response.ProjectsResponse;
-import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
-import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
-import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackRequest;
-import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureDefinitionResponse;
-import com.starmix.checkmate.adapter.in.sse.project.response.CreateFeatureSpecificationResponse;
-import com.starmix.checkmate.adapter.in.sse.project.response.FeedbackResponse;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateProjectRequest;
+import com.starmix.checkmate.adapter.in.rest.web.project.response.ProjectsResponse;
+import com.starmix.checkmate.adapter.in.sse.web.project.request.CreateFeatureDefinitionRequest;
+import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
+import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackRequest;
+import com.starmix.checkmate.adapter.in.sse.web.project.response.CreateFeatureDefinitionResponse;
+import com.starmix.checkmate.adapter.in.sse.web.project.response.CreateFeatureSpecificationResponse;
+import com.starmix.checkmate.adapter.in.sse.web.project.response.FeedbackResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.adapter.out.mail.type.MailType;
 import com.starmix.checkmate.adapter.out.redis.RedisType;

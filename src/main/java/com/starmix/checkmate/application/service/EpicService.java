@@ -1,7 +1,7 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.http.epic.request.CreateEpicRequest;
-import com.starmix.checkmate.adapter.in.http.epic.response.EpicResponse;
+import com.starmix.checkmate.adapter.in.rest.web.epic.request.CreateEpicRequest;
+import com.starmix.checkmate.adapter.in.rest.web.epic.response.EpicResponse;
 import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;

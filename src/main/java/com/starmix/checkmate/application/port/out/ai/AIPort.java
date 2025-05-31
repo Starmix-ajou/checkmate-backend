@@ -1,6 +1,6 @@
 package com.starmix.checkmate.application.port.out.ai;
 
-import com.starmix.checkmate.adapter.in.sse.project.request.FeedbackFeatureSpecificationRequest;
+import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.domain.feature.Feature;

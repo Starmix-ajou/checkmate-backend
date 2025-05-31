@@ -1,6 +1,6 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.http.dailyScrum.request.UpdateDailyScrumRequest;
+import com.starmix.checkmate.adapter.in.rest.web.dailyScrum.request.UpdateDailyScrumRequest;
 import com.starmix.checkmate.application.port.out.persistence.DailyScrumPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;

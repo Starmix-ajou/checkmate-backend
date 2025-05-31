@@ -1,11 +1,11 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.common.EpicDto;
-import com.starmix.checkmate.adapter.in.common.TaskDto;
-import com.starmix.checkmate.adapter.in.http.task.request.CreateTaskRequest;
-import com.starmix.checkmate.adapter.in.http.task.request.UpdateTaskRequest;
-import com.starmix.checkmate.adapter.in.http.task.response.TaskCountResponse;
-import com.starmix.checkmate.adapter.in.http.task.response.TaskScheduleResponse;
+import com.starmix.checkmate.adapter.in.rest.web.common.EpicDto;
+import com.starmix.checkmate.adapter.in.rest.web.common.TaskDto;
+import com.starmix.checkmate.adapter.in.rest.web.task.request.CreateTaskRequest;
+import com.starmix.checkmate.adapter.in.rest.web.task.request.UpdateTaskRequest;
+import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskCountResponse;
+import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskScheduleResponse;
 import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;

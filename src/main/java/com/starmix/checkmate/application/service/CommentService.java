@@ -1,8 +1,8 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.common.UserDto;
-import com.starmix.checkmate.adapter.in.http.comment.request.CommentRequest;
-import com.starmix.checkmate.adapter.in.http.comment.response.CommentResponse;
+import com.starmix.checkmate.adapter.in.rest.web.common.UserDto;
+import com.starmix.checkmate.adapter.in.rest.web.comment.request.CommentRequest;
+import com.starmix.checkmate.adapter.in.rest.web.comment.response.CommentResponse;
 import com.starmix.checkmate.application.port.out.persistence.CommentPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
 import com.starmix.checkmate.domain.comment.Comment;
