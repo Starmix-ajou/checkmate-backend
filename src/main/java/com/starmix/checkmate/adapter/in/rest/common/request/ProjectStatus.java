@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.rest.web.project.request;
+package com.starmix.checkmate.adapter.in.rest.common.request;
 
 import lombok.Getter;
 

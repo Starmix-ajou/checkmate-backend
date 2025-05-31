@@ -1,12 +1,15 @@
 package com.starmix.checkmate.adapter.in.rest.web.project;
 
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
-import com.starmix.checkmate.adapter.in.rest.web.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateProjectRequest;
-import com.starmix.checkmate.adapter.in.rest.web.project.response.ProjectsResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;
 import com.starmix.checkmate.application.service.ProjectService;
 import com.starmix.checkmate.domain.project.Project;
+import com.starmix.checkmate.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +27,8 @@ public class ProjectController {
     public ResponseEntity<List<ProjectsResponse>> getProjects (
             @RequestParam(required = false) ProjectStatus status
     ) {
-        List<ProjectsResponse> projects = projectService.getProjects(status);
+        List<ProjectsResponse> projects =
+                projectService.getProjects(status, Role.DEVELOPER);
         return ResponseEntity.ok().body(projects);
     }
 
@@ -34,6 +38,14 @@ public class ProjectController {
     ) {
         Project project = projectService.getProject(id);
         return ResponseEntity.ok().body(project);
+    }
+
+    @GetMapping("{id}/brief")
+    public ResponseEntity<ProjectBriefResponse> getProjectBrief (
+            @PathVariable String id
+    ) {
+        ProjectBriefResponse response = projectService.getProjectBrief(id);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/{id}/approve")
@@ -67,6 +79,14 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{projectId}/member")
+    public ResponseEntity<ProjectUserResponse> getMembers (
+            @PathVariable String projectId
+    ) {
+        ProjectUserResponse response = projectService.getMembers(projectId);
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping("/{projectId}/member")
     public ResponseEntity<Void> invite(
             @PathVariable String projectId,
@@ -94,4 +114,5 @@ public class ProjectController {
         projectService.deleteMember(projectId, memberId);
         return ResponseEntity.ok().build();
     }
+
 }

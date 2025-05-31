@@ -1,6 +1,6 @@
 package com.starmix.checkmate.adapter.in.rest.web.comment.response;
 
-import com.starmix.checkmate.adapter.in.rest.web.common.UserDto;
+import com.starmix.checkmate.adapter.in.rest.common.UserDto;
 import com.starmix.checkmate.domain.comment.Comment;
 import lombok.Builder;
 

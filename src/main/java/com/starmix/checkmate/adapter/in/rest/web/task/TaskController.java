@@ -1,6 +1,6 @@
 package com.starmix.checkmate.adapter.in.rest.web.task;
 
-import com.starmix.checkmate.adapter.in.rest.web.common.TaskDto;
+import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
 import com.starmix.checkmate.adapter.in.rest.web.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.request.UpdateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskCountResponse;
@@ -23,7 +23,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<TaskDto>> getTasks(
+    public ResponseEntity<List<TaskResponse>> getTasks(
             @RequestParam String projectId,
             @RequestParam(required = false) List<String> epicId,
             @RequestParam(required = false) List<String> sprintId,
@@ -33,7 +33,7 @@ public class TaskController {
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) List<Status> status
     ) {
-        List<TaskDto> tasks = taskService.getTasks(
+        List<TaskResponse> tasks = taskService.getTasks(
                 projectId, epicId, sprintId, assigneeEmail,
                 priority, startDate, endDate, status
         );
@@ -41,8 +41,8 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<TaskDto> getTask(@PathVariable String taskId) {
-        TaskDto task = taskService.getTask(taskId);
+    public ResponseEntity<TaskResponse> getTask(@PathVariable String taskId) {
+        TaskResponse task = taskService.getTask(taskId);
         return ResponseEntity.ok().body(task);
     }
 

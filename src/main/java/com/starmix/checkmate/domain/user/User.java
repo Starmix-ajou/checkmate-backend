@@ -52,6 +52,12 @@ public class User {
                 .orElseThrow(() -> new CustomException("Profile not found", HttpStatus.NOT_FOUND));
     }
 
+    public List<Profile> getProfilesByRole(Role role) {
+        return profiles.stream().filter(
+                profile -> profile.getRole().equals(role)
+        ).toList();
+    }
+
     public void deleteProfileByProjectId(String projectId) {
         profiles.removeIf(profile -> profile.getProjectId().equals(projectId));
     }
