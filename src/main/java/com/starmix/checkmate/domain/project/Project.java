@@ -1,7 +1,7 @@
 package com.starmix.checkmate.domain.project;
 
 import com.starmix.checkmate.adapter.in.common.ProfileDto;
-import com.starmix.checkmate.adapter.in.sse.project.request.CreateFeatureDefinitionRequest;
+import com.starmix.checkmate.adapter.in.sse.web.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;

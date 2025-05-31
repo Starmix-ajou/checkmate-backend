@@ -1,6 +1,6 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.http.meeting.request.UpdateMeetingRequest;
+import com.starmix.checkmate.adapter.in.rest.web.meeting.request.UpdateMeetingRequest;
 import com.starmix.checkmate.application.port.out.persistence.MeetingPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.domain.meeting.Meeting;
