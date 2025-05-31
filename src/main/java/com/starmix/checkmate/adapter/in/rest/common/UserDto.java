@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.rest.web.common;
+package com.starmix.checkmate.adapter.in.rest.common;
 
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
@@ -13,6 +13,7 @@ public record UserDto(
         Profile profile
 ) {
     public static UserDto fromDomain(User user, String projectId) {
+        if(user == null) return null;
         return UserDto.builder()
                 .userId(user.getUserId())
                 .name(user.getName())

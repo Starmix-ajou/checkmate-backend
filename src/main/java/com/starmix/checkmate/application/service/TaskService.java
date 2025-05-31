@@ -1,7 +1,6 @@
 package com.starmix.checkmate.application.service;
 
-import com.starmix.checkmate.adapter.in.rest.web.common.EpicDto;
-import com.starmix.checkmate.adapter.in.rest.web.common.TaskDto;
+import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
 import com.starmix.checkmate.adapter.in.rest.web.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.request.UpdateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskCountResponse;
@@ -37,7 +36,7 @@ public class TaskService {
     private final SprintPersistencePort sprintPersistencePort;
     private final JwtUtil jwtUtil;
 
-    public List<TaskDto> getTasks(
+    public List<TaskResponse> getTasks(
             String projectId, List<String> epicId, List<String> sprintId,
             List<String> assigneeEmail, List<Priority> priority,
             LocalDate startDate, LocalDate endDate, List<Status> status
@@ -51,18 +50,16 @@ public class TaskService {
                 task -> {
                     Epic epic = task.getEpic();
                     Sprint sprint = findSprintByEpic(epic);
-                    EpicDto epicDto = EpicDto.fromDomain(epic, sprint);
-                    return TaskDto.fromDomain(task, epicDto);
+                    return TaskResponse.fromDomain(task, epic, sprint);
                 }
         ).toList();
     }
 
-    public TaskDto getTask(String taskId) {
+    public TaskResponse getTask(String taskId) {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
         Sprint sprint = findSprintByEpic(task.getEpic());
-        EpicDto epicDto = EpicDto.fromDomain(task.getEpic(), sprint);
-        return TaskDto.fromDomain(task, epicDto);
+        return TaskResponse.fromDomain(task, task.getEpic(), sprint);
     }
 
     @Transactional

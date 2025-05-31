@@ -1,10 +1,12 @@
 package com.starmix.checkmate.application.service;
 
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
-import com.starmix.checkmate.adapter.in.rest.web.project.request.ProjectStatus;
+import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateProjectRequest;
-import com.starmix.checkmate.adapter.in.rest.web.project.response.ProjectsResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackRequest;
@@ -47,9 +49,12 @@ public class ProjectService {
     private final MailPort mailPort;
     private final EpicPersistencePort epicPersistencePort;
 
-    public List<ProjectsResponse> getProjects(ProjectStatus status) {
+    public List<ProjectsResponse> getProjects(ProjectStatus status, Role role) {
         User user = jwtUtil.extractUser();
-        List<Profile> profiles = Optional.ofNullable(user.getProfiles()).orElse(Collections.emptyList());
+        List<Profile> profiles = user.getProfilesByRole(role);
+        if(profiles.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         List<String> projectIds = switch (status) {
             case ACTIVE -> Profile.filterProjectIds(profiles, Profile::getIsActive);
@@ -190,6 +195,17 @@ public class ProjectService {
         contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
     }
 
+    public ProjectUserResponse getMembers(String projectId) {
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        return ProjectUserResponse.fromDomain(
+                project.getMembers(),
+                project.getLeader(),
+                project.getProductManager(),
+                project.getProjectId()
+        );
+    }
+
     public void updateMember(String projectId, String memberId, UpdateMemberRequest request) {
         User member = isAuthorizedMember(projectId, memberId);
         member.getProfileByProjectId(projectId).updatePositions(request.positions());
@@ -205,6 +221,12 @@ public class ProjectService {
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         project.deleteMember(member);
         projectPersistencePort.save(project);
+    }
+
+    public ProjectBriefResponse getProjectBrief(String projectId) {
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        return ProjectBriefResponse.fromDomain(project);
     }
 
     private User isAuthorizedMember(String projectId, String memberId) {

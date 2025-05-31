@@ -1,6 +1,5 @@
-package com.starmix.checkmate.adapter.in.rest.web.project.response;
+package com.starmix.checkmate.adapter.in.rest.common.response;
 
-import com.starmix.checkmate.adapter.in.rest.web.common.ProjectBriefDto;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.user.Profile;
 import com.starmix.checkmate.domain.user.User;
@@ -18,6 +17,21 @@ public record ProjectsResponse(
         List<User> members,
         User leader
 ) {
+    @Builder
+    public record ProjectBriefDto(
+            String projectId,
+            String title,
+            String imageUrl
+    ) {
+        public static ProjectBriefDto fromDomain(Project project) {
+            return ProjectBriefDto.builder()
+                    .projectId(project.getProjectId())
+                    .title(project.getTitle())
+                    .imageUrl(project.getImageUrl())
+                    .build();
+        }
+    }
+
     public static ProjectsResponse fromDomain(Project project, Profile profile) {
         return ProjectsResponse.builder()
                 .project(ProjectBriefDto.fromDomain(project))
