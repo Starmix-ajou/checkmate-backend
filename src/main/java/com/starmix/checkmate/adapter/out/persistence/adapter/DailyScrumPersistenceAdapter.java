@@ -7,6 +7,9 @@ import com.starmix.checkmate.application.port.out.persistence.DailyScrumPersiste
 import com.starmix.checkmate.domain.dailyScrum.DailyScrum;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class DailyScrumPersistenceAdapter implements DailyScrumPersistencePort {
 
     private final DailyScrumMongoRepository dailyScrumMongoRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public List<DailyScrum> findAllByProjectId(String projectId) {
@@ -45,6 +49,19 @@ public class DailyScrumPersistenceAdapter implements DailyScrumPersistencePort {
         try {
             DailyScrumEntity dailyScrumEntity = DailyScrumMapper.toEntity(dailyScrum);
             return dailyScrumMongoRepository.save(dailyScrumEntity).getId();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Integer countByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
+        try {
+            Criteria criteria = Criteria.where("timestamp").gte(startDate).lte(endDate);
+
+            Query query = new Query(criteria);
+            long count = mongoTemplate.count(query, DailyScrumEntity.class);
+            return count > 0 ? (int) count : 0;
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
