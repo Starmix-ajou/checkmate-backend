@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -55,11 +54,6 @@ public class EpicService {
     public void deleteEpic(String epicId) {
         List<Task> tasks = taskPersistencePort.findAllByEpicId(epicId);
         tasks.forEach(task -> taskPersistencePort.delete(task.getTaskId()));
-
-        Epic epic = epicPersistencePort.findById(epicId)
-                        .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
-        List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(epic.getEpicId());
-        sprints.forEach(sprint -> sprintPersistencePort.delete(sprint.getSprintId()));
         epicPersistencePort.delete(epicId);
     }
 }

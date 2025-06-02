@@ -15,6 +15,7 @@ public class ProjectMapper {
                 .leader(UserMapper.toDomain(entity.getLeader()))
                 .imageUrl(entity.getImageUrl())
                 .projectId(entity.getId())
+                .productManager(UserMapper.toDomain(entity.getProductManager()))
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class ProjectMapper {
                 .members(domain.getMembers().stream().map(UserMapper::toEntity).toList())
                 .leader(UserMapper.toEntity(domain.getLeader()))
                 .imageUrl(domain.getImageUrl())
+                .productManager(UserMapper.toEntity(domain.getProductManager()))
                 .build();
     }
 

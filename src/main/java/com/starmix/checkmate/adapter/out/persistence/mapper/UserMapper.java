@@ -7,11 +7,11 @@ public class UserMapper {
 
     public static User toDomain(UserEntity userEntity) {
         return User.builder()
+                .userId(userEntity.getId())
                 .name(userEntity.getName())
                 .email(userEntity.getEmail())
                 .profiles(userEntity.getProfiles())
                 .profileImageUrl(userEntity.getProfileImageUrl())
-                .userId(userEntity.getId())
                 .build();
     }
 

@@ -1,13 +1,12 @@
 package com.starmix.checkmate.adapter.out.ai.client;
 
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureDefinitionFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecificationFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateSprintFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
+import com.starmix.checkmate.adapter.out.ai.client.request.*;
 import com.starmix.checkmate.adapter.out.ai.client.response.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
+import java.util.List;
 
 @FeignClient(name = "aiFeignClient", url = "${ai.external.server.url}")
 public interface AIFeignClient {
@@ -25,4 +24,10 @@ public interface AIFeignClient {
 
     @PostMapping("/sprint")
     CreateSprintFeignResponse createSprint(CreateSprintFeignRequest request);
+
+    @PostMapping("/meeting")
+    CreateMeetingFeignResponse createMeeting(CreateMeetingFeignRequest request);
+
+    @PostMapping("/meeting/action-items")
+    List<CreateActionItemsFeignResponse> createActionItems(CreateActionItemsFeignRequest request);
 }

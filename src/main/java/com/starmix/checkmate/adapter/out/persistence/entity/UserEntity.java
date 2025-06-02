@@ -1,7 +1,6 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
 import com.starmix.checkmate.domain.user.Profile;
-import com.starmix.checkmate.domain.user.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -18,6 +17,4 @@ public class UserEntity extends BaseEntity {
     private String email;
     private String profileImageUrl;
     private List<Profile> profiles;
-    private Role role;
-    private List<String> pendingProjectIds;
 }

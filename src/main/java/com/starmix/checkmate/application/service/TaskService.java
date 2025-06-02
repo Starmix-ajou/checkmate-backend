@@ -48,9 +48,8 @@ public class TaskService {
 
         return tasks.stream().map(
                 task -> {
-                    Epic epic = task.getEpic();
-                    Sprint sprint = findSprintByEpic(epic);
-                    return TaskResponse.fromDomain(task, epic, sprint);
+                    Sprint sprint = findSprintByEpic(task.getEpic());
+                    return TaskResponse.fromDomain(task, sprint);
                 }
         ).toList();
     }
@@ -59,7 +58,7 @@ public class TaskService {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
         Sprint sprint = findSprintByEpic(task.getEpic());
-        return TaskResponse.fromDomain(task, task.getEpic(), sprint);
+        return TaskResponse.fromDomain(task, sprint);
     }
 
     @Transactional

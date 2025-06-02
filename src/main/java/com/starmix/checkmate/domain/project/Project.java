@@ -71,9 +71,6 @@ public class Project {
     }
 
     public void changeProductManager(User productManager) {
-        if (this.productManager.equals(productManager)) {
-            throw new CustomException("Product Manager Already Exists", HttpStatus.BAD_REQUEST);
-        }
         this.productManager = productManager;
     }
 

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -69,6 +70,10 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
 
             Query dailyScrumQuery = new Query(Criteria.where("projectId").is(projectId));
             mongoTemplate.remove(dailyScrumQuery, DailyScrumEntity.class);
+
+            Query userQuery = new Query(Criteria.where("profiles.projectId").is(projectId));
+            Update update = new Update().pull("profiles", Query.query(Criteria.where("projectId").is(projectId)).getQueryObject());
+            mongoTemplate.updateMulti(userQuery, update, UserEntity.class);
 
             projectMongoRepository.deleteById(projectId);
         } catch (Exception e) {

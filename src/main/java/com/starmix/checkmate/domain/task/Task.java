@@ -33,6 +33,22 @@ public class Task {
 
     public static Task init(
             String title, String description, User assignee,
+            LocalDate endDate, Epic epic
+    ) {
+        return Task.builder()
+                .title(title)
+                .description(description)
+                .status(Status.TODO)
+                .assignee(assignee)
+                .startDate(LocalDate.now())
+                .endDate(endDate)
+                .priority(Priority.HIGH)
+                .epic(epic)
+                .build();
+    }
+
+    public static Task init(
+            String title, String description, User assignee,
             LocalDate startDate, LocalDate endDate, Priority priority, Epic epic
     ) {
         return Task.builder()
