@@ -2,12 +2,14 @@ package com.starmix.checkmate.adapter.out.redis;
 
 import com.starmix.checkmate.adapter.out.redis.dto.SprintDetail;
 import com.starmix.checkmate.domain.project.Project;
+import com.starmix.checkmate.domain.task.Task;
 import lombok.Getter;
 
 @Getter
 public enum RedisType {
     PROJECT_INFO("PROJECT_INFO_", Project.class),
-    SPRINT_INFO("SPRINT_INFO_", SprintDetail.class);
+    SPRINT_INFO("SPRINT_INFO_", SprintDetail.class),
+    MEETING_ACTION_ITEMS("MEETING_ACTION_ITEMS", Task.class);
 
     private final String key;
     private final Class<?> type;
