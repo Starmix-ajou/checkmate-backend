@@ -6,6 +6,8 @@ import com.starmix.checkmate.domain.user.User;
 public class UserMapper {
 
     public static User toDomain(UserEntity userEntity) {
+        if (userEntity == null) return null;
+
         return User.builder()
                 .userId(userEntity.getId())
                 .name(userEntity.getName())
@@ -16,6 +18,8 @@ public class UserMapper {
     }
 
     public static UserEntity toEntity(User user) {
+        if (user == null) return null;
+
         return UserEntity.builder()
                 .id(user.getUserId())
                 .name(user.getName())

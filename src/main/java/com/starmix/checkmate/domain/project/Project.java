@@ -49,6 +49,7 @@ public class Project {
                 .endDate(request.endDate())
                 .leader(leader)
                 .members(members)
+                .productManager(null)
                 .build();
     }
 

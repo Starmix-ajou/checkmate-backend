@@ -29,7 +29,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Service
 public class MeetingService {
-
     private final MeetingPersistencePort meetingPersistencePort;
     private final JwtUtil jwtUtil;
     private final UserPersistencePort userPersistencePort;
