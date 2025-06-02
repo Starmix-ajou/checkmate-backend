@@ -17,8 +17,6 @@ public class MeetingEntity extends BaseEntity {
     private String title;
     private String content;
     @DBRef
-    private List<UserEntity> participants;
-    @DBRef
     private UserEntity master;
     private String projectId;
     private LocalDate timestamp;

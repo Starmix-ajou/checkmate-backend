@@ -41,7 +41,7 @@ public record TaskResponse(
         }
     }
 
-    public static TaskResponse fromDomain(Task task, Epic epic, Sprint sprint) {
+    public static TaskResponse fromDomain(Task task, Sprint sprint) {
         return TaskResponse.builder()
                 .taskId(task.getTaskId())
                 .title(task.getTitle())
@@ -51,7 +51,7 @@ public record TaskResponse(
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .priority(task.getPriority())
-                .epic(EpicDto.fromDomain(epic, sprint))
+                .epic(EpicDto.fromDomain(task.getEpic(), sprint))
                 .build();
     }
 }

@@ -11,7 +11,6 @@ import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
-import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -54,11 +53,11 @@ public class SprintService {
             Epic epic = epicPersistencePort.findById(epicWithFeatures.epicId())
                     .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
             List<Task> tasks = epicWithFeatures.tasks().stream().map(taskBrief -> {
-                User assignee = userPersistencePort.findById(taskBrief.assigneeId())
+                User assignee = userPersistencePort.findByEmail(taskBrief.assigneeEmail())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
                 return Task.init(
-                        taskBrief.title(), taskBrief.description(), assignee, taskBrief.startDate(),
-                        taskBrief.endDate(), Priority.getPriority(taskBrief.priority()), epic
+                        taskBrief.title(), taskBrief.description(), assignee,
+                        taskBrief.startDate(), taskBrief.endDate(), taskBrief.priority(), epic
                 );
             }).toList();
             return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);

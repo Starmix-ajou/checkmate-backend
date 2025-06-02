@@ -2,14 +2,12 @@ package com.starmix.checkmate.adapter.out.ai.adapter;
 
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.out.ai.client.AIFeignClient;
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureDefinitionFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateFeatureSpecificationFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.CreateSprintFeignRequest;
-import com.starmix.checkmate.adapter.out.ai.client.request.FeedbackFeignRequest;
+import com.starmix.checkmate.adapter.out.ai.client.request.*;
 import com.starmix.checkmate.adapter.out.ai.client.response.*;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.domain.feature.Feature;
+import com.starmix.checkmate.domain.meeting.Meeting;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -102,6 +100,28 @@ public class AIAdapter implements AIPort {
                     .startDate(startDate)
                     .build();
             return aiFeignClient.createSprint(request);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public CreateMeetingFeignResponse saveMeeting(Meeting meeting) {
+        try {
+            CreateMeetingFeignRequest request = CreateMeetingFeignRequest.fromDomain(meeting);
+            return aiFeignClient.createMeeting(request);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<CreateActionItemsFeignResponse> createActionItems(String projectId, List<String> actionItems) {
+        try {
+            CreateActionItemsFeignRequest request = CreateActionItemsFeignRequest.from(projectId, actionItems);
+            return aiFeignClient.createActionItems(request);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
