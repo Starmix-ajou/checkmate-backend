@@ -22,4 +22,5 @@ public interface TaskPersistencePort {
     List<Task> findMyTasksByStartDateAndEndDate(String projectId, String assigneeId, LocalDate startDate, LocalDate endDate);
     List<Task> findAllByEpicId(String epicId);
     TaskCountPersistenceDto countByStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
+    Integer countReviewedBySprintId(String sprintId);
 }

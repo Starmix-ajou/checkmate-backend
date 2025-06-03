@@ -264,8 +264,7 @@ public class ProjectService {
 
         Integer doneCount = null;
         if(role.equals(Role.DEVELOPER)) {
-            // TODO: Review 기능 추가 이후 구현
-            doneCount = 0;
+            doneCount = taskPersistencePort.countReviewedBySprintId(sprint.getSprintId());
         }
 
         return ProjectStatisticsResponse.from(taskCounts, doneDays, totalDays, doneCount);

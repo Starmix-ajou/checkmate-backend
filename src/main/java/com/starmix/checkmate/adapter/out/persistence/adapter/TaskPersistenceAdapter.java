@@ -5,8 +5,11 @@ import com.starmix.checkmate.adapter.out.persistence.entity.TaskEntity;
 import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.TaskMongoRepository;
+import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
 import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto;
+import com.starmix.checkmate.domain.epic.Epic;
+import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
@@ -31,6 +34,7 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
     private final TaskMongoRepository taskMongoRepository;
     private final MongoTemplate mongoTemplate;
+    private final SprintPersistencePort sprintPersistencePort;
 
     @Override
     public Optional<Task> findById(String id) {
@@ -249,6 +253,23 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
                     .doneCount(statusMap.getOrDefault(Status.DONE, 0))
                     .totalCount(statusMap.values().stream().mapToInt(Integer::intValue).sum())
                     .build();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Integer countReviewedBySprintId(String sprintId) {
+        try {
+            Sprint sprint = sprintPersistencePort.findById(sprintId)
+                    .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.INTERNAL_SERVER_ERROR));
+
+            Query query = new Query();
+            query.addCriteria(Criteria.where("epic.$id")
+                    .in(sprint.getEpics().stream().map(Epic::getEpicId)));
+            query.addCriteria(Criteria.where("review").ne(null));
+
+            return Math.toIntExact(mongoTemplate.count(query, TaskEntity.class));
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
