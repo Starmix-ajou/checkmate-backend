@@ -18,7 +18,7 @@ public class SseController {
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
-        String email = jwtUtil.extractEmail();
-        return emitterManager.addEmitter(email);
+        String userId = jwtUtil.extractUser().getUserId();
+        return emitterManager.addEmitter(userId);
     }
 }

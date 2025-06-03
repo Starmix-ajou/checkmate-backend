@@ -4,8 +4,6 @@ import com.starmix.checkmate.adapter.out.persistence.entity.TaskEntity;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 
-import java.time.LocalDateTime;
-
 public class TaskMapper {
 
     public static Task toDomain(TaskEntity entity) {

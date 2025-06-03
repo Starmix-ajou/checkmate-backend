@@ -6,7 +6,7 @@ import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
 import com.starmix.checkmate.adapter.out.persistence.mongo.TaskMongoRepository;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.dto.TaskCountPersistenceDto;
+import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;

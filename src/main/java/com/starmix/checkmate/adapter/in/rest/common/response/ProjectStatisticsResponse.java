@@ -1,6 +1,6 @@
 package com.starmix.checkmate.adapter.in.rest.common.response;
 
-import com.starmix.checkmate.application.port.out.persistence.dto.TaskCountPersistenceDto;
+import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto;
 import lombok.Builder;
 
 @Builder
