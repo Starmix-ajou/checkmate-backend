@@ -1,6 +1,6 @@
 package com.starmix.checkmate.adapter.out.ai.client.response;
 
-import com.starmix.checkmate.adapter.in.common.TaskBrief;
+import com.starmix.checkmate.domain.task.Priority;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -14,7 +14,16 @@ public record CreateSprintFeignResponse(
     public record EpicWithFeatures(
             String epicId,
             List<TaskBrief> tasks
-    ) { }
+    ) {
+        public record TaskBrief(
+                String title,
+                String description,
+                String assigneeId,
+                LocalDate startDate,
+                LocalDate endDate,
+                Priority priority
+        ) { }
+    }
 
     public record SprintBrief(
             String title,
