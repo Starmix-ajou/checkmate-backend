@@ -24,6 +24,7 @@ import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;
+import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.domain.sprint.Sprint;
@@ -53,6 +54,7 @@ public class ProjectService {
     private final TaskPersistencePort taskPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
     private final DailyScrumPersistencePort dailyScrumPersistencePort;
+    private final NotificationService notificationService;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status, Role role) {
         User user = jwtUtil.extractUser();
@@ -128,6 +130,11 @@ public class ProjectService {
                         user.addProfile(member.getProfileByProjectId(project.getProjectId()));
                         if(member.getUserId().equals(project.getLeader().getUserId())) {
                             user.approve(project.getProjectId());
+                        } else {
+                            Notification notification = Notification.createProjectInviteNotification(
+                                    member.getUserId(), project
+                            );
+                            notificationService.addNotifications(notification);
                         }
                         return user;
                     }
@@ -188,6 +195,11 @@ public class ProjectService {
         if(request.role().equals(Role.DEVELOPER)) {
             user.addProfile(Profile.init(request.profile(), projectId));
             project.addMember(user);
+
+            Notification notification = Notification.createProjectInviteNotification(
+                    user.getUserId(), project
+            );
+            notificationService.addNotifications(notification);
         } else {
             user.addProfile(Profile.initProductManager(projectId));
             project.changeProductManager(user);
@@ -213,8 +225,13 @@ public class ProjectService {
 
     public void updateMember(String projectId, String memberId, UpdateMemberRequest request) {
         User member = isAuthorizedMember(projectId, memberId);
+        Project project = projectPersistencePort.findById(projectId)
+                        .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         member.getProfileByProjectId(projectId).updatePositions(request.positions());
         userPersistencePort.save(member);
+
+        Notification notification = Notification.updateMyProfile(memberId, project);
+        notificationService.addNotifications(notification);
     }
 
     public void deleteMember(String projectId, String memberId) {

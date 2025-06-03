@@ -4,8 +4,12 @@ import com.starmix.checkmate.adapter.in.rest.common.UserDto;
 import com.starmix.checkmate.adapter.in.rest.web.comment.request.CommentRequest;
 import com.starmix.checkmate.adapter.in.rest.web.comment.response.CommentResponse;
 import com.starmix.checkmate.application.port.out.persistence.CommentPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.NotificationPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
 import com.starmix.checkmate.domain.comment.Comment;
+import com.starmix.checkmate.domain.notification.Notification;
+import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -23,6 +27,8 @@ public class CommentService {
     private final CommentPersistencePort commentPersistencePort;
     private final TaskPersistencePort taskPersistencePort;
     private final JwtUtil jwtUtil;
+    private final ProjectPersistencePort projectPersistencePort;
+    private final NotificationPersistencePort notificationPersistencePort;
 
     public List<CommentResponse> getCommentsByTaskId(String taskId) {
         Task task = taskPersistencePort.findById(taskId)
@@ -35,10 +41,18 @@ public class CommentService {
 
     public void createComment(String taskId, CommentRequest request) {
         User user = jwtUtil.extractUser();
-        taskPersistencePort.findById(taskId)
+        Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
         Comment comment = Comment.create(taskId, user, request.message());
         commentPersistencePort.save(comment);
+
+        Project project = projectPersistencePort.findById(task.getTaskId())
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+
+        Notification notification = Notification.commentOnTask(
+                task.getAssignee().getUserId(), task, comment, project
+        );
+        notificationPersistencePort.save(notification);
     }
 
     public void updateComment(String commentId, CommentRequest request) {

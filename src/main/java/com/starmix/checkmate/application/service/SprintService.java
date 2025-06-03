@@ -10,6 +10,8 @@ import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
+import com.starmix.checkmate.domain.notification.Notification;
+import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
@@ -30,6 +32,8 @@ public class SprintService {
     private final AIPort aIPort;
     private final EpicPersistencePort epicPersistencePort;
     private final UserPersistencePort userPersistencePort;
+    private final ProjectPersistencePort projectPersistencePort;
+    private final NotificationService notificationService;
 
     public List<Sprint> getSprintsByProjectId(String projectId) {
         return sprintPersistencePort.findAllByProjectId(projectId);
@@ -96,6 +100,15 @@ public class SprintService {
         }).toList();
         sprintDetail.epics().forEach(epicPersistencePort::save);
         sprintPersistencePort.save(sprintDetail.sprint());
+
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        project.getMembers().forEach(member -> {
+            Notification notification = Notification.createSprintNotification(
+                    member.getUserId(), sprintDetail.sprint(), project
+            );
+            notificationService.addNotifications(notification);
+        });
         return response;
     }
 }
