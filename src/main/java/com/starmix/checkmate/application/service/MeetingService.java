@@ -14,6 +14,8 @@ import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.meeting.Meeting;
+import com.starmix.checkmate.domain.notification.Notification;
+import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
@@ -37,6 +39,8 @@ public class MeetingService {
     private final EpicPersistencePort epicPersistencePort;
     private final TaskPersistencePort taskPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
+    private final ProjectPersistencePort projectPersistencePort;
+    private final NotificationService notificationService;
 
     public List<Meeting> getMeetingsByProjectId(String projectId) {
         return meetingPersistencePort.findAllByProjectId(projectId);
@@ -46,6 +50,18 @@ public class MeetingService {
         User creator = jwtUtil.extractUser();
         Meeting meeting = Meeting.create(creator, projectId);
         String meetingId = meetingPersistencePort.save(meeting);
+        Project project = projectPersistencePort.findById(meeting.getProjectId())
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+
+        project.getMembers().forEach(
+                member -> {
+                    Notification notification = Notification.makeMeetingNotification(
+                            member.getUserId(), meeting, project
+                    );
+                    notificationService.addNotifications(notification);
+                }
+        );
+        
         return meetingPersistencePort.findById(meetingId)
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
     }

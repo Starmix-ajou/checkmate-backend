@@ -79,6 +79,20 @@ public class Task {
                 .build();
     }
 
+    public void update(
+            String title, String description, Status status, User assignee,
+            LocalDate startDate, LocalDate endDate, Priority priority, Epic epic
+    ) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.assignee = assignee;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.priority = priority;
+        this.epic = epic;
+    }
+
     public static Map<Status, List<Task>> groupByStatus(List<Task> tasks) {
         return tasks.stream()
                 .collect(Collectors.groupingBy(Task::getStatus));

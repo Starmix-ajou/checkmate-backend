@@ -29,9 +29,9 @@ public class NotificationPersistenceAdapter implements NotificationPersistencePo
         try {
             List<NotificationEntity> notificationEntities;
             if(projectId != null && !projectId.isEmpty()) {
-                notificationEntities = notificationMongoRepository.findByUserIdAndProjectId(userId, projectId);
+                notificationEntities = notificationMongoRepository.findByUserId(userId);
             } else {
-                notificationEntities = notificationMongoRepository.findByUserIdAndProjectId(userId, projectId);
+                notificationEntities = notificationMongoRepository.findByUserIdAndProject_Id(userId, projectId);
             }
 
             return notificationEntities.stream().map(NotificationMapper::toDomain).toList();

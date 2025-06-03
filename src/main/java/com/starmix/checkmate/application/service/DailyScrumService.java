@@ -4,7 +4,6 @@ import com.starmix.checkmate.adapter.in.rest.web.dailyScrum.request.UpdateDailyS
 import com.starmix.checkmate.application.port.out.persistence.DailyScrumPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.ProjectPersistencePort;
 import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
 import com.starmix.checkmate.domain.dailyScrum.DailyScrum;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.task.Task;
@@ -25,7 +24,6 @@ public class DailyScrumService {
 
     private final DailyScrumPersistencePort dailyScrumPersistencePort;
     private final JwtUtil jwtUtil;
-    private final UserPersistencePort userPersistencePort;
     private final ProjectPersistencePort projectPersistencePort;
     private final TaskPersistencePort taskPersistencePort;
 
@@ -62,6 +60,7 @@ public class DailyScrumService {
         dailyScrum.getDoneTasks().forEach(taskPersistencePort::save);
         
         dailyScrumPersistencePort.save(dailyScrum);
+
         return dailyScrum;
     }
 }

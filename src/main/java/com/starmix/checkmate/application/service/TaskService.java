@@ -5,11 +5,10 @@ import com.starmix.checkmate.adapter.in.rest.web.task.request.CreateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.request.UpdateTaskRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskCountResponse;
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskScheduleResponse;
-import com.starmix.checkmate.application.port.out.persistence.EpicPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.SprintPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.TaskPersistencePort;
-import com.starmix.checkmate.application.port.out.persistence.UserPersistencePort;
+import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.domain.epic.Epic;
+import com.starmix.checkmate.domain.notification.Notification;
+import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Status;
@@ -35,6 +34,8 @@ public class TaskService {
     private final EpicPersistencePort epicPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
     private final JwtUtil jwtUtil;
+    private final ProjectPersistencePort projectPersistencePort;
+    private final NotificationService notificationService;
 
     public List<TaskResponse> getTasks(
             String projectId, List<String> epicId, List<String> sprintId,
@@ -86,18 +87,22 @@ public class TaskService {
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
         Epic epic = epicPersistencePort.findById(request.epicId())
                 .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
-        Task task = Task.builder()
-                .taskId(taskId)
-                .title(request.title())
-                .description(request.description())
-                .status(request.status())
-                .assignee(assignee)
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .priority(request.priority())
-                .epic(epic)
-                .build();
+        Project project = projectPersistencePort.findById(epic.getProjectId())
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+        Task task = taskPersistencePort.findById(taskId)
+                .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
 
+        if(!task.getAssignee().equals(assignee)){
+            Notification notification = Notification.assignTaskNotification(
+                    assignee.getUserId(), task, project
+            );
+            notificationService.addNotifications(notification);
+        }
+
+        task.update(
+                request.title(), request.description(), request.status(), assignee,
+                request.startDate(), request.endDate(), request.priority(), epic
+        );
         taskPersistencePort.save(task);
     }
 
