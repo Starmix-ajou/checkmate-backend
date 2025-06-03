@@ -52,13 +52,13 @@ public class SseEmitterManager {
     }
 
     public void sendEvent(String eventName, Object data) {
-        String email = jwtUtil.extractEmail();
-        SseEmitter emitter = emitters.get(email);
+        String userId = jwtUtil.extractUser().getUserId();
+        SseEmitter emitter = emitters.get(userId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event().name(eventName).data(data));
             } catch (IOException e) {
-                emitters.remove(email);
+                emitters.remove(userId);
             }
         }
     }
