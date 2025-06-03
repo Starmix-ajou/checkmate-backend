@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -40,12 +41,13 @@ public class SprintService {
     }
 
     public List<UpdateSprintResponse> createSprint(String projectId, CreateSprintRequest request) {
-        Sprint currentSprint = sprintPersistencePort.findCurrentSprint(projectId)
-                .orElseThrow(() -> new CustomException("Current Sprint not found", HttpStatus.NOT_FOUND));
+        LocalDate startDate = sprintPersistencePort.findCurrentSprint(projectId)
+                .map(Sprint::getEndDate)
+                .orElse(LocalDate.now());
         CreateSprintFeignResponse response = aIPort.createSprint(
                 projectId,
                 request.pendingTaskIds(),
-                currentSprint.getEndDate().plusDays(1)
+                startDate
         );
         Integer sequence = sprintPersistencePort.getNextSequence(projectId);
 
@@ -57,7 +59,7 @@ public class SprintService {
             Epic epic = epicPersistencePort.findById(epicWithFeatures.epicId())
                     .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
             List<Task> tasks = epicWithFeatures.tasks().stream().map(taskBrief -> {
-                User assignee = userPersistencePort.findByEmail(taskBrief.assigneeEmail())
+                User assignee = userPersistencePort.findById(taskBrief.assigneeId())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
                 return Task.init(
                         taskBrief.title(), taskBrief.description(), assignee,

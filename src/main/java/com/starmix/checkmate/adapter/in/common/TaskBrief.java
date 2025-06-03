@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public record TaskBrief(
         String title,
         String description,
-        String assigneeId,
+        String assigneeEmail,
         LocalDate startDate,
         LocalDate endDate,
         Priority priority

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +62,6 @@ public class SprintPersistenceAdapter implements SprintPersistencePort {
     @Override
     public Optional<Sprint> findCurrentSprint(String projectId) {
         try {
-            LocalDate today = LocalDate.now();
             Optional<SprintEntity> sprintEntity = sprintMongoRepository
                     .findTopByProjectIdOrderBySequenceDesc(projectId);
             return sprintEntity.map(SprintMapper::toDomain);
