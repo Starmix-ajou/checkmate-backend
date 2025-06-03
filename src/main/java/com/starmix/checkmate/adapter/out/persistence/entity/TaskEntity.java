@@ -28,4 +28,6 @@ public class TaskEntity extends BaseEntity {
 
     @DBRef
     private EpicEntity epic;
+
+    private String review;
 }

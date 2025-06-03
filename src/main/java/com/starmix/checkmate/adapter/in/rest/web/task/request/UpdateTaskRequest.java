@@ -13,5 +13,6 @@ public record UpdateTaskRequest(
         LocalDate startDate,
         LocalDate endDate,
         Priority priority,
-        String epicId
+        String epicId,
+        String review
 ) { }
