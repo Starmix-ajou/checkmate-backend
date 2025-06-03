@@ -22,7 +22,7 @@ public class Task {
     private LocalDate endDate;
     private Priority priority;
     private Epic epic;
-    private String review;
+    private Review review;
 
     public void updateStatus(Status status) {
         this.status = status;
@@ -83,7 +83,7 @@ public class Task {
     public void update(
             String title, String description, Status status, User assignee,
             LocalDate startDate, LocalDate endDate,
-            String review, Priority priority, Epic epic
+            Review review, Priority priority, Epic epic
     ) {
         this.title = title;
         this.description = description;

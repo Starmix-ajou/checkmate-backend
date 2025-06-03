@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
+import com.starmix.checkmate.domain.task.Review;
 import com.starmix.checkmate.domain.task.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,5 @@ public class TaskEntity extends BaseEntity {
     @DBRef
     private EpicEntity epic;
 
-    private String review;
+    private Review review;
 }

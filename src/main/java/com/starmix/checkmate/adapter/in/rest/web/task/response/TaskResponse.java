@@ -4,6 +4,7 @@ import com.starmix.checkmate.adapter.in.rest.common.UserDto;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Review;
 import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public record TaskResponse(
         LocalDate endDate,
         Priority priority,
         EpicDto epic,
-        String review
+        Review review
 ) {
     @Builder
     public record EpicDto(

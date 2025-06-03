@@ -33,6 +33,7 @@ public class AIAdapter implements AIPort {
                     .definitionUrl(definitionUrl)
                     .build();
             CreateFeatureDefinitionFeignResponse response = aiFeignClient.createFeatureDefinition(request);
+            System.out.println("createFunctionDefinition");
             return response.suggestion().toDomain();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -48,6 +49,7 @@ public class AIAdapter implements AIPort {
                     .feedback(feedback)
                     .build();
             FeedbackFeatureDefinitionFeignResponse response = aiFeignClient.feedbackFeatureDefinition(request);
+            System.out.println("feedbackFeatureDefinition");
             return FeedbackDto.fromFeatureDefinition(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -62,6 +64,7 @@ public class AIAdapter implements AIPort {
                     .email(email)
                     .build();
             CreateFeatureSpecificationFeignResponse response = aiFeignClient.createFeatureSpecification(request);
+            System.out.println("createFeatureSpecification");
             return response.features();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -80,6 +83,7 @@ public class AIAdapter implements AIPort {
                     .deletedFeatures(feedback.deletedFeatures())
                     .build();
             FeedbackFeatureSpecificationFeignResponse response = aiFeignClient.feedbackFeatureSpecification(request);
+            System.out.println("feedbackFeatureSpecification");
             return FeedbackDto.fromFeatureSpecification(response);
         } catch (Exception e) {
             System.out.println(e.getMessage());

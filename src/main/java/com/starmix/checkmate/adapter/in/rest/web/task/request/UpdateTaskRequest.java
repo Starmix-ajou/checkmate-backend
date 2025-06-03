@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.in.rest.web.task.request;
 
 import com.starmix.checkmate.domain.task.Priority;
+import com.starmix.checkmate.domain.task.Review;
 import com.starmix.checkmate.domain.task.Status;
 
 import java.time.LocalDate;
@@ -14,5 +15,5 @@ public record UpdateTaskRequest(
         LocalDate endDate,
         Priority priority,
         String epicId,
-        String review
+        Review review
 ) { }
