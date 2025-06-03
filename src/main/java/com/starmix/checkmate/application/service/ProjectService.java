@@ -20,7 +20,7 @@ import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
 import com.starmix.checkmate.application.port.out.persistence.*;
-import com.starmix.checkmate.application.port.out.persistence.dto.TaskCountPersistenceDto;
+import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;

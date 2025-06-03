@@ -1,4 +1,4 @@
-package com.starmix.checkmate.application.port.out.persistence.dto;
+package com.starmix.checkmate.adapter.out.persistence.dto;
 
 import lombok.Builder;
 
