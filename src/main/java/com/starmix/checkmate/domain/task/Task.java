@@ -22,6 +22,7 @@ public class Task {
     private LocalDate endDate;
     private Priority priority;
     private Epic epic;
+    private String review;
 
     public void updateStatus(Status status) {
         this.status = status;
@@ -81,7 +82,8 @@ public class Task {
 
     public void update(
             String title, String description, Status status, User assignee,
-            LocalDate startDate, LocalDate endDate, Priority priority, Epic epic
+            LocalDate startDate, LocalDate endDate,
+            String review, Priority priority, Epic epic
     ) {
         this.title = title;
         this.description = description;
@@ -91,6 +93,7 @@ public class Task {
         this.endDate = endDate;
         this.priority = priority;
         this.epic = epic;
+        this.review = review;
     }
 
     public static Map<Status, List<Task>> groupByStatus(List<Task> tasks) {

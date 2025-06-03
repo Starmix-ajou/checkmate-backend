@@ -1,11 +1,11 @@
 package com.starmix.checkmate.adapter.in.rest.web.task.response;
 
+import com.starmix.checkmate.adapter.in.rest.common.UserDto;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Status;
 import com.starmix.checkmate.domain.task.Task;
-import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -16,11 +16,12 @@ public record TaskResponse(
         String title,
         String description,
         Status status,
-        User assignee,
+        UserDto assignee,
         LocalDate startDate,
         LocalDate endDate,
         Priority priority,
-        EpicDto epic
+        EpicDto epic,
+        String review
 ) {
     @Builder
     public record EpicDto(
@@ -47,11 +48,12 @@ public record TaskResponse(
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .status(task.getStatus())
-                .assignee(task.getAssignee())
+                .assignee(UserDto.fromDomain(task.getAssignee(), sprint.getProjectId()))
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .priority(task.getPriority())
                 .epic(EpicDto.fromDomain(task.getEpic(), sprint))
+                .review(task.getReview())
                 .build();
     }
 }

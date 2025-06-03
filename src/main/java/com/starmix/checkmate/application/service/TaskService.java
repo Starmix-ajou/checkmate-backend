@@ -82,6 +82,7 @@ public class TaskService {
         taskPersistencePort.delete(taskId);
     }
 
+    @Transactional
     public void updateTask(String taskId, UpdateTaskRequest request) {
         User assignee = userPersistencePort.findByEmail(request.assigneeEmail())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
@@ -92,17 +93,18 @@ public class TaskService {
         Task task = taskPersistencePort.findById(taskId)
                 .orElseThrow(() -> new CustomException("Task not found", HttpStatus.NOT_FOUND));
 
-        if(!task.getAssignee().equals(assignee)){
+        User prevAssignee = task.getAssignee();
+        task.update(
+                request.title(), request.description(), request.status(), assignee,
+                request.startDate(), request.endDate(),
+                request.review(), request.priority(), epic
+        );
+        if(!prevAssignee.equals(task.getAssignee())) {
             Notification notification = Notification.assignTaskNotification(
                     assignee.getUserId(), task, project
             );
             notificationService.addNotifications(notification);
         }
-
-        task.update(
-                request.title(), request.description(), request.status(), assignee,
-                request.startDate(), request.endDate(), request.priority(), epic
-        );
         taskPersistencePort.save(task);
     }
 

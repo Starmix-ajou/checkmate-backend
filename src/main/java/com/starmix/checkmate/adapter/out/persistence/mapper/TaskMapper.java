@@ -17,6 +17,7 @@ public class TaskMapper {
                 .priority(Priority.getPriority(entity.getPriority()))
                 .taskId(entity.getId())
                 .epic(EpicMapper.toDomain(entity.getEpic()))
+                .review(entity.getReview())
                 .build();
     }
 
@@ -31,6 +32,7 @@ public class TaskMapper {
                 .endDate(domain.getEndDate())
                 .priority(domain.getPriority().getPriorityNum())
                 .epic(EpicMapper.toEntity(domain.getEpic()))
+                .review(domain.getReview())
                 .build();
     }
 }
