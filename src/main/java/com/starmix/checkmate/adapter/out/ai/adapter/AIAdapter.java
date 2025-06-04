@@ -120,15 +120,4 @@ public class AIAdapter implements AIPort {
             throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @Override
-    public List<CreateActionItemsFeignResponse> createActionItems(String projectId, List<String> actionItems) {
-        try {
-            CreateActionItemsFeignRequest request = CreateActionItemsFeignRequest.from(projectId, actionItems);
-            return aiFeignClient.createActionItems(request);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new CustomException("예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

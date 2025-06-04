@@ -20,4 +20,5 @@ public class MeetingEntity extends BaseEntity {
     private UserEntity master;
     private String projectId;
     private LocalDate timestamp;
+    private String summary;
 }

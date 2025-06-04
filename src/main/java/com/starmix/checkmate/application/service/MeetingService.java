@@ -1,12 +1,10 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
-import com.starmix.checkmate.adapter.in.sse.web.meeting.common.ActionItemDto;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.CreateActionItemsRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.FeedbackActionItemsRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.SaveMeetingRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.response.SaveMeetingResponse;
-import com.starmix.checkmate.adapter.out.ai.client.response.CreateActionItemsFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateMeetingFeignResponse;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
@@ -37,10 +35,10 @@ public class MeetingService {
     private final AIPort aIPort;
     private final RedisPort redisPort;
     private final EpicPersistencePort epicPersistencePort;
-    private final TaskPersistencePort taskPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
     private final ProjectPersistencePort projectPersistencePort;
     private final NotificationService notificationService;
+    private final TaskPersistencePort taskPersistencePort;
 
     public List<Meeting> getMeetingsByProjectId(String projectId) {
         return meetingPersistencePort.findAllByProjectId(projectId);
@@ -71,30 +69,14 @@ public class MeetingService {
     }
 
     public SaveMeetingResponse saveMeeting(SaveMeetingRequest request) {
-
         Meeting meeting = meetingPersistencePort.findById(request.masterId())
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
         User master = userPersistencePort.findById(request.masterId())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-        meeting.save(request, master);
-        meetingPersistencePort.save(meeting);
-        CreateMeetingFeignResponse response = aIPort.saveMeeting(meeting);
-        return SaveMeetingResponse.builder()
-                .summary(response.summary())
-                .actionItems(response.actionItems())
-                .build();
-    }
 
-    public List<ActionItemDto> createActionItems(
-            String meetingId,
-            CreateActionItemsRequest request
-    ) {
-        Meeting meeting = meetingPersistencePort.findById(meetingId)
-                .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
-        List<CreateActionItemsFeignResponse> response = aIPort.createActionItems(
-                meeting.getProjectId(), request.actionItems()
-        );
-        List<Task> tasks = response.stream().map(
+        CreateMeetingFeignResponse response = aIPort.saveMeeting(meeting);
+
+        List<Task> tasks = response.actionItems().stream().map(
                 actionItem -> {
                     User assignee = userPersistencePort.findById(actionItem.assigneeId())
                             .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
@@ -106,28 +88,60 @@ public class MeetingService {
                     );
                 }
         ).toList();
-        redisPort.saveSet(RedisType.MEETING_ACTION_ITEMS, meetingId, tasks);
-        return tasks.stream().map(ActionItemDto::fromDomain).toList();
+
+        meeting.save(request, master, response.summary());
+        meetingPersistencePort.save(meeting);
+
+        redisPort.saveSet(RedisType.MEETING_ACTION_ITEMS, meeting.getMeetingId(), tasks);
+
+        return SaveMeetingResponse.builder()
+                .summary(response.summary())
+                .actionItems(
+                        response.actionItems().stream()
+                                .map(CreateMeetingFeignResponse.ActionItem::title).toList()
+                )
+                .build();
     }
 
-    public List<TaskResponse> feedbackActionItems(
-            String meetingId,
-            FeedbackActionItemsRequest request
+    public List<TaskResponse> createActionItems(
+            String meetingId, CreateActionItemsRequest request
     ) {
-        List<Task> tasks = redisPort.getSet(
+        List<Task> cachedTasks = redisPort.getSet(
                 RedisType.MEETING_ACTION_ITEMS,
                 meetingId,
                 Task.class
         );
 
-        return request.tasks().stream().map(taskDto -> {
-            Task cachedTask = tasks.stream().filter(
-                    cachedMapTask -> cachedMapTask.getTitle().equals(taskDto.title())
-            ).findFirst().orElse(null);
-            taskPersistencePort.save(cachedTask);
-            List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(Objects.requireNonNull(cachedTask).getEpic().getEpicId());
-            Sprint sprint = cachedTask.getEpic().findCurrentSprint(sprints);
-            return TaskResponse.fromDomain(cachedTask, sprint);
+        List<Task> tasks = cachedTasks.stream()
+                .filter(cachedTask -> request.actionItems().contains(cachedTask.getTitle()))
+                .toList();
+
+        return tasks.stream().map(task -> {
+            List<Sprint> sprints = sprintPersistencePort
+                    .findSprintByEpicId(Objects.requireNonNull(task).getEpic().getEpicId());
+            Sprint sprint = task.getEpic().findCurrentSprint(sprints);
+            return TaskResponse.fromDomain(task, sprint);
         }).toList();
+    }
+
+    public List<TaskResponse> feedbackActionItems(
+            String meetingId, FeedbackActionItemsRequest request
+    ) {
+        request.tasks().forEach(
+                actionItem -> {
+                    User assignee = userPersistencePort.findById(actionItem.assignee().userId())
+                            .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                    Epic epic = epicPersistencePort.findById(actionItem.epic().epicId())
+                            .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+
+                    Task task = Task.create(
+                            actionItem.title(), actionItem.description(), actionItem.status(),
+                            assignee, actionItem.startDate(), actionItem.endDate(),
+                            actionItem.priority(), epic
+                    );
+                    taskPersistencePort.save(task);
+                }
+        );
+        return request.tasks();
     }
 }

@@ -75,6 +75,11 @@ public class TaskService {
                 request.startDate(), request.endDate(), request.priority(), epic
         );
 
+        Sprint sprint = sprintPersistencePort.findCurrentSprint(epic.getProjectId())
+                        .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+        sprint.addEpic(epic);
+        sprintPersistencePort.save(sprint);
+
         taskPersistencePort.save(task);
     }
 

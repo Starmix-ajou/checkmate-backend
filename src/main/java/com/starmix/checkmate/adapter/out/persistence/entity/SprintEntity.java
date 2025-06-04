@@ -1,6 +1,5 @@
 package com.starmix.checkmate.adapter.out.persistence.entity;
 
-import com.starmix.checkmate.domain.epic.Epic;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
