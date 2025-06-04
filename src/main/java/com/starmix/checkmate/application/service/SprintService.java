@@ -13,6 +13,7 @@ import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.sprint.Sprint;
+import com.starmix.checkmate.domain.task.Priority;
 import com.starmix.checkmate.domain.task.Task;
 import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -63,7 +64,8 @@ public class SprintService {
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.FORBIDDEN));
                 return Task.init(
                         taskBrief.title(), taskBrief.description(), assignee,
-                        taskBrief.startDate(), taskBrief.endDate(), taskBrief.priority(), epic
+                        taskBrief.startDate(), taskBrief.endDate(),
+                        Priority.getPriority(taskBrief.priority()), epic
                 );
             }).toList();
             return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
@@ -101,6 +103,11 @@ public class SprintService {
             return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
         }).toList();
         sprintDetail.epics().forEach(epicPersistencePort::save);
+        sprintDetail.epics().forEach(
+                epic -> {
+                    sprintDetail.sprint().addEpic(epic);
+                }
+        );
         sprintPersistencePort.save(sprintDetail.sprint());
 
         Project project = projectPersistencePort.findById(projectId)

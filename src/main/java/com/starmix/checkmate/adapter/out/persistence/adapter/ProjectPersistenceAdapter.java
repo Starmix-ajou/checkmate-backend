@@ -75,6 +75,9 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
             Update update = new Update().pull("profiles", Query.query(Criteria.where("projectId").is(projectId)).getQueryObject());
             mongoTemplate.updateMulti(userQuery, update, UserEntity.class);
 
+            Query notificationQuery = new Query(Criteria.where("project.$id").is(projectId));
+            mongoTemplate.remove(notificationQuery, NotificationEntity.class);
+
             projectMongoRepository.deleteById(projectId);
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

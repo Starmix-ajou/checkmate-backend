@@ -1,6 +1,5 @@
 package com.starmix.checkmate.adapter.out.ai.client.response;
 
-import com.starmix.checkmate.domain.task.Priority;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -21,7 +20,7 @@ public record CreateSprintFeignResponse(
                 String assigneeId,
                 LocalDate startDate,
                 LocalDate endDate,
-                Priority priority
+                Integer priority
         ) { }
     }
 

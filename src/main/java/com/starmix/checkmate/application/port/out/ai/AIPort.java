@@ -1,7 +1,6 @@
 package com.starmix.checkmate.application.port.out.ai;
 
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
-import com.starmix.checkmate.adapter.out.ai.client.response.CreateActionItemsFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateMeetingFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.client.response.CreateSprintFeignResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
@@ -20,5 +19,4 @@ public interface AIPort {
     FeedbackDto feedbackFeatureSpecification(String email, FeedbackFeatureSpecificationRequest feedback);
     CreateSprintFeignResponse createSprint(String projectId, List<String> pendingTaskIds, LocalDate startDate);
     CreateMeetingFeignResponse saveMeeting(Meeting meeting);
-    List<CreateActionItemsFeignResponse> createActionItems(String projectId, List<String> actionItems);
 }

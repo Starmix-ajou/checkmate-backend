@@ -79,4 +79,16 @@ public class Epic {
                 .max(Comparator.comparing(Sprint::getSequence))
                 .orElse(null);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Epic other)) return false;
+        return epicId != null && epicId.equals(other.epicId);
+    }
+
+    @Override
+    public int hashCode() {
+        return epicId != null ? epicId.hashCode() : 0;
+    }
 }

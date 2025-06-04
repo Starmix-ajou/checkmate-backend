@@ -27,7 +27,4 @@ public interface AIFeignClient {
 
     @PostMapping("/meeting")
     CreateMeetingFeignResponse createMeeting(CreateMeetingFeignRequest request);
-
-    @PostMapping("/meeting/action-items")
-    List<CreateActionItemsFeignResponse> createActionItems(CreateActionItemsFeignRequest request);
 }
