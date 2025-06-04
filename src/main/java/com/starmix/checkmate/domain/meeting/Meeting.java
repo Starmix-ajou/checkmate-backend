@@ -41,4 +41,8 @@ public class Meeting {
         this.master = master;
         this.summary = summary;
     }
+
+    public void addContent(String content) {
+        this.content = content;
+    }
 }

@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,11 @@ public class MeetingService {
 
     public List<Meeting> getMeetingsByProjectId(String projectId) {
         return meetingPersistencePort.findAllByProjectId(projectId);
+    }
+
+    public Meeting getMeeting(String meetingId) {
+        return meetingPersistencePort.findById(meetingId)
+                .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
     }
 
     public Meeting createMeeting(String projectId) {
@@ -69,22 +75,37 @@ public class MeetingService {
     }
 
     public SaveMeetingResponse saveMeeting(SaveMeetingRequest request) {
-        Meeting meeting = meetingPersistencePort.findById(request.masterId())
+        Meeting meeting = meetingPersistencePort.findById(request.meetingId())
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
         User master = userPersistencePort.findById(request.masterId())
                         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-
+        meeting.addContent(request.content());
+        
         CreateMeetingFeignResponse response = aIPort.saveMeeting(meeting);
 
         List<Task> tasks = response.actionItems().stream().map(
                 actionItem -> {
-                    User assignee = userPersistencePort.findById(actionItem.assigneeId())
-                            .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-                    Epic epic = epicPersistencePort.findById(actionItem.epicId())
-                            .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+                    User assignee = null;
+                    if(actionItem.assigneeId() != null) {
+                        assignee = userPersistencePort.findById(actionItem.assigneeId())
+                                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                    }
+                    Epic epic = null;
+                    if(actionItem.epicId() != null) {
+                        epic = epicPersistencePort.findById(actionItem.epicId())
+                                .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
+
+                    }
+                    LocalDate endDate = actionItem.endDate();
+                    if(endDate == null) {
+                        Sprint sprint = sprintPersistencePort.findCurrentSprint(meeting.getProjectId())
+                                .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+                        endDate = sprint.getEndDate();
+                    }
+
                     return Task.init(
-                            actionItem.title(), actionItem.description(), assignee,
-                            actionItem.endDate(), epic
+                            actionItem.title(), actionItem.description(),
+                            assignee, endDate, epic
                     );
                 }
         ).toList();
@@ -117,9 +138,11 @@ public class MeetingService {
                 .toList();
 
         return tasks.stream().map(task -> {
-            List<Sprint> sprints = sprintPersistencePort
-                    .findSprintByEpicId(Objects.requireNonNull(task).getEpic().getEpicId());
-            Sprint sprint = task.getEpic().findCurrentSprint(sprints);
+            Sprint sprint = null;
+            if(task.getEpic() != null) {
+                List<Sprint> sprints = sprintPersistencePort.findSprintByEpicId(task.getEpic().getEpicId());
+                sprint = task.getEpic().findCurrentSprint(sprints);
+            }
             return TaskResponse.fromDomain(task, sprint);
         }).toList();
     }
@@ -127,11 +150,17 @@ public class MeetingService {
     public List<TaskResponse> feedbackActionItems(
             String meetingId, FeedbackActionItemsRequest request
     ) {
-        request.tasks().forEach(
+        Meeting meeting = meetingPersistencePort.findById(meetingId)
+                .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
+
+        Sprint sprint = sprintPersistencePort.findCurrentSprint(meeting.getProjectId())
+                .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
+
+        List<Task> tasks = request.tasks().stream().map(
                 actionItem -> {
-                    User assignee = userPersistencePort.findById(actionItem.assignee().userId())
+                    User assignee = userPersistencePort.findByEmail(actionItem.assigneeEmail())
                             .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-                    Epic epic = epicPersistencePort.findById(actionItem.epic().epicId())
+                    Epic epic = epicPersistencePort.findById(actionItem.epicId())
                             .orElseThrow(() -> new CustomException("Epic not found", HttpStatus.NOT_FOUND));
 
                     Task task = Task.create(
@@ -140,8 +169,9 @@ public class MeetingService {
                             actionItem.priority(), epic
                     );
                     taskPersistencePort.save(task);
+                    return task;
                 }
-        );
-        return request.tasks();
+        ).toList();
+        return tasks.stream().map(task -> TaskResponse.fromDomain(task, sprint)).toList();
     }
 }

@@ -44,16 +44,23 @@ public record TaskResponse(
     }
 
     public static TaskResponse fromDomain(Task task, Sprint sprint) {
+        UserDto assignee = null;
+        EpicDto epic = null;
+        if(task.getEpic() != null) {
+            epic = EpicDto.fromDomain(task.getEpic(), sprint);
+            assignee = UserDto.fromDomain(task.getAssignee(), task.getEpic().getProjectId());
+        }
+
         return TaskResponse.builder()
                 .taskId(task.getTaskId())
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .status(task.getStatus())
-                .assignee(UserDto.fromDomain(task.getAssignee(), sprint.getProjectId()))
+                .assignee(assignee)
                 .startDate(task.getStartDate())
                 .endDate(task.getEndDate())
                 .priority(task.getPriority())
-                .epic(EpicDto.fromDomain(task.getEpic(), sprint))
+                .epic(epic)
                 .review(task.getReview())
                 .build();
     }

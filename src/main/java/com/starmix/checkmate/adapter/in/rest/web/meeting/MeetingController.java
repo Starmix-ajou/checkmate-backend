@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.in.rest.web.meeting;
 
+import com.starmix.checkmate.adapter.in.rest.web.meeting.response.MeetingResponse;
 import com.starmix.checkmate.application.service.MeetingService;
 import com.starmix.checkmate.domain.meeting.Meeting;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,28 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @GetMapping
-    public ResponseEntity<List<Meeting>> getMeetingsByProjectId (
+    public ResponseEntity<List<MeetingResponse>> getMeetingsByProjectId (
             @RequestParam String projectId
     ) {
         List<Meeting> meetings = meetingService.getMeetingsByProjectId(projectId);
-        return ResponseEntity.ok().body(meetings);
+        List<MeetingResponse> response = meetings.stream().map(MeetingResponse::from).toList();
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/{meetingId}")
+    public ResponseEntity<MeetingResponse> getMeeting (
+            @PathVariable String meetingId
+    ) {
+        Meeting meetings = meetingService.getMeeting(meetingId);
+        MeetingResponse response = MeetingResponse.from(meetings);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/create")
-    public ResponseEntity<Meeting> createMeeting(@RequestParam String projectId) {
+    public ResponseEntity<MeetingResponse> createMeeting(@RequestParam String projectId) {
         Meeting meeting = meetingService.createMeeting(projectId);
-        return ResponseEntity.ok().body(meeting);
+        MeetingResponse response = MeetingResponse.from(meeting);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{meetingId}")
