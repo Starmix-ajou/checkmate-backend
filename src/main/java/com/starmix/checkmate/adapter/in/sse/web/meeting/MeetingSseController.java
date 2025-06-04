@@ -2,7 +2,6 @@ package com.starmix.checkmate.adapter.in.sse.web.meeting;
 
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
 import com.starmix.checkmate.adapter.in.sse.common.SseEmitterManager;
-import com.starmix.checkmate.adapter.in.sse.web.meeting.common.ActionItemDto;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.CreateActionItemsRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.FeedbackActionItemsRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.SaveMeetingRequest;
@@ -31,7 +30,7 @@ public class MeetingSseController {
             @PathVariable String meetingId,
             @RequestBody CreateActionItemsRequest request
     ) {
-        List<ActionItemDto> response = meetingService.createActionItems(meetingId,request);
+        List<TaskResponse> response = meetingService.createActionItems(meetingId,request);
         sseEmitterManager.sendEvent("create-action-items", response);
     }
 
@@ -41,6 +40,6 @@ public class MeetingSseController {
             @RequestBody FeedbackActionItemsRequest request
     ) {
         List<TaskResponse> response = meetingService.feedbackActionItems(meetingId, request);
-        sseEmitterManager.sendEvent("create-action-items", response);
+        sseEmitterManager.sendEvent("feedback-action-items", response);
     }
 }

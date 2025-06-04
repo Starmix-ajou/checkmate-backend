@@ -1,9 +1,9 @@
 package com.starmix.checkmate.adapter.in.sse.web.meeting.request;
 
-import com.starmix.checkmate.adapter.in.sse.web.meeting.common.ActionItemDto;
+import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
 
 import java.util.List;
 
 public record FeedbackActionItemsRequest(
-        List<ActionItemDto> tasks
+        List<TaskResponse> tasks
 ) { }

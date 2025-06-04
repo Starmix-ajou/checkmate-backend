@@ -1,10 +1,8 @@
 package com.starmix.checkmate.adapter.out.persistence.mapper;
 
 import com.starmix.checkmate.adapter.out.persistence.entity.MeetingEntity;
-import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.domain.meeting.Meeting;
 
-import java.util.List;
 
 public class MeetingMapper {
 
@@ -16,6 +14,7 @@ public class MeetingMapper {
                 .projectId(entity.getProjectId())
                 .meetingId(entity.getId())
                 .timestamp(entity.getTimestamp())
+                .summary(entity.getSummary())
                 .build();
     }
 
@@ -27,6 +26,7 @@ public class MeetingMapper {
                 .master(UserMapper.toEntity(domain.getMaster()))
                 .projectId(domain.getProjectId())
                 .timestamp(domain.getTimestamp())
+                .summary(domain.getSummary())
                 .build();
     }
 }
