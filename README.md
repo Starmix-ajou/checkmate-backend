@@ -33,33 +33,35 @@ Task는 Epic 단위로 구조화할 수 있으며, Gantt Chart, Kanban Board, Ca
 ### Backend
 | Java | Spring | Spring<br>Boot | Spring<br>Security | JWT | Spring Cloud<br>OpenFeign
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/4821fb33-7da7-497b-9cfc-0ffc0ba436e2" alt="icon" width="65" height="65" /></div> | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > 
+| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/90ee6491-df94-43cd-8ae0-f06816f8e6e3" alt="icon" width="65" height="65" /></div> | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://github.com/user-attachments/assets/7187bfd4-de1b-4640-8ac0-e1f535470032" width="65" height="65" > | <img src="https://github.com/user-attachments/assets/aeab1f38-d058-4de3-9fef-a0c1dd414637" width="65" height="65" > | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/89031782-58f1-4fdf-88a4-cec6cef029fa" alt="icon" width="65" height="55" /></div>
 
 ### Data
-| MongoDB | Redis | Spring Data | Lombok | 
-| :---: | :---: | :---: | :---: |
-| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/4821fb33-7da7-497b-9cfc-0ffc0ba436e2" alt="icon" width="65" height="65" /></div> | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" >
+| MongoDB | Redis | Spring Data |
+| :---: | :---: | :---: |
+| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/4821fb33-7da7-497b-9cfc-0ffc0ba436e2" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/c1e4b2e0-c032-4f53-b356-67a197d200b2" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://spring.io/img/projects/spring-data.svg" alt="icon" width="65" height="65" /></div>
 
 ### External API
 | Gmail API | Google<br>OAuth API | Slack API |
 | :---: | :---: | :---: |
-| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/4821fb33-7da7-497b-9cfc-0ffc0ba436e2" alt="icon" width="65" height="65" /></div> | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" >
+| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/79265390-c068-4ddc-bd84-a864bc10ef36" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/e6959bab-6d9b-44bd-bbc1-470ef7502447" alt="icon" width="65" height="65" /></div> | <img src="https://github.com/user-attachments/assets/8dc92556-f116-4829-8c27-8fd6e257e8c9" width="65" height="65" >
 
 ### Infra
 | Kubernetes | Docker | ArgoCD | GitHub Actions |
 | :---: | :---: | :---: | :---: |
-| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/4821fb33-7da7-497b-9cfc-0ffc0ba436e2" alt="icon" width="65" height="65" /></div> | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > | <img src="https://t1.daumcdn.net/cfile/tistory/27034D4F58E660F616" width="65" height="65" > 
+| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/a7dfdba3-f40e-48e6-83a3-da11bca758b7" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/f4cb5839-a012-4757-8534-0b2acb891fd2" alt="icon" width="65" height="65" /></div> | <img src="https://github.com/user-attachments/assets/d13b1657-0511-4509-9e94-47d6764fbda4" width="65" height="65" > | <img src="https://github.com/user-attachments/assets/16cb73c0-8a95-43dc-b084-ad2489dc4a76" width="65" height="65" > 
 
 ### Test & Docs
 | JUnit | Swagger |
 | :---: | :---: |
-| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/0af70e4e-1991-4da1-9eb8-94ee8ab51b73" alt="icon" width="65" height="65" /></div> 
+| <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/2c54371b-e8d2-4b29-b73a-1a90e7e791cd" alt="icon" width="65" height="65" /></div> | <div style="display: flex; align-items: flex-start;"><img src="https://github.com/user-attachments/assets/72f9ce71-1eab-47b8-bc4e-d9ac2b142091" alt="icon" width="65" height="65" /></div> 
 
 ## 2. 채택한 개발 기술과 브랜치 전략
 
 ### Spring Cloud OpenFeign
 
-최신 React 기능과 App Router 기반의 파일 시스템 라우팅을 통해 구조적이고 효율적인 페이지 설계가 가능하며, Next.js의 서버 컴포넌트와 서버 액션을 적극 활용해 클라이언트-서버 간 경계를 명확히 유지.
+### Kubernetes
+
+### ArgoCD & App of Apps
 
 ### 브랜치 전략
 
@@ -77,18 +79,45 @@ Task는 Epic 단위로 구조화할 수 있으며, Gantt Chart, Kanban Board, Ca
 ## 4. 프로젝트 구조
 
 ```bash
-.
-├── .github              # GitHub 설정 및 워크플로우
-├── apps
-│   ├── manager          # Product Manager 전용 뷰
-│   └── web              # 메인 사용자 프론트엔드 앱
-├── packages
-│   ├── api              # 공통 API 클라이언트 패키지
-│   ├── ui               # 디자인 시스템 및 컴포넌트 (Storybook으로 문서화)
-│   └── types            # 공유 타입 정의
-├── pnpm-workspace.yaml  # 워크스페이스 설정
-├── turbo.json           # 터보레포 구성
-└── package.json
+src/main/java/com.starmix.checkmate
+├── adapter                          # 외부 시스템과의 입출력을 담당하는 어댑터 계층
+│   ├── in                           # 외부에서 들어오는 요청 처리 (API)
+│   │   ├── common                   # 공통적으로 사용되는 DTO
+│   │   ├── rest                     # REST API Controller / DTO
+│   │   └── sse                      # SSE Controller / DTO
+│   └── out                          # 외부 시스템 호출 (예: DB, 외부 API)
+│       ├── ai                       # AI 서버 연동
+│       ├── mail                     # 이메일 발송 API 연동 (예: Gmail API)
+│       ├── oauth                    # OAuth 인증 관련 외부 연동
+│       ├── persistence              # 데이터베이스 영속성 구현체 (MongoDB)
+│       ├── redis                    # Redis 연동 구현체
+│       └── slack                    # Slack Webhook 또는 API 연동 구현체
+├── application                      # 도메인 로직을 실행하는 UseCase 계층
+│   ├── service                      # UseCase 서비스 구현체
+│   └── port                         # 어댑터-애플리케이션 계층 연결 포트 정의
+│       └── out                      # 어댑터에서 구현해야 할 인터페이스 정의
+│           ├── ai                   # AI 서버 연동을 위한 포트
+│           ├── mail                 # 메일 발송 포트
+│           ├── oauth                # OAuth 인증 포트
+│           ├── persistence          # 영속성 포트 (Repository)
+│           ├── redis                # Redis 연동 포트
+│           └── slack                # Slack 연동 포트
+├── domain                           # 도메인 모델 및 도메인 서비스 계층
+│   ├── comment                      # 댓글 도메인
+│   ├── dailyScrum                   # 데일리 스크럼 관련 도메인
+│   ├── epic                         # 에픽 도메인
+│   ├── feature                      # 기능(feature) 도메인
+│   ├── meeting                      # 회의 관련 도메인
+│   ├── notification                 # 알림 도메인
+│   ├── project                      # 프로젝트 도메인
+│   ├── sprint                       # 스프린트 도메인
+│   ├── task                         # 태스크 도메인
+│   └── user                         # 사용자 도메인
+├── global                           # 전역적으로 사용되는 설정/처리 계층
+│   └── exception                    # 전역 예외 처리 및 예외 정의
+└── infrastructure                   # 설정 및 보안 등 인프라 관련 구성
+    ├── config                       # 애플리케이션 설정 클래스 (ex: Bean 설정, 메시지 설정 등)
+    └── security                     # Spring Security 및 인증/인가 관련 설정
 ```
 
 ## 5. 테스트
