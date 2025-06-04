@@ -44,6 +44,11 @@ public class MeetingService {
         return meetingPersistencePort.findAllByProjectId(projectId);
     }
 
+    public Meeting getMeeting(String meetingId) {
+        return meetingPersistencePort.findById(meetingId)
+                .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
+    }
+
     public Meeting createMeeting(String projectId) {
         User creator = jwtUtil.extractUser();
         Meeting meeting = Meeting.create(creator, projectId);
