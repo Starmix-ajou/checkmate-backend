@@ -84,6 +84,7 @@ public class SprintService {
             String projectId, List<UpdateSprintRequest> request
     ) {
         SprintDetail sprintDetail = redisPort.getObject(RedisType.SPRINT_INFO, projectId);
+        redisPort.delete(RedisType.SPRINT_INFO, projectId);
 
         List<UpdateSprintResponse> response = request.stream().map(requestItem -> {
             Epic epic = epicPersistencePort.findById(requestItem.epicId())
@@ -103,11 +104,7 @@ public class SprintService {
             return UpdateSprintResponse.fromEpicAndTasks(epic, tasks);
         }).toList();
         sprintDetail.epics().forEach(epicPersistencePort::save);
-        sprintDetail.epics().forEach(
-                epic -> {
-                    sprintDetail.sprint().addEpic(epic);
-                }
-        );
+        sprintDetail.epics().forEach(epic -> sprintDetail.sprint().addEpic(epic));
         sprintPersistencePort.save(sprintDetail.sprint());
 
         Project project = projectPersistencePort.findById(projectId)

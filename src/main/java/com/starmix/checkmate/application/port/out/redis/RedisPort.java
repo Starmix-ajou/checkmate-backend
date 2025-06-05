@@ -11,6 +11,7 @@ public interface RedisPort {
     String get(RedisType type, String key);
     boolean isInclude(RedisType type, String key, String value);
     void saveSet(RedisType redisType, String key, List<?> values);
+    void saveSet(RedisType redisType, String key, List<?> values, long timeout, TimeUnit timeUnit);
     void updateSet(RedisType redisType, String key, List<?> newValues);
     <T> List<T> getSet(RedisType redisType, String key, Class<T> clazz);
     boolean exists(RedisType type, String key);

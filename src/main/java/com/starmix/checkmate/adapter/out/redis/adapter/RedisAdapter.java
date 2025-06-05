@@ -33,7 +33,7 @@ public class RedisAdapter implements RedisPort {
     @Override
     public void save(RedisType cacheType, String key, String value, long timeout, TimeUnit timeUnit) {
         try {
-            redisTemplate.opsForValue().set( key, value);
+            redisTemplate.opsForValue().set(key, value);
             redisTemplate.expire(key, timeout, timeUnit);
         } catch (Exception e) {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -60,6 +60,20 @@ public class RedisAdapter implements RedisPort {
             throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public void saveSet(RedisType redisType, String key, List<?> values, long timeout, TimeUnit timeUnit) {
+        try {
+            for (Object value : values) {
+                String json = objectMapper.writeValueAsString(value);
+                redisTemplate.opsForSet().add(key, json);
+                redisTemplate.expire(key, timeout, timeUnit);
+            }
+        } catch (JsonProcessingException e) {
+            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @Override
     public <T> List<T> getSet(RedisType cacheType, String key, Class<T> clazz) {

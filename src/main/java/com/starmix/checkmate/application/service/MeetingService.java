@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -113,7 +113,7 @@ public class MeetingService {
         meeting.save(request, master, response.summary());
         meetingPersistencePort.save(meeting);
 
-        redisPort.saveSet(RedisType.MEETING_ACTION_ITEMS, meeting.getMeetingId(), tasks);
+        redisPort.saveSet(RedisType.MEETING_ACTION_ITEMS, meeting.getMeetingId(), tasks, 10, TimeUnit.MINUTES);
 
         return SaveMeetingResponse.builder()
                 .summary(response.summary())
@@ -132,6 +132,7 @@ public class MeetingService {
                 meetingId,
                 Task.class
         );
+        redisPort.delete(RedisType.MEETING_ACTION_ITEMS, meetingId);
 
         List<Task> tasks = cachedTasks.stream()
                 .filter(cachedTask -> request.actionItems().contains(cachedTask.getTitle()))

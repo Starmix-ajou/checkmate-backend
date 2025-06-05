@@ -46,7 +46,7 @@ public class CommentService {
         Comment comment = Comment.create(taskId, user, request.message());
         commentPersistencePort.save(comment);
 
-        Project project = projectPersistencePort.findById(task.getTaskId())
+        Project project = projectPersistencePort.findById(task.getEpic().getProjectId())
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
 
         Notification notification = Notification.commentOnTask(
