@@ -1,7 +1,7 @@
 package com.starmix.checkmate.adapter.in.rest.manager.project;
 
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
-import com.starmix.checkmate.adapter.in.rest.common.response.ProjectStatisticsResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.statistics.ProjectStatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
 import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;

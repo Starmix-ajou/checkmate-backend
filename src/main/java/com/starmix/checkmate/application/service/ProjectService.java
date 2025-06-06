@@ -1,8 +1,9 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
-import com.starmix.checkmate.adapter.in.rest.common.response.ProjectStatisticsResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.statistics.ProjectStatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.statistics.StatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
@@ -16,6 +17,7 @@ import com.starmix.checkmate.adapter.in.sse.web.project.response.CreateFeatureSp
 import com.starmix.checkmate.adapter.in.sse.web.project.response.FeedbackResponse;
 import com.starmix.checkmate.adapter.out.ai.dto.FeedbackDto;
 import com.starmix.checkmate.adapter.out.mail.type.MailType;
+import com.starmix.checkmate.adapter.out.persistence.entity.LeaderboardEntity;
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.ai.AIPort;
 import com.starmix.checkmate.application.port.out.mail.MailPort;
@@ -24,6 +26,7 @@ import com.starmix.checkmate.adapter.out.persistence.dto.TaskCountPersistenceDto
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;
+import com.starmix.checkmate.domain.leaderboard.Leaderboard;
 import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
@@ -34,12 +37,17 @@ import com.starmix.checkmate.domain.user.User;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -54,6 +62,7 @@ public class ProjectService {
     private final TaskPersistencePort taskPersistencePort;
     private final SprintPersistencePort sprintPersistencePort;
     private final DailyScrumPersistencePort dailyScrumPersistencePort;
+    private final LeaderboardPersistencePort leaderBoardPersistencePort;
     private final NotificationService notificationService;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status, Role role) {
@@ -268,7 +277,41 @@ public class ProjectService {
             doneCount = taskPersistencePort.countReviewedBySprintId(sprint.getSprintId());
         }
 
-        return ProjectStatisticsResponse.from(taskCounts, doneDays, totalDays, doneCount);
+        return ProjectStatisticsResponse.from(projectId, taskCounts, doneDays, totalDays, doneCount);
+    }
+
+    public StatisticsResponse getStatistics(LocalDate timestamp) {
+        LeaderboardEntity leaderBoardEntity;
+        if(timestamp != null) {
+            leaderBoardEntity = leaderBoardPersistencePort.findByTimestamp(timestamp);
+        } else {
+            leaderBoardEntity = leaderBoardPersistencePort.findLatest();
+        }
+        return StatisticsResponse.fromLeaderBoardEntity(leaderBoardEntity);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void resetLeaderBoard() {
+        LocalDate now = LocalDate.now();
+        LeaderboardEntity existsLeaderboard = leaderBoardPersistencePort.findByTimestamp(now);
+        if (existsLeaderboard != null && existsLeaderboard.getTimestamp().equals(LocalDate.now())) {
+            return;
+        }
+
+        List<Project> projects = projectPersistencePort.findAll();
+        List<ProjectStatisticsResponse> projectStatistics = projects.stream()
+                .flatMap(project -> {
+                    try {
+                        ProjectStatisticsResponse stats = getProjectStatistics(project.getProjectId(), Role.DEVELOPER);
+                        return Stream.of(stats);
+                    } catch (Exception e) {
+                        return Stream.empty();
+                    }
+                }).toList();
+
+        Leaderboard leaderboard = Leaderboard.createFromProjectStatistics(projects, projectStatistics);
+        leaderBoardPersistencePort.save(leaderboard);
     }
 
     private User isAuthorizedMember(String projectId, String memberId) {

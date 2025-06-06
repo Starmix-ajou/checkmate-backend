@@ -1,8 +1,9 @@
 package com.starmix.checkmate.adapter.in.rest.web.project;
 
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectBriefResponse;
-import com.starmix.checkmate.adapter.in.rest.common.response.ProjectStatisticsResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.statistics.ProjectStatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectUserResponse;
+import com.starmix.checkmate.adapter.in.rest.common.response.statistics.StatisticsResponse;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.InviteProjectRequest;
 import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -117,11 +119,19 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/statistics")
-    public ResponseEntity<ProjectStatisticsResponse> getProjectStatistics (
+    public ResponseEntity<ProjectStatisticsResponse> getProjectStatistics(
             @PathVariable String projectId
     ) {
         ProjectStatisticsResponse response =
                 projectService.getProjectStatistics(projectId, Role.DEVELOPER);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<StatisticsResponse> getStatistics(
+            @RequestParam(required = false) LocalDate timestamp
+    ) {
+        StatisticsResponse response = projectService.getStatistics(timestamp);
         return ResponseEntity.ok().body(response);
     }
 }
