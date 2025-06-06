@@ -48,6 +48,22 @@ public class ProjectManagerController {
         return ResponseEntity.ok().body(response);
     }
 
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<Void> approve (
+            @PathVariable String id
+    ) {
+        projectService.approve(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/deny")
+    public ResponseEntity<Void> deny (
+            @PathVariable String id
+    ) {
+        projectService.deny(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{projectId}/member")
     public ResponseEntity<ProjectUserResponse> getMembers (
             @PathVariable String projectId
