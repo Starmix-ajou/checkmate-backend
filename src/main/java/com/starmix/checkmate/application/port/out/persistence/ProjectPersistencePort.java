@@ -10,4 +10,5 @@ public interface ProjectPersistencePort {
     String save(Project project);
     void delete(String projectId);
     List<Project> findByProjectIds(List<String> projectIds);
+    List<Project> findAll();
 }

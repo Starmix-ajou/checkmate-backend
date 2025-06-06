@@ -93,4 +93,14 @@ public class ProjectPersistenceAdapter implements ProjectPersistencePort {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public List<Project> findAll() {
+        try {
+            List<ProjectEntity> projectEntities = projectMongoRepository.findAll();
+            return projectEntities.stream().map(ProjectMapper::toDomain).toList();
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

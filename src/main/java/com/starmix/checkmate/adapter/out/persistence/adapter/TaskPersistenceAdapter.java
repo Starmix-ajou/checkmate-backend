@@ -266,7 +266,7 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
             Query query = new Query();
             query.addCriteria(Criteria.where("epic.$id")
-                    .in(sprint.getEpics().stream().map(Epic::getEpicId)));
+                    .in(sprint.getEpics().stream().map(Epic::getEpicId).toList()));
             query.addCriteria(Criteria.where("review").ne(null));
 
             return Math.toIntExact(mongoTemplate.count(query, TaskEntity.class));
