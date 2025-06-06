@@ -67,7 +67,7 @@ public class Notification {
         return Notification.builder()
                 .userId(userId)
                 .title("회의록이 추가되었어요!")
-                .description(meeting.getMaster() + " 님이 " + meeting.getTitle() + " 을 추가했어요!")
+                .description(meeting.getMaster().getName() + " 님이 " + meeting.getTitle() + " 을 추가했어요!")
                 .targetId(meeting.getMeetingId())
                 .isRead(false)
                 .project(project)

@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @Builder
 public class Leaderboard {
+    private String leaderboardId;
     private LocalDate timestamp;
     private List<ProjectTaskStatistics> taskStatistics;
     private List<ProjectDailyScrumStatistics> dailyScrumStatistics;
@@ -49,4 +50,7 @@ public class Leaderboard {
                 .build();
     }
 
+    public void changeId(String leaderboardId) {
+        this.leaderboardId = leaderboardId;
+    }
 }

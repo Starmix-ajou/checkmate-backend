@@ -7,6 +7,7 @@ public class LeaderboardMapper {
 
     public static Leaderboard toDomain(LeaderboardEntity entity) {
         return Leaderboard.builder()
+                .leaderboardId(entity.getId())
                 .timestamp(entity.getTimestamp())
                 .taskStatistics(entity.getTaskStatistics())
                 .dailyScrumStatistics(entity.getDailyScrumStatistics())
@@ -16,6 +17,7 @@ public class LeaderboardMapper {
 
     public static LeaderboardEntity toEntity(Leaderboard domain) {
         return LeaderboardEntity.builder()
+                .id(domain.getLeaderboardId())
                 .timestamp(domain.getTimestamp())
                 .taskStatistics(domain.getTaskStatistics())
                 .dailyScrumStatistics(domain.getDailyScrumStatistics())

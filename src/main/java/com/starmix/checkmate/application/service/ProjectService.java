@@ -291,13 +291,10 @@ public class ProjectService {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0/15 * * * ?")
     public void resetLeaderBoard() {
         LocalDate now = LocalDate.now();
         LeaderboardEntity existsLeaderboard = leaderBoardPersistencePort.findByTimestamp(now);
-        if (existsLeaderboard != null && existsLeaderboard.getTimestamp().equals(LocalDate.now())) {
-            return;
-        }
 
         List<Project> projects = projectPersistencePort.findAll();
         List<ProjectStatisticsResponse> projectStatistics = projects.stream()
@@ -311,6 +308,10 @@ public class ProjectService {
                 }).toList();
 
         Leaderboard leaderboard = Leaderboard.createFromProjectStatistics(projects, projectStatistics);
+
+        if (existsLeaderboard != null && existsLeaderboard.getTimestamp().equals(LocalDate.now())) {
+            leaderboard.changeId(existsLeaderboard.getId());
+        }
         leaderBoardPersistencePort.save(leaderboard);
     }
 
