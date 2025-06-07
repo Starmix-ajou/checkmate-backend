@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -39,6 +40,25 @@ public class NotificationPersistenceAdapter implements NotificationPersistencePo
         try {
             NotificationEntity notificationEntity = NotificationMapper.toEntity(notification);
             notificationMongoRepository.save(notificationEntity);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void delete(String notificationId) {
+        try {
+            notificationMongoRepository.deleteById(notificationId);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Optional<Notification> findById(String notificationId) {
+        try {
+            Optional<NotificationEntity> notificationEntity = notificationMongoRepository.findById(notificationId);
+            return notificationEntity.map(NotificationMapper::toDomain);
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
