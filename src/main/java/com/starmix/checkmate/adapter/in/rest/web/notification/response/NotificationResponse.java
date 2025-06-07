@@ -1,4 +1,4 @@
-package com.starmix.checkmate.adapter.in.sse.web.notification.response;
+package com.starmix.checkmate.adapter.in.rest.web.notification.response;
 
 import com.starmix.checkmate.adapter.in.rest.web.project.response.ProjectResponse;
 import com.starmix.checkmate.domain.notification.Notification;

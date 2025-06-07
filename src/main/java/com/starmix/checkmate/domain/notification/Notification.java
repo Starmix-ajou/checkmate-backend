@@ -18,6 +18,7 @@ public class Notification {
     private String targetId;
     private Boolean isRead;
     private Project project;
+    private NotificationType type;
 
     public static Notification createProjectInviteNotification(String userId, Project project) {
         return Notification.builder()
@@ -27,6 +28,7 @@ public class Notification {
                 .targetId(project.getProjectId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.INVITE_PROJECT)
                 .build();
     }
 
@@ -38,6 +40,7 @@ public class Notification {
                 .targetId(task.getTaskId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.ASSIGN_TASK)
                 .build();
     }
 
@@ -49,6 +52,7 @@ public class Notification {
                 .targetId(task.getTaskId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.COMMENT_TASK)
                 .build();
     }
 
@@ -60,6 +64,7 @@ public class Notification {
                 .targetId(project.getProjectId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.UPDATE_PROFILE)
                 .build();
     }
 
@@ -71,6 +76,7 @@ public class Notification {
                 .targetId(meeting.getMeetingId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.MAKE_MEETING)
                 .build();
     }
 
@@ -82,6 +88,7 @@ public class Notification {
                 .targetId(project.getProjectId())
                 .isRead(false)
                 .project(project)
+                .type(NotificationType.CREATE_SPRINT)
                 .build();
     }
 
