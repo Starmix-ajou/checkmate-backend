@@ -1,5 +1,6 @@
 package com.starmix.checkmate.adapter.in.rest.web.notification;
 
+import com.starmix.checkmate.adapter.in.rest.web.notification.response.NotificationCountResponse;
 import com.starmix.checkmate.adapter.in.rest.web.notification.response.NotificationResponse;
 import com.starmix.checkmate.application.service.NotificationService;
 import com.starmix.checkmate.domain.notification.Notification;
@@ -21,6 +22,15 @@ public class NotificationController {
     ) {
         Page<Notification> notifications = notificationService.getNotifications(projectId, page, size);
         Page<NotificationResponse> response = notifications.map(NotificationResponse::from);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<NotificationCountResponse> getNotificationCount(
+            @RequestParam(required = false) String projectId
+    ) {
+        Integer count = notificationService.getNotificationCount(projectId);
+        NotificationCountResponse response = NotificationCountResponse.from(count);
         return ResponseEntity.ok().body(response);
     }
 
