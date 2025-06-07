@@ -7,8 +7,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Builder(toBuilder = true)
 @Getter
@@ -23,9 +21,13 @@ public class Task {
     private Priority priority;
     private Epic epic;
     private Review review;
+    private LocalDate doneDate;
 
     public void updateStatus(Status status) {
         this.status = status;
+        if(status == Status.DONE) {
+            this.doneDate = LocalDate.now();
+        }
     }
 
     public boolean isScheduledForDate(LocalDate date) {
@@ -94,11 +96,6 @@ public class Task {
         this.priority = priority;
         this.epic = epic;
         this.review = review;
-    }
-
-    public static Map<Status, List<Task>> groupByStatus(List<Task> tasks) {
-        return tasks.stream()
-                .collect(Collectors.groupingBy(Task::getStatus));
     }
 
     public static List<Task> filterByStatus(List<Task> tasks, Status status) {

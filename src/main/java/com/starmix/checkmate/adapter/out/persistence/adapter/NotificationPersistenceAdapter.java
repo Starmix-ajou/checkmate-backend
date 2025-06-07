@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -61,6 +60,21 @@ public class NotificationPersistenceAdapter implements NotificationPersistencePo
         try {
             Optional<NotificationEntity> notificationEntity = notificationMongoRepository.findById(notificationId);
             return notificationEntity.map(NotificationMapper::toDomain);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public Integer countByUserIdAndProjectId(String userId, String projectId) {
+        try {
+            Integer count;
+            if(projectId != null && !projectId.isEmpty()) {
+                count = notificationMongoRepository.countByUserIdAndProject_Id(userId, projectId);
+            } else {
+                count = notificationMongoRepository.countByUserId(userId);
+            }
+            return count;
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

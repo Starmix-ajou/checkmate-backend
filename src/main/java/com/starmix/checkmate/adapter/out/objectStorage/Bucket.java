@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Bucket {
-    DEFINITION("checkmate-definition");
+    DEFINITION("checkmate-definition"),
+    PROJECT("checkmate-project");
 
     private final String key;
 

@@ -33,7 +33,7 @@ public class ObjectStorageAdapter implements ObjectStoragePort {
                     .bucket(bucket.getKey())
                     .key(savedFilename)
                     .contentType("multipart/form-data")
-//                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .acl(ObjectCannedACL.PUBLIC_READ)
                     .build();
 
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()

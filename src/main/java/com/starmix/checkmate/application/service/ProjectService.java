@@ -130,7 +130,6 @@ public class ProjectService {
         String email = jwtUtil.extractEmail();
 
         Project project = redisPort.getObject(RedisType.PROJECT_INFO, email);
-        redisPort.delete(RedisType.PROJECT_INFO, email);
         FeedbackDto response = aiPort.feedbackFeatureSpecification(email, request);
         if(response.isNextStep()) {
             List<User> members = project.getMembers().stream().map(
@@ -162,6 +161,7 @@ public class ProjectService {
             contexts.forEach((memberEmail, context) -> mailPort.send(memberEmail, MailType.PROJECT_INVITE, context));
         }
 
+        redisPort.delete(RedisType.PROJECT_INFO, email);
         return FeedbackResponse.fromFeedbackDto(response, project.getProjectId());
     }
 

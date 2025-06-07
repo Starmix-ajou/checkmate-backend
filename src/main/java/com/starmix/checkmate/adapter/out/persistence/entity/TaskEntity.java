@@ -31,4 +31,6 @@ public class TaskEntity extends BaseEntity {
     private EpicEntity epic;
 
     private Review review;
+
+    private LocalDate doneDate;
 }

@@ -48,4 +48,9 @@ public class NotificationService {
     public void deleteNotification(String notificationId) {
         notificationPersistencePort.delete(notificationId);
     }
+
+    public Integer getNotificationCount(String projectId) {
+        String userId = jwtUtil.extractUser().getUserId();
+        return notificationPersistencePort.countByUserIdAndProjectId(userId, projectId);
+    }
 }
