@@ -6,10 +6,12 @@ import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.global.exception.CustomException;
 import com.starmix.checkmate.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -19,9 +21,15 @@ public class NotificationService {
     private final JwtUtil jwtUtil;
     private final SseEmitterManager sseEmitterManager;
 
-    public List<Notification> getNotifications(String projectId) {
+    public Page<Notification> getNotifications(String projectId, Integer page, Integer size) {
         String userId = jwtUtil.extractUser().getUserId();
-        return notificationPersistencePort.findByUserIdAndProjectId(userId, projectId);
+        Pageable pageable = PageRequest.of(
+                page == null ? 0 : page,
+                size == null ? 10 : size,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+
+        return notificationPersistencePort.findByUserIdAndProjectId(userId, projectId, pageable);
     }
 
     public void addNotifications(Notification notification) {
@@ -33,7 +41,7 @@ public class NotificationService {
         Notification notification = notificationPersistencePort.findById(notificationId)
                 .orElseThrow(() -> new CustomException("Notification not found.", HttpStatus.NOT_FOUND));
         notification.read();
-        
+
         notificationPersistencePort.save(notification);
     }
 

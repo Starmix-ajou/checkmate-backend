@@ -7,6 +7,8 @@ import com.starmix.checkmate.application.port.out.persistence.NotificationPersis
 import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +22,16 @@ public class NotificationPersistenceAdapter implements NotificationPersistencePo
     private final NotificationMongoRepository notificationMongoRepository;
 
     @Override
-    public List<Notification> findByUserIdAndProjectId(String userId, String projectId) {
+    public Page<Notification> findByUserIdAndProjectId(String userId, String projectId, Pageable pageable) {
         try {
-            List<NotificationEntity> notificationEntities;
+            Page<NotificationEntity> notificationEntities;
             if(projectId != null && !projectId.isEmpty()) {
-                notificationEntities = notificationMongoRepository.findByUserIdAndProject_Id(userId, projectId);
+                notificationEntities = notificationMongoRepository.findByUserIdAndProject_Id(userId, projectId, pageable);
             } else {
-                notificationEntities = notificationMongoRepository.findByUserId(userId);
+                notificationEntities = notificationMongoRepository.findByUserId(userId, pageable);
             }
 
-            return notificationEntities.stream().map(NotificationMapper::toDomain).toList();
+            return notificationEntities.map(NotificationMapper::toDomain);
         } catch (Exception e) {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
