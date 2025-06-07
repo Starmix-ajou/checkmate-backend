@@ -4,10 +4,9 @@ import com.starmix.checkmate.adapter.in.rest.web.notification.response.Notificat
 import com.starmix.checkmate.application.service.NotificationService;
 import com.starmix.checkmate.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,11 +15,12 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getNotifications(
-            @RequestParam(required = false) String projectId
+    public ResponseEntity<Page<NotificationResponse>> getNotifications(
+            @RequestParam(required = false) String projectId,
+            Integer page, Integer size
     ) {
-        List<Notification> notifications = notificationService.getNotifications(projectId);
-        List<NotificationResponse> response = notifications.stream().map(NotificationResponse::from).toList();
+        Page<Notification> notifications = notificationService.getNotifications(projectId, page, size);
+        Page<NotificationResponse> response = notifications.map(NotificationResponse::from);
         return ResponseEntity.ok().body(response);
     }
 
