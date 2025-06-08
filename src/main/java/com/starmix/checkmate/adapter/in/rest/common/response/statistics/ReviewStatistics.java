@@ -9,10 +9,13 @@ public record ReviewStatistics(
         double doneRate
 ) {
     public static ReviewStatistics from(Integer totalCount, Integer doneCount) {
+        double doneRate = (totalCount != null && totalCount != 0)
+                ? (double) doneCount / totalCount
+                : 0.0;
         return ReviewStatistics.builder()
                 .totalCount(totalCount)
                 .doneCount(doneCount)
-                .doneRate((double) doneCount/totalCount)
+                .doneRate(doneRate)
                 .build();
     }
 }

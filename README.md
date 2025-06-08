@@ -57,26 +57,20 @@ Task는 Epic 단위로 구조화할 수 있으며, Gantt Chart, Kanban Board, Ca
 
 ## 2. 채택한 개발 기술과 브랜치 전략
 
+### Hexagonal Architecture
+
+### Domain Driven Design
+
 ### Spring Cloud OpenFeign
-
-### Kubernetes
-
-### ArgoCD & App of Apps
 
 ### 브랜치 전략
 
 - 브랜치 명: **Jira 태스크 ID 기반**
-  - ex) `CM-123`
+    - ex) `CM-123`
 - **Rebase Merge** 방식으로 main 브랜치에 병합
 - **최소 1명 이상의 approve** 필요
 
-## 3. Challenge
-
-### Hexagonal Architecture
-
-### Domain Driven Development
-
-## 4. 프로젝트 구조
+## 3. 프로젝트 구조
 
 ```bash
 src/main/java/com.starmix.checkmate
@@ -120,7 +114,7 @@ src/main/java/com.starmix.checkmate
     └── security                     # Spring Security 및 인증/인가 관련 설정
 ```
 
-## 5. 테스트
+## 4. 테스트
 
 **JUnit**을 기반으로 Domain / Service 유닛 테스트를 수행
 

@@ -12,12 +12,16 @@ public record TaskStatistics(
         double doneRate
 ) {
     public static TaskStatistics from(TaskCountPersistenceDto taskCount) {
+        int total = taskCount.totalCount();
+        double doneRate = (total != 0)
+                ? (double) taskCount.doneCount() / total
+                : 0.0;
         return TaskStatistics.builder()
                 .todoCount(taskCount.todoCount())
                 .inProgressCount(taskCount.inProgressCount())
                 .doneCount(taskCount.doneCount())
-                .totalCount(taskCount.totalCount())
-                .doneRate((double) taskCount.doneCount() / taskCount.totalCount())
+                .totalCount(total)
+                .doneRate(doneRate)
                 .build();
     }
 }

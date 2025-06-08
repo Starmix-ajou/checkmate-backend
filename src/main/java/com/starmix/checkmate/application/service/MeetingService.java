@@ -1,5 +1,6 @@
 package com.starmix.checkmate.application.service;
 
+import com.starmix.checkmate.adapter.in.rest.web.meeting.request.UpdateMeetingRequest;
 import com.starmix.checkmate.adapter.in.rest.web.task.response.TaskResponse;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.CreateActionItemsRequest;
 import com.starmix.checkmate.adapter.in.sse.web.meeting.request.FeedbackActionItemsRequest;
@@ -65,7 +66,7 @@ public class MeetingService {
                     notificationService.addNotifications(notification);
                 }
         );
-        
+
         return meetingPersistencePort.findById(meetingId)
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
     }
@@ -78,9 +79,9 @@ public class MeetingService {
         Meeting meeting = meetingPersistencePort.findById(request.meetingId())
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
         User master = userPersistencePort.findById(request.masterId())
-                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
         meeting.addContent(request.content());
-        
+
         CreateMeetingFeignResponse response = aIPort.saveMeeting(meeting);
 
         List<Task> tasks = response.actionItems().stream().map(
@@ -174,5 +175,15 @@ public class MeetingService {
                 }
         ).toList();
         return tasks.stream().map(task -> TaskResponse.fromDomain(task, sprint)).toList();
+    }
+
+    public void updateMeeting(String meetingId, UpdateMeetingRequest request) {
+        Meeting meeting = meetingPersistencePort.findById(meetingId)
+                .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
+        User master = userPersistencePort.findById(request.masterId())
+                .orElseThrow(() -> new CustomException("Master not found", HttpStatus.NOT_FOUND));
+
+        meeting.update(request.title(), master);
+        meetingPersistencePort.save(meeting);
     }
 }

@@ -42,6 +42,11 @@ public class Meeting {
         this.summary = summary;
     }
 
+    public void update(String title, User master) {
+        this.title = title;
+        this.master = master;
+    }
+
     public void addContent(String content) {
         this.content = content;
     }

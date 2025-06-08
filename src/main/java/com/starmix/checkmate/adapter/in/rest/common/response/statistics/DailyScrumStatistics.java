@@ -9,10 +9,13 @@ public record DailyScrumStatistics(
         double doneRate
 ) {
     public static DailyScrumStatistics from(Integer doneDays, Integer totalDays) {
+        double doneRate = (totalDays != null && totalDays != 0)
+                ? (double) doneDays / totalDays
+                : 0.0;
         return DailyScrumStatistics.builder()
                 .doneDays(doneDays)
                 .totalDays(totalDays)
-                .doneRate((double) doneDays/totalDays)
+                .doneRate(doneRate)
                 .build();
     }
 }

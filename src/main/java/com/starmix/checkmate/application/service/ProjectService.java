@@ -175,6 +175,14 @@ public class ProjectService {
 
         user.approve(project.getProjectId());
         userPersistencePort.save(user);
+
+        project.addMember(user);
+        projectPersistencePort.save(project);
+
+        Notification notification = Notification.approveNotification(
+                project.getLeader().getUserId(), project, user
+        );
+        notificationService.addNotifications(notification);
     }
 
     public void deny(String projectId) {
@@ -184,6 +192,14 @@ public class ProjectService {
 
         user.deny(project.getProjectId());
         userPersistencePort.save(user);
+
+        project.deleteMember(user);
+        projectPersistencePort.save(project);
+
+        Notification notification = Notification.denyNotification(
+                project.getLeader().getUserId(), project, user
+        );
+        notificationService.addNotifications(notification);
     }
 
     public void deleteProject(String projectId) {
@@ -204,7 +220,7 @@ public class ProjectService {
         Project project = isAuthorizedLeader(projectId);
 
         User user = userPersistencePort.findByEmail(request.email())
-                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
         if(request.role().equals(Role.DEVELOPER)) {
             user.addProfile(Profile.init(request.profile(), projectId));
             project.addMember(user);
@@ -239,7 +255,7 @@ public class ProjectService {
     public void updateMember(String projectId, String memberId, UpdateMemberRequest request) {
         User member = isAuthorizedMember(projectId, memberId);
         Project project = projectPersistencePort.findById(projectId)
-                        .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         member.getProfileByProjectId(projectId).updatePositions(request.positions());
         userPersistencePort.save(member);
 
@@ -249,12 +265,18 @@ public class ProjectService {
 
     public void deleteMember(String projectId, String memberId) {
         User member = isAuthorizedMember(projectId, memberId);
+        Profile profile = member.getProfileByProjectId(projectId);
         member.deleteProfileByProjectId(projectId);
         userPersistencePort.save(member);
 
         Project project = projectPersistencePort.findById(projectId)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
-        project.deleteMember(member);
+
+        if(profile.getRole().equals(Role.DEVELOPER)) {
+            project.deleteMember(member);
+        } else {
+            project.deleteManager(member);
+        }
         projectPersistencePort.save(project);
     }
 
@@ -268,8 +290,7 @@ public class ProjectService {
         Sprint sprint = sprintPersistencePort.findCurrentSprint(projectId)
                 .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
 
-        TaskCountPersistenceDto taskCounts =
-                taskPersistencePort.countByStartDateAndEndDate(sprint.getStartDate(), sprint.getEndDate());
+        TaskCountPersistenceDto taskCounts = taskPersistencePort.countBySprintId(sprint.getSprintId());
 
         Integer doneDays =
                 dailyScrumPersistencePort.countByStartDateAndEndDate(sprint.getStartDate(), sprint.getEndDate());
