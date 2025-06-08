@@ -175,6 +175,11 @@ public class ProjectService {
 
         user.approve(project.getProjectId());
         userPersistencePort.save(user);
+
+        Notification notification = Notification.approveNotification(
+                project.getLeader().getUserId(), project, user
+        );
+        notificationService.addNotifications(notification);
     }
 
     public void deny(String projectId) {
@@ -184,6 +189,11 @@ public class ProjectService {
 
         user.deny(project.getProjectId());
         userPersistencePort.save(user);
+
+        Notification notification = Notification.denyNotification(
+                project.getLeader().getUserId(), project, user
+        );
+        notificationService.addNotifications(notification);
     }
 
     public void deleteProject(String projectId) {

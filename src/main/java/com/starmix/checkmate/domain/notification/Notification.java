@@ -5,6 +5,7 @@ import com.starmix.checkmate.domain.meeting.Meeting;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.sprint.Sprint;
 import com.starmix.checkmate.domain.task.Task;
+import com.starmix.checkmate.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -89,6 +90,30 @@ public class Notification {
                 .isRead(false)
                 .project(project)
                 .type(NotificationType.CREATE_SPRINT)
+                .build();
+    }
+
+    public static Notification approveNotification(String userId, Project project, User user) {
+        return Notification.builder()
+                .userId(userId)
+                .title("프로젝트 초대를 수락했어요!")
+                .description(user.getName() + " 님이 " + project.getTitle() + " 프로젝트 초대를 수락했어요!")
+                .targetId(project.getProjectId())
+                .isRead(false)
+                .project(project)
+                .type(NotificationType.INVITE_APPROVE)
+                .build();
+    }
+
+    public static Notification denyNotification(String userId, Project project, User user) {
+        return Notification.builder()
+                .userId(userId)
+                .title("프로젝트 초대를 거절했어요!")
+                .description(user.getName() + " 님이 " + project.getTitle() + " 프로젝트 초대를 거절했어요!")
+                .targetId(project.getProjectId())
+                .isRead(false)
+                .project(project)
+                .type(NotificationType.INVITE_DENY)
                 .build();
     }
 
