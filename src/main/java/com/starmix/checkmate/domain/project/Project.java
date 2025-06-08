@@ -27,8 +27,8 @@ public class Project {
     private User leader;
     private User productManager;
     private String imageUrl;
-    @JsonIgnore
-    private List<String> paymentIds;
+    @Builder.Default
+    private List<String> paymentIds = new ArrayList<>();
 
     public static Project createTemporaryProject(
             CreateFeatureDefinitionRequest request,
@@ -54,6 +54,7 @@ public class Project {
                 .leader(leader)
                 .members(members)
                 .productManager(null)
+                .paymentIds(new ArrayList<>())
                 .build();
     }
 
@@ -73,6 +74,13 @@ public class Project {
         List<User> existingMembers = new ArrayList<>(this.members);
         existingMembers.remove(member);
         this.members = existingMembers;
+    }
+
+    public void deleteManager(User productManager) {
+        if (!this.productManager.equals(productManager)) {
+            throw new CustomException("Manager Not Exists", HttpStatus.BAD_REQUEST);
+        }
+        this.productManager = null;
     }
 
     public void changeProductManager(User productManager) {
@@ -96,7 +104,7 @@ public class Project {
     }
 
     public Map<String, Context> toMailContext(User user) {
-        String baseUrl = isProductManager(user) ? "https://manager.checkmate.it.kr/" : "https://checkmate.it.kr/";
+        String baseUrl = isProductManager(user) ? "https://manager.checkmate.it.kr/projects/" : "https://checkmate.it.kr/projects/";
 
         Map<String, Context> mailContextMap = new HashMap<>();
         Context context = new Context();
@@ -122,7 +130,7 @@ public class Project {
     }
 
     public Boolean isProductManager(User user) {
-        return productManager.equals(user);
+        return Objects.equals(productManager, user);
     }
 
     public void update(
@@ -142,7 +150,7 @@ public class Project {
     }
 
     public boolean canManageMember(User user, User member) {
-        return isLeader(user) && !user.equals(member);
+        return isLeader(user) || !user.equals(member);
     }
 
     public void addPayment(String paymentId) {
@@ -156,6 +164,6 @@ public class Project {
 
     @JsonProperty("isPremium")
     public boolean isPremium() {
-        return !this.paymentIds.isEmpty();
+        return this.paymentIds != null && !this.paymentIds.isEmpty();
     }
 }

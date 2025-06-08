@@ -6,5 +6,7 @@ public enum NotificationType {
     COMMENT_TASK,
     UPDATE_PROFILE,
     MAKE_MEETING,
-    CREATE_SPRINT
+    CREATE_SPRINT,
+    INVITE_APPROVE,
+    INVITE_DENY
 }

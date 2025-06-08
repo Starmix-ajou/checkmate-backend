@@ -22,7 +22,8 @@ public record TaskResponse(
         LocalDate endDate,
         Priority priority,
         EpicDto epic,
-        Review review
+        Review review,
+        LocalDate doneDate
 ) {
     @Builder
     public record EpicDto(
@@ -62,6 +63,7 @@ public record TaskResponse(
                 .priority(task.getPriority())
                 .epic(epic)
                 .review(task.getReview())
+                .doneDate(task.getDoneDate())
                 .build();
     }
 }

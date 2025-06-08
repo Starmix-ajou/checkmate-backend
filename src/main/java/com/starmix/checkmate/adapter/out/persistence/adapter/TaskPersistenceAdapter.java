@@ -1,6 +1,7 @@
 package com.starmix.checkmate.adapter.out.persistence.adapter;
 
 import com.starmix.checkmate.adapter.out.persistence.entity.EpicEntity;
+import com.starmix.checkmate.adapter.out.persistence.entity.SprintEntity;
 import com.starmix.checkmate.adapter.out.persistence.entity.TaskEntity;
 import com.starmix.checkmate.adapter.out.persistence.entity.UserEntity;
 import com.starmix.checkmate.adapter.out.persistence.mapper.TaskMapper;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -79,16 +81,35 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             List<Criteria> epicCriteriaList = new ArrayList<>();
             epicCriteriaList.add(Criteria.where("projectId").is(projectId));
 
+            if (sprintIds != null && !sprintIds.isEmpty()) {
+                // sprintId → SprintEntity
+                Query sprintQuery = new Query(Criteria.where("_id").in(sprintIds));
+                List<SprintEntity> sprints = mongoTemplate.find(sprintQuery, SprintEntity.class);
+
+                if (sprints.isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                List<String> epicIdsFromSprints = sprints.stream()
+                        .flatMap(sprint -> sprint.getEpics().stream())
+                        .map(EpicEntity::getId)
+                        .distinct()
+                        .toList();
+
+                if (epicIdsFromSprints.isEmpty()) {
+                    return Collections.emptyList();
+                }
+
+                epicCriteriaList.add(Criteria.where("_id").in(epicIdsFromSprints));
+            }
+
             if (epicIds != null && !epicIds.isEmpty()) {
                 epicCriteriaList.add(Criteria.where("_id").in(epicIds));
             }
 
-            if (sprintIds != null && !sprintIds.isEmpty()) {
-                epicCriteriaList.add(Criteria.where("sprintId").in(sprintIds));
-            }
-
             Query epicQuery = new Query(new Criteria().andOperator(epicCriteriaList.toArray(new Criteria[0])));
             List<EpicEntity> epics = mongoTemplate.find(epicQuery, EpicEntity.class);
+
             if (epics.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -125,7 +146,6 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
             if (startDate != null) {
                 taskCriteriaList.add(Criteria.where("startDate").gte(startDate));
             }
-
             if (endDate != null) {
                 taskCriteriaList.add(Criteria.where("endDate").lte(endDate));
             }
@@ -136,8 +156,8 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
 
             Query taskQuery = new Query();
             taskQuery.addCriteria(new Criteria().andOperator(taskCriteriaList.toArray(new Criteria[0])));
-
             List<TaskEntity> taskEntities = mongoTemplate.find(taskQuery, TaskEntity.class);
+
             return taskEntities.stream()
                     .map(TaskMapper::toDomain)
                     .toList();
@@ -226,25 +246,35 @@ public class TaskPersistenceAdapter implements TaskPersistencePort {
     }
 
     @Override
-    public TaskCountPersistenceDto countByStartDateAndEndDate(LocalDate startDate, LocalDate endDate) {
+    public TaskCountPersistenceDto countBySprintId(String sprintId) {
         try {
-            Criteria criteria = Criteria.where("startDate").lte(endDate)
-                    .and("endDate").gte(startDate);
+            SprintEntity sprint = mongoTemplate.findById(sprintId, SprintEntity.class);
+            if (sprint == null) {
+                throw new CustomException("Sprint not found", HttpStatus.NOT_FOUND);
+            }
+
+            List<String> epicIds = sprint.getEpics().stream()
+                    .map(EpicEntity::getId)
+                    .collect(Collectors.toList());
+
+            Criteria criteria = Criteria.where("epic.$id").in(epicIds);
 
             Aggregation aggregation = Aggregation.newAggregation(
                     Aggregation.match(criteria),
                     Aggregation.group("status").count().as("count")
             );
 
-            AggregationResults<Document> results = mongoTemplate.aggregate(
-                    aggregation, TaskEntity.class, Document.class
-            );
+            AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, TaskEntity.class, Document.class);
 
             Map<Status, Integer> statusMap = new EnumMap<>(Status.class);
             for (Document doc : results.getMappedResults()) {
-                String statusStr = doc.getString("_id");
-                int count = doc.getInteger("count");
-                statusMap.put(Status.valueOf(statusStr), count);
+                Status status = Status.valueOf(doc.getString("_id"));
+                int count = doc.getInteger("count", 0);
+                statusMap.put(status, count);
+            }
+
+            for (Status s : Status.values()) {
+                statusMap.putIfAbsent(s, 0);
             }
 
             return TaskCountPersistenceDto.builder()

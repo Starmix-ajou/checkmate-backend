@@ -26,7 +26,7 @@ public class RedisAdapter implements RedisPort {
         try {
             redisTemplate.opsForValue().set(key, value);
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -36,7 +36,7 @@ public class RedisAdapter implements RedisPort {
             redisTemplate.opsForValue().set(key, value);
             redisTemplate.expire(key, timeout, timeUnit);
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -45,7 +45,7 @@ public class RedisAdapter implements RedisPort {
         try {
             return redisTemplate.opsForValue().get(key);
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,8 +56,8 @@ public class RedisAdapter implements RedisPort {
                 String json = objectMapper.writeValueAsString(value);
                 redisTemplate.opsForSet().add(key, json);
             }
-        } catch (JsonProcessingException e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,8 +69,8 @@ public class RedisAdapter implements RedisPort {
                 redisTemplate.opsForSet().add(key, json);
                 redisTemplate.expire(key, timeout, timeUnit);
             }
-        } catch (JsonProcessingException e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -88,7 +88,7 @@ public class RedisAdapter implements RedisPort {
             }
             return result;
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -97,7 +97,7 @@ public class RedisAdapter implements RedisPort {
         try {
             return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, value));
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,7 +106,7 @@ public class RedisAdapter implements RedisPort {
         try {
             return redisTemplate.hasKey(key);
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -115,7 +115,7 @@ public class RedisAdapter implements RedisPort {
         try {
             redisTemplate.delete(key);
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -124,8 +124,8 @@ public class RedisAdapter implements RedisPort {
         try {
             String json = objectMapper.writeValueAsString(value);
             save(cacheType, key, json, timeout, timeUnit);
-        } catch (JsonProcessingException e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,8 +134,8 @@ public class RedisAdapter implements RedisPort {
         try {
             String json = objectMapper.writeValueAsString(value);
             save(cacheType, key, json);
-        } catch (JsonProcessingException e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -148,7 +148,7 @@ public class RedisAdapter implements RedisPort {
             }
             return (T) objectMapper.readValue(json, cacheType.getType());
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -162,7 +162,7 @@ public class RedisAdapter implements RedisPort {
                 redisTemplate.opsForSet().add(key, json);
             }
         } catch (Exception e) {
-            throw new CustomException("Redis Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
