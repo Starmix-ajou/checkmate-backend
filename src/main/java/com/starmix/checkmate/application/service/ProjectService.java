@@ -220,7 +220,7 @@ public class ProjectService {
         Project project = isAuthorizedLeader(projectId);
 
         User user = userPersistencePort.findByEmail(request.email())
-                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
         if(request.role().equals(Role.DEVELOPER)) {
             user.addProfile(Profile.init(request.profile(), projectId));
             project.addMember(user);
@@ -255,7 +255,7 @@ public class ProjectService {
     public void updateMember(String projectId, String memberId, UpdateMemberRequest request) {
         User member = isAuthorizedMember(projectId, memberId);
         Project project = projectPersistencePort.findById(projectId)
-                        .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         member.getProfileByProjectId(projectId).updatePositions(request.positions());
         userPersistencePort.save(member);
 

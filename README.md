@@ -66,7 +66,7 @@ Task는 Epic 단위로 구조화할 수 있으며, Gantt Chart, Kanban Board, Ca
 ### 브랜치 전략
 
 - 브랜치 명: **Jira 태스크 ID 기반**
-  - ex) `CM-123`
+    - ex) `CM-123`
 - **Rebase Merge** 방식으로 main 브랜치에 병합
 - **최소 1명 이상의 approve** 필요
 

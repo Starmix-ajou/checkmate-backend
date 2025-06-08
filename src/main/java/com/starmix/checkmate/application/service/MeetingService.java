@@ -66,7 +66,7 @@ public class MeetingService {
                     notificationService.addNotifications(notification);
                 }
         );
-        
+
         return meetingPersistencePort.findById(meetingId)
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
     }
@@ -79,9 +79,9 @@ public class MeetingService {
         Meeting meeting = meetingPersistencePort.findById(request.meetingId())
                 .orElseThrow(() -> new CustomException("Meeting not found", HttpStatus.NOT_FOUND));
         User master = userPersistencePort.findById(request.masterId())
-                        .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
         meeting.addContent(request.content());
-        
+
         CreateMeetingFeignResponse response = aIPort.saveMeeting(meeting);
 
         List<Task> tasks = response.actionItems().stream().map(
