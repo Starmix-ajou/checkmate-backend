@@ -1,6 +1,5 @@
 package com.starmix.checkmate.domain.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.starmix.checkmate.adapter.in.common.ProfileDto;
 import lombok.Builder;
 import lombok.Getter;

@@ -79,6 +79,7 @@ public class Task {
                 .endDate(endDate)
                 .priority(priority)
                 .epic(epic)
+                .doneDate(status == Status.DONE ? LocalDate.now() : null)
                 .build();
     }
 
@@ -87,6 +88,10 @@ public class Task {
             LocalDate startDate, LocalDate endDate,
             Review review, Priority priority, Epic epic
     ) {
+        if(status == Status.DONE) {
+            this.doneDate = LocalDate.now();
+        }
+
         this.title = title;
         this.description = description;
         this.status = status;

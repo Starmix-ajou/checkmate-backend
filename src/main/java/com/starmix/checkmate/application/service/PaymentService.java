@@ -2,6 +2,7 @@ package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.out.redis.RedisType;
 import com.starmix.checkmate.application.port.out.payment.PaymentPort;
+import com.starmix.checkmate.application.port.out.persistence.PaymentPersistencePort;
 import com.starmix.checkmate.application.port.out.redis.RedisPort;
 import com.starmix.checkmate.domain.payment.Payment;
 import com.starmix.checkmate.domain.payment.PaymentStatus;
@@ -20,6 +21,7 @@ public class PaymentService {
 
     private final PaymentPort paymentPort;
     private final RedisPort redisPort;
+    private final PaymentPersistencePort paymentPersistencePort;
 
     public Payment completePayment(String paymentId) {
         Payment payment = redisPort.getObject(RedisType.PAYMENT_INFO, paymentId);
@@ -29,13 +31,13 @@ public class PaymentService {
             throw new CustomException("Sync Payment Exception", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (payment != null && payment.getStatus().equals(PaymentStatus.PAID)) {
-            return payment;
-        } else {
-            payment = Payment.init(paymentId, PaymentStatus.PAID);
+        if (payment == null) {
+            payment = Payment.init(paymentId, PaymentStatus.PAID, actualPayment);
             redisPort.saveObject(RedisType.PAYMENT_INFO, paymentId, payment, 3, TimeUnit.MINUTES);
-            return payment;
         }
+        
+        paymentPersistencePort.save(payment);
+        return payment;
     }
 
     public void handleWebhook(String body, String id, String timestamp, String signature) {

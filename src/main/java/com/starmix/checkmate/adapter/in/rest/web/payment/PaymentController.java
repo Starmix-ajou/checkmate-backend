@@ -3,8 +3,6 @@ package com.starmix.checkmate.adapter.in.rest.web.payment;
 import com.starmix.checkmate.adapter.in.rest.web.payment.request.CompletePaymentRequest;
 import com.starmix.checkmate.application.service.PaymentService;
 import com.starmix.checkmate.domain.payment.Payment;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +12,6 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
-
-    @Getter
-    @AllArgsConstructor
-    public static class Item {
-        private String id;
-        private String name;
-        private int price;
-        private String currency;
-    }
 
     @PostMapping("/complete")
     public Payment completePayment(@RequestBody CompletePaymentRequest request) {

@@ -1,6 +1,7 @@
 package com.starmix.checkmate.application.service;
 
 import com.starmix.checkmate.adapter.in.sse.common.SseEmitterManager;
+import com.starmix.checkmate.adapter.in.sse.common.SseType;
 import com.starmix.checkmate.application.port.out.persistence.*;
 import com.starmix.checkmate.domain.notification.Notification;
 import com.starmix.checkmate.global.exception.CustomException;
@@ -34,7 +35,7 @@ public class NotificationService {
 
     public void addNotifications(Notification notification) {
         notificationPersistencePort.save(notification);
-        sseEmitterManager.sendEventTo(notification.getUserId(), "new-notification", notification);
+        sseEmitterManager.sendEventTo(SseType.NOTIFICATION, notification.getUserId(), "new-notification", notification);
     }
 
     public void readNotification(String notificationId) {

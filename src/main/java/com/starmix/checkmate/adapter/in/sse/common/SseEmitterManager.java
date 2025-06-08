@@ -19,13 +19,13 @@ public class SseEmitterManager {
         scheduler.scheduleAtFixedRate(this::sendKeepAlive, 15, 15, TimeUnit.SECONDS);
     }
 
-    public SseEmitter addEmitter(String userId) {
+    public SseEmitter addEmitter(SseType sseType, String userId) {
         SseEmitter emitter = new SseEmitter(0L);
-        emitters.put(userId, emitter);
+        emitters.put(sseType.getPrefix() + userId, emitter);
 
-        emitter.onCompletion(() -> emitters.remove(userId));
-        emitter.onTimeout(() -> emitters.remove(userId));
-        emitter.onError((e) -> emitters.remove(userId));
+        emitter.onCompletion(() -> emitters.remove(sseType.getPrefix() + userId));
+        emitter.onTimeout(() -> emitters.remove(sseType.getPrefix() + userId));
+        emitter.onError((e) -> emitters.remove(sseType.getPrefix() + userId));
 
         Executors.newSingleThreadExecutor().submit(() -> {
             try {
@@ -33,20 +33,20 @@ public class SseEmitterManager {
                         .name("init")
                         .data("connected"));
             } catch (IOException e) {
-                emitters.remove(userId);
+                emitters.remove(sseType.getPrefix() + userId);
             }
         });
 
         return emitter;
     }
 
-    public void sendEventTo(String userId, String eventName, Object data) {
-        SseEmitter emitter = emitters.get(userId);
+    public void sendEventTo(SseType sseType, String userId, String eventName, Object data) {
+        SseEmitter emitter = emitters.get(sseType.getPrefix() + userId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event().name(eventName).data(data));
             } catch (IOException e) {
-                emitters.remove(userId);
+                emitters.remove(sseType.getPrefix() + userId);
             }
         }
     }

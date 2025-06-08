@@ -19,6 +19,12 @@ public class SseController {
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
         String userId = jwtUtil.extractUser().getUserId();
-        return emitterManager.addEmitter(userId);
+        return emitterManager.addEmitter(SseType.PROJECT_SPRINT, userId);
+    }
+
+    @GetMapping(value = "/notification", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter notificationSubscribe() {
+        String userId = jwtUtil.extractUser().getUserId();
+        return emitterManager.addEmitter(SseType.NOTIFICATION, userId);
     }
 }

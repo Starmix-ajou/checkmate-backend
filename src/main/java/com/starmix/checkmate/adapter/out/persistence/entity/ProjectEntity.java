@@ -25,4 +25,5 @@ public class ProjectEntity extends BaseEntity {
     @DBRef
     private UserEntity productManager;
     private String imageUrl;
+    private List<String> paymentIds;
 }
