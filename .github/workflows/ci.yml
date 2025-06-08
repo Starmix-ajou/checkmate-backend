@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - CM-211
     
 env:
   IMAGE_NAME: yny.ocir.io/ax1nm9kw34v6/checkmate

@@ -16,6 +16,7 @@ public class ProjectMapper {
                 .imageUrl(entity.getImageUrl())
                 .projectId(entity.getId())
                 .productManager(UserMapper.toDomain(entity.getProductManager()))
+                .paymentIds(entity.getPaymentIds())
                 .build();
     }
 
@@ -30,6 +31,7 @@ public class ProjectMapper {
                 .leader(UserMapper.toEntity(domain.getLeader()))
                 .imageUrl(domain.getImageUrl())
                 .productManager(UserMapper.toEntity(domain.getProductManager()))
+                .paymentIds(domain.getPaymentIds())
                 .build();
     }
 

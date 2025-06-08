@@ -9,7 +9,10 @@ import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.UpgradeProjectRequest;
+import com.starmix.checkmate.application.service.PaymentService;
 import com.starmix.checkmate.application.service.ProjectService;
+import com.starmix.checkmate.domain.payment.Payment;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.user.Role;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final PaymentService paymentService;
 
     @GetMapping
     public ResponseEntity<List<ProjectsResponse>> getProjects (
@@ -133,5 +137,22 @@ public class ProjectController {
     ) {
         StatisticsResponse response = projectService.getStatistics(timestamp);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/{projectId}/upgrade")
+    public ResponseEntity<Void> upgrade (
+            @PathVariable String projectId,
+            @RequestBody UpgradeProjectRequest request
+    ) {
+        projectService.upgrade(projectId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{projectId}/payment")
+    public ResponseEntity<List<Payment>> getPayments (
+            @PathVariable String projectId
+    ) {
+       List<Payment> payments = projectService.getPayments(projectId);
+       return ResponseEntity.ok().body(payments);
     }
 }

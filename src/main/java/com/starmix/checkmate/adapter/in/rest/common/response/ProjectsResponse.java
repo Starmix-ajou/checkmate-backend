@@ -21,13 +21,15 @@ public record ProjectsResponse(
     public record ProjectBriefDto(
             String projectId,
             String title,
-            String imageUrl
+            String imageUrl,
+            Boolean isPremium
     ) {
         public static ProjectBriefDto fromDomain(Project project) {
             return ProjectBriefDto.builder()
                     .projectId(project.getProjectId())
                     .title(project.getTitle())
                     .imageUrl(project.getImageUrl())
+                    .isPremium(project.isPremium())
                     .build();
         }
     }

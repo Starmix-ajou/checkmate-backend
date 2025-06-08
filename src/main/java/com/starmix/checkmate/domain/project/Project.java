@@ -1,5 +1,7 @@
 package com.starmix.checkmate.domain.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.starmix.checkmate.adapter.in.common.ProfileDto;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.domain.user.Profile;
@@ -25,6 +27,8 @@ public class Project {
     private User leader;
     private User productManager;
     private String imageUrl;
+    @JsonIgnore
+    private List<String> paymentIds;
 
     public static Project createTemporaryProject(
             CreateFeatureDefinitionRequest request,
@@ -126,6 +130,7 @@ public class Project {
         this.imageUrl = imageUrl;
     }
 
+    @JsonIgnore
     public boolean isArchived() {
         LocalDate today = LocalDate.now();
         return this.endDate != null && this.endDate.isBefore(today);
@@ -133,5 +138,19 @@ public class Project {
 
     public boolean canManageMember(User user, User member) {
         return isLeader(user) && !user.equals(member);
+    }
+
+    public void addPayment(String paymentId) {
+        if (this.paymentIds.contains(paymentId)) {
+            throw new CustomException("Payment Already Exists", HttpStatus.BAD_REQUEST);
+        }
+        List<String> existingPayment = new ArrayList<>(this.paymentIds);
+        existingPayment.add(paymentId);
+        this.paymentIds = existingPayment;
+    }
+
+    @JsonProperty("isPremium")
+    public boolean isPremium() {
+        return !this.paymentIds.isEmpty();
     }
 }

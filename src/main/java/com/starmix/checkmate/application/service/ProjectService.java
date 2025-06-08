@@ -9,6 +9,7 @@ import com.starmix.checkmate.adapter.in.rest.common.request.ProjectStatus;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateMemberRequest;
 import com.starmix.checkmate.adapter.in.rest.web.project.request.UpdateProjectRequest;
 import com.starmix.checkmate.adapter.in.rest.common.response.ProjectsResponse;
+import com.starmix.checkmate.adapter.in.rest.web.project.request.UpgradeProjectRequest;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.CreateFeatureDefinitionRequest;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackFeatureSpecificationRequest;
 import com.starmix.checkmate.adapter.in.sse.web.project.request.FeedbackRequest;
@@ -28,6 +29,7 @@ import com.starmix.checkmate.domain.epic.Epic;
 import com.starmix.checkmate.domain.feature.Feature;
 import com.starmix.checkmate.domain.leaderboard.Leaderboard;
 import com.starmix.checkmate.domain.notification.Notification;
+import com.starmix.checkmate.domain.payment.Payment;
 import com.starmix.checkmate.domain.project.Project;
 import com.starmix.checkmate.domain.project.Suggestion;
 import com.starmix.checkmate.domain.sprint.Sprint;
@@ -64,6 +66,7 @@ public class ProjectService {
     private final DailyScrumPersistencePort dailyScrumPersistencePort;
     private final LeaderboardPersistencePort leaderBoardPersistencePort;
     private final NotificationService notificationService;
+    private final PaymentPersistencePort paymentPersistencePort;
 
     public List<ProjectsResponse> getProjects(ProjectStatus status, Role role) {
         User user = jwtUtil.extractUser();
@@ -335,5 +338,21 @@ public class ProjectService {
             throw new CustomException("Permission Denied", HttpStatus.FORBIDDEN);
         }
         return project;
+    }
+
+    public void upgrade(String projectId, UpgradeProjectRequest request) {
+        Payment payment = paymentPersistencePort.findById(request.paymentId())
+                .orElseThrow(() -> new CustomException("Payment not found", HttpStatus.NOT_FOUND));
+        Project project = projectPersistencePort.findById(projectId)
+                .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
+
+        if(project.getProjectId().equals(payment.getOrderName())) {
+            project.addPayment(request.paymentId());
+        }
+        projectPersistencePort.save(project);
+    }
+
+    public List<Payment> getPayments(String projectId) {
+        return paymentPersistencePort.findAllByOrderName(projectId);
     }
 }

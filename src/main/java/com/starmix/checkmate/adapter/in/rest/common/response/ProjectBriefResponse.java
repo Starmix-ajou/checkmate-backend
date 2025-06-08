@@ -7,13 +7,15 @@ import lombok.Builder;
 public record ProjectBriefResponse(
         String projectId,
         String title,
-        String description
+        String description,
+        Boolean isPremium
 ) {
     public static ProjectBriefResponse fromDomain(Project project) {
         return ProjectBriefResponse.builder()
                 .projectId(project.getProjectId())
                 .title(project.getTitle())
                 .description(project.getDescription())
+                .isPremium(project.isPremium())
                 .build();
     }
 }
