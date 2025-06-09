@@ -20,6 +20,10 @@ public class User {
     private List<Profile> profiles;
 
     public void addProfile(Profile profile) {
+        if(this.profiles == null || this.profiles.isEmpty()) {
+            this.profiles = new ArrayList<>();
+        }
+
         boolean exists = profiles.stream().anyMatch(
                 p -> p.getProjectId().equals(profile.getProjectId())
         );
