@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface NotificationMongoRepository extends MongoRepository<NotificationEntity, String> {
     Page<NotificationEntity> findByUserId(String userId, Pageable pageable);
     Page<NotificationEntity> findByUserIdAndProject_Id(String userId, String projectId, Pageable pageable);
-    Integer countByUserIdAndProject_Id(String userId, String projectId);
-    Integer countByUserId(String userId);
+    Integer countByUserIdAndProject_IdAndIsReadFalse(String userId, String projectId);
+    Integer countByUserIdAndIsReadFalse(String userId);
 }

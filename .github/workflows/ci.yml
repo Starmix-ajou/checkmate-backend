@@ -1,15 +1,42 @@
-name: Build and Push to OCI
+name: Test, Build and Deploy to OCI
 
 on:
   push:
     branches:
-      - main
-    
+      - '**'
+
 env:
-  IMAGE_NAME: yny.ocir.io/ax1nm9kw34v6/checkmate
+  IMAGE_NAME: ${{ secrets.OCI_IMAGE_NAME }}
 
 jobs:
-  build-and-push:
+  test:
+    runs-on: [self-hosted, checkmate]
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
+
+  build-and-deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, checkmate]
     steps:
       - name: Checkout Source Repository
@@ -25,7 +52,7 @@ jobs:
             --platform linux/arm64 \
             -t $IMAGE_NAME:latest \
             -t $IMAGE_NAME:${{ github.sha }} \
-            . 
+            .
 
           docker push $IMAGE_NAME:latest
           docker push $IMAGE_NAME:${{ github.sha }}
@@ -43,13 +70,13 @@ jobs:
 
       - name: Install envsubst
         run: sudo apt-get update && sudo apt-get install -y gettext
-        
+
       - name: Generate Argo CD Application with Webhook Secret
         run: |
           export WEBHOOK_SECRET="${{ secrets.WEBHOOK_SECRET }}"
           envsubst < manifests/apps/backend/application.yaml > manifests/apps/backend/application.yaml.tmp
           mv manifests/apps/backend/application.yaml.tmp manifests/apps/backend/application.yaml
-      
+
       - name: Commit and Push Changes to Manifest Repo
         run: |
           cd manifests

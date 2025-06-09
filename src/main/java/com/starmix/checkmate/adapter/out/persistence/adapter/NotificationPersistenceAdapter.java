@@ -66,13 +66,13 @@ public class NotificationPersistenceAdapter implements NotificationPersistencePo
     }
 
     @Override
-    public Integer countByUserIdAndProjectId(String userId, String projectId) {
+    public Integer countNotReadByUserIdAndProjectId(String userId, String projectId) {
         try {
             Integer count;
             if(projectId != null && !projectId.isEmpty()) {
-                count = notificationMongoRepository.countByUserIdAndProject_Id(userId, projectId);
+                count = notificationMongoRepository.countByUserIdAndProject_IdAndIsReadFalse(userId, projectId);
             } else {
-                count = notificationMongoRepository.countByUserId(userId);
+                count = notificationMongoRepository.countByUserIdAndIsReadFalse(userId);
             }
             return count;
         } catch (Exception e) {

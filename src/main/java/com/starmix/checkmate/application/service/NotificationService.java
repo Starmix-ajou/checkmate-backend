@@ -52,6 +52,6 @@ public class NotificationService {
 
     public Integer getNotificationCount(String projectId) {
         String userId = jwtUtil.extractUser().getUserId();
-        return notificationPersistencePort.countByUserIdAndProjectId(userId, projectId);
+        return notificationPersistencePort.countNotReadByUserIdAndProjectId(userId, projectId);
     }
 }

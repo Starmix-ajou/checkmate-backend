@@ -1,13 +1,18 @@
 package com.starmix.checkmate;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.platform.suite.api.Suite;
+import org.junit.platform.suite.api.SuiteDisplayName;
 
-@SpringBootTest
-class CheckmateApplicationTests {
+@Suite
+@SuiteDisplayName("Checkmate 전체 테스트 스위트")
+@SelectPackages({
+		"com.starmix.checkmate.domain",
+})
+public class CheckmateApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-
 }

@@ -11,5 +11,5 @@ public interface NotificationPersistencePort {
     void save(Notification notification);
     void delete(String notificationId);
     Optional<Notification> findById(String notificationId);
-    Integer countByUserIdAndProjectId(String userId, String projectId);
+    Integer countNotReadByUserIdAndProjectId(String userId, String projectId);
 }
