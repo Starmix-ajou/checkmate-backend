@@ -29,14 +29,21 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Tests
-        run: ./gradlew test
+        run: ./gradlew clean test jacocoTestReport
 
-      - name: Upload Test Report
+      - name: Upload JUnit Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report
-          path: build/reports/tests/test/
+          name: junit-report
+          path: build/reports/tests/test
+
+      - name: Upload JaCoCo Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-html-report
+          path: build/jacocoHtml
 
   build-and-deploy:
     needs: test
