@@ -1,15 +1,19 @@
 name: Test, Build and Deploy to OCI
 
 on:
-  push:
+  pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - 'main'
 
 env:
   IMAGE_NAME: ${{ secrets.OCI_IMAGE_NAME }}
 
 jobs:
   test:
+    if: github.event_name == 'pull_request'
     runs-on: [self-hosted, checkmate]
     steps:
       - name: Checkout Source Repository
@@ -36,7 +40,7 @@ jobs:
 
   build-and-deploy:
     needs: test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: [self-hosted, checkmate]
     steps:
       - name: Checkout Source Repository
