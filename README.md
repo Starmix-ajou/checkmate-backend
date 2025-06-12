@@ -69,6 +69,7 @@ Task는 Epic 단위로 구조화할 수 있으며, Gantt Chart, Kanban Board, Ca
     - ex) `CM-123`
 - **Rebase Merge** 방식으로 main 브랜치에 병합
 - **최소 1명 이상의 approve** 필요
+- test
 
 ## 3. 프로젝트 구조
 
