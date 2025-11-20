@@ -3,10 +3,41 @@ plugins {
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
+	id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
 group = 'com.starmix'
 version = '0.0.1-SNAPSHOT'
+
+jib {
+    from {
+        image = 'eclipse-temurin:21-jre-alpine'
+        platforms {
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = "yny.ocir.io/ax1nm9kw34v6/checkmate" 
+        tags = ['latest'] // GitHub Actions에서 추가 태그 주입 예정
+        auth {
+            username = System.getenv('OCI_REGISTRY_USERNAME')
+            password = System.getenv('OCI_REGISTRY_PASSWORD')
+        }
+    }
+    container {
+        jvmFlags = [
+            '-XX:+UseContainerSupport',
+            '-XX:MaxRAMPercentage=75.0',
+            '-Djava.security.egd=file:/dev/./urandom',
+            '-Duser.timezone=Asia/Seoul'
+        ]
+        ports = ['8080']
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+    }
+}
 
 java {
 	toolchain {

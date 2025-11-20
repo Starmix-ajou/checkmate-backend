@@ -1,97 +1,103 @@
 name: Test, Build and Deploy to OCI
 
 on:
-  pull_request:
-    branches:
-      - '**'
   push:
-    branches:
-      - 'main'
+    branches: [ 'main' ]
 
 env:
   IMAGE_NAME: ${{ secrets.OCI_IMAGE_NAME }}
 
 jobs:
-  # test:
-  #   if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-  #   runs-on: [self-hosted, checkmate]
-  #   steps:
-  #     - name: Checkout Source Repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Set up JDK
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         distribution: 'temurin'
-  #         java-version: '21'
-
-  #     - name: Grant execute permission for gradlew
-  #       run: chmod +x ./gradlew
-
-  #     - name: Run Tests
-  #       run: ./gradlew clean test jacocoTestReport
-
-  #     - name: Upload JUnit Test Report
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: junit-report
-  #         path: build/reports/tests/test
-
-  #     - name: Upload JaCoCo Coverage Report
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: jacoco-html-report
-  #         path: build/jacocoHtml
-
+#  test:
+#    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+#    runs-on: [self-hosted, checkmate]
+#    steps:
+#      - name: Checkout Source Repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '21'
+#          cache: gradle
+#
+#      - name: Cache Gradle packages (extra)
+#        uses: actions/cache@v4
+#        with:
+#          path: |
+#            ~/.gradle/caches
+#            ~/.gradle/wrapper/
+#          key: ${{ runner.os }}-gradle-${{ hashFiles('**/gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle*','**/build.gradle*') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gradle-
+#
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x ./gradlew
+#
+#      - name: Run Tests
+#        run: ./gradlew clean test jacocoTestReport --no-daemon --stacktrace
   build-and-deploy:
-    # needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: [self-hosted, checkmate]
     steps:
       - name: Checkout Source Repository
         uses: actions/checkout@v4
 
-      - name: Log in to OCI Container Registry
-        run: |
-          echo "${{ secrets.OCI_REGISTRY_PASSWORD }}" | docker login yny.ocir.io -u "${{ secrets.OCI_REGISTRY_USERNAME }}" --password-stdin
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: gradle
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Image with Jib
+        env:
+          OCI_REGISTRY_USERNAME: ${{ secrets.OCI_REGISTRY_USERNAME }}
+          OCI_REGISTRY_PASSWORD: ${{ secrets.OCI_REGISTRY_PASSWORD }}
         run: |
-          docker build \
-            --platform linux/arm64 \
-            -t $IMAGE_NAME:latest \
-            -t $IMAGE_NAME:${{ github.sha }} \
-            .
-
-          docker push $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:${{ github.sha }}
+          # 별도의 도커 설치 없이 Gradle만으로 빌드 및 푸시까지 완료
+          # -Djib.to.tags를 통해 GitHub SHA를 태그로 추가 주입합니다.
+          chmod +x ./gradlew
+          ./gradlew jib \
+            -Djib.to.tags=latest,${{ github.sha }} \
+            --no-daemon
 
       - name: Checkout Manifest Repository
-        uses: actions/checkout@v4
-        with:
-          repository: starmix-ajou/checkmate-manifest
-          token: ${{ secrets.PAT_TOKEN }}
-          path: manifests
-
-      - name: Update Image Tag in Deployment YAML
         run: |
-          sed -i "s|image: $IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" manifests/apps/backend/deployment.yaml
+          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/starmix-ajou/checkmate-manifest.git manifests
 
-      - name: Install envsubst
-        run: sudo apt-get update && sudo apt-get install -y gettext
-
-      - name: Generate Argo CD Application with Webhook Secret
+      - name: Update image tag and inject webhook secret (Python)
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
-          export WEBHOOK_SECRET="${{ secrets.WEBHOOK_SECRET }}"
-          envsubst < manifests/apps/backend/application.yaml > manifests/apps/backend/application.yaml.tmp
-          mv manifests/apps/backend/application.yaml.tmp manifests/apps/backend/application.yaml
+          python3 - <<'PY'
+          import os, re
 
-      - name: Commit and Push Changes to Manifest Repo
+          man_dep = 'manifests/apps/backend/deployment.yaml'
+          man_app = 'manifests/apps/backend/application.yaml'
+          IMAGE = os.environ.get('IMAGE_NAME', '')
+          SHA = os.environ.get('GITHUB_SHA', '')
+          WEBHOOK = os.environ.get('WEBHOOK_SECRET', '')
+
+          def update_file(path, pattern, replacement):
+              if os.path.exists(path):
+                  with open(path, 'r', encoding='utf-8') as f:
+                      content = f.read()
+                  new_content = re.sub(pattern, replacement, content)
+                  with open(path, 'w', encoding='utf-8') as f:
+                      f.write(new_content)
+
+          # 이미지 태그 업데이트
+          update_file(man_dep, rf"image:\s*{re.escape(IMAGE)}:.*", f"image: {IMAGE}:{SHA}")
+          # 웹훅 시크릿 주입
+          update_file(man_app, r'(\$\{?WEBHOOK_SECRET\}?)', WEBHOOK)
+          PY
+
+      - name: Commit and Push to Manifest Repo
         run: |
           cd manifests
           git config user.name "yeonnnnjs"
           git config user.email "sungyeon52@gmail.com"
-          git commit -am "Update image tag from checkmate-backend"
-          git push origin main
+          git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update image tag to ${GITHUB_SHA}" && git push origin main)
