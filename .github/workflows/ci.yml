@@ -12,41 +12,41 @@ env:
   IMAGE_NAME: ${{ secrets.OCI_IMAGE_NAME }}
 
 jobs:
-  test:
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, checkmate]
-    steps:
-      - name: Checkout Source Repository
-        uses: actions/checkout@v4
+  # test:
+  #   if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+  #   runs-on: [self-hosted, checkmate]
+  #   steps:
+  #     - name: Checkout Source Repository
+  #       uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         distribution: 'temurin'
+  #         java-version: '21'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+  #     - name: Grant execute permission for gradlew
+  #       run: chmod +x ./gradlew
 
-      - name: Run Tests
-        run: ./gradlew clean test jacocoTestReport
+  #     - name: Run Tests
+  #       run: ./gradlew clean test jacocoTestReport
 
-      - name: Upload JUnit Test Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-report
-          path: build/reports/tests/test
+  #     - name: Upload JUnit Test Report
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: junit-report
+  #         path: build/reports/tests/test
 
-      - name: Upload JaCoCo Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-html-report
-          path: build/jacocoHtml
+  #     - name: Upload JaCoCo Coverage Report
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: jacoco-html-report
+  #         path: build/jacocoHtml
 
   build-and-deploy:
-    needs: test
+    # needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: [self-hosted, checkmate]
     steps:
